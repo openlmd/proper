@@ -1,0 +1,15 @@
+<package>
+  <name>proper</name>
+  <version>0.1.0</version>
+  <description>This package provides proper packages.</description>
+  <maintainer email="jorge.rodriguez@aimen.es">Jorge Rodríguez-Araújo</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>proper_cloud</run_depend>
+
+  <export>
+    <metapackage/>
+  </export>
+</package>
