@@ -9,5 +9,5 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mashes_workcell)/config/workcell.rviz" required="true" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find proper_workcell)/config/workcell.rviz" required="true" />
 </launch>
