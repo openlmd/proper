@@ -2,6 +2,10 @@
 
 Vision guided 3D Direct Laser Repair of Complex Metal Parts.
 
+## 3D Scan
+
+![3D scan screenshot](./proper/media/scan.png)
+
 ## Acknowledgement
 
 This work has been supported by the European Commission through the research project
