@@ -9,6 +9,7 @@ Vision guided 3D Direct Laser Repair of Complex Metal Parts.
 To record a bag file with the scanning information:
 
 ```
+roslaunch proper_workcell proper_workcell.launch
 roslaunch proper_workcell proper_bagrecord.launch filename:=scan.bag
 ```
 
