@@ -14,20 +14,18 @@ from sensor_msgs.msg import PointCloud2, PointField
 class Cloud():
     def __init__(self):
         rospy.init_node('pub_cloud', anonymous=True)
-        
+
         cloud_topic = rospy.get_param('~cloud', '/camera/cloud') # cameara/points
         self.cloud_pub = rospy.Publisher(cloud_topic, PointCloud2, queue_size=5)
-        
+
         self.sequence = 0
         self.pcloud = PointCloud2()
-        
-        self.listener = tf.TransformListener()
-        
+
         r = rospy.Rate(10) # 10hz
         while not rospy.is_shutdown():
             self.pub_point_cloud()
             r.sleep()
-        
+
     def pub_point_cloud(self):
         stamp = rospy.Time.now()
         points3d = np.random.random((100, 3))
@@ -51,4 +49,3 @@ if __name__ == '__main__':
         Cloud()
     except rospy.ROSInterruptException:
         pass
-    
