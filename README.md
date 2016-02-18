@@ -17,10 +17,12 @@ The complexity of laser cladding makes a challenge to adequate the process
 parameters (e.g. traverse speed, laser power, powder feed rate) to achieve an
 homogeneous layer with an specific properties. In a traditional way, a set of
 parameters is supposed to give constant conditions through the successive
-deposition of tracks. Thus the laser path required to build up the part is calculated off-line based on a constant layer height and track width. Therefore
+deposition of tracks. Thus the laser path required to build up the part is
+calculated off-line based on a constant layer height and track width. Therefore
 the final volume can be achieved assuming no distortions during the process.
 
-Tracks are affected by heating and part geometry during the process, especially building large parts. The piece suffers from geometrical distortions and clad
+Tracks are affected by heating and part geometry during the process, especially
+building large parts. The piece suffers from geometrical distortions and clad
 defects. It is particularly affected by overheating and accumulation of
 residual thermal stresses, main cause of building defects. As a consequence,
 the final dimensions and properties of each manufactured part are not
@@ -30,29 +32,33 @@ tools.
 
 In recent years, several closed-loop control systems have been proposed to
 improve the laser cladding stability during the process [1]. These control
-systems mainly use a coaxial arrangement for the melt pool monitoring  (i.e. temperature or width), acting on the laser power to overcome the effects of
+systems mainly use a coaxial arrangement for the melt pool monitoring  (i.e.
+  temperature or width), acting on the laser power to overcome the effects of
 thermal variations. However, LMD suffers from a lack of more specific
 solutions beyond the melt pool monitoring and control.
 
 Compatible with current coaxial solutions, a novel approach focused on the
 on-line geometrical measurement and laser path adaptation of the LMD process
-has been proposed [2]. This enables the detection and correction of geometrical  distortions to avoid the final result affectation. Besides improving the
+has been proposed [2]. This enables the detection and correction of geometrical  
+distortions to avoid the final result affectation. Besides improving the
 accuracy and finishing of the near-net-shape part built from the 3D design
 model. It takes special attention to the flexibility required to be exploited
 on current laser cladding industrial facilities.
 
 This 3D scanning solution for geometrical monitoring has been demonstrated that
-is suited to work on-line in a robotized LMD process, able to different  configurations and conditions through a self-calibrated procedure. In this way,
+is suited to work on-line in a robotized LMD process, able to different  
+configurations and conditions through a self-calibrated procedure. In this way,
 the system is able to provide a point cloud in the working coordinates with no
 constraints in the movement of the robot.
 
-[1] J. Rodriguez-Araujo, J.J. Rodriguez-Andina, J. Farina, F. Vidal, J.L. Mato, M.A.
-Montealegre, “Industrial Laser Cladding Systems: FPGA-Based Adaptive Control”, IEEE
-Industrial Electronics Magazine, vol. 6, no. 4, pp. 35-46, Dec. 2012.
+[1] J. Rodriguez-Araujo, J.J. Rodriguez-Andina, J. Farina, F. Vidal, J.L. Mato,
+M.A. Montealegre, “Industrial Laser Cladding Systems: FPGA-Based Adaptive
+Control”, IEEE Industrial Electronics Magazine, vol. 6, no. 4, pp. 35-46, Dec.
+2012.
 
-[2] J. Rodriguez-Araujo, J.J. Rodriguez-Andina, "ROS-based 3D on-line monitoring of LMD
-robotized cells", 2015 IEEE 13th International Conference on Industrial Informatics (INDIN),
-vol., no., pp. 308-313, 22-24 July 2015.
+[2] J. Rodriguez-Araujo, J.J. Rodriguez-Andina, "ROS-based 3D on-line monitoring
+of LMD robotized cells", 2015 IEEE 13th International Conference on Industrial
+Informatics (INDIN), vol., no., pp. 308-313, 22-24 July 2015.
 
 ## Description
 
@@ -75,7 +81,8 @@ camera frame. Finally, the point cloud is resolved on-line in the working cell
 coordinates with independence of the process speed and the robot path
 trajectory.
 
-The achieved accuracy is enough to distinguish tracks with a height lower than  0.5mm, as shown the next picture.
+The achieved accuracy is enough to distinguish tracks with a height lower than
+0.5mm, as shown the next picture.
 
 ![3D profile](./proper/media/profile.jpg)
 
@@ -90,9 +97,10 @@ cell in its real dimensions.
 
 This meta-package contains two packages:
 - proper_workcell: contains the working cell description files.
-- proper_cloud: contains some useful tools used for 3D filtering (under development).
+- proper_cloud: contains some useful tools used for 3D filtering (under
+  development).
 
-## 3D Scan
+## Quick start
 
 ![3D scan screenshot](./proper/media/scan.png)
 
@@ -109,7 +117,8 @@ To play a bag file with the scanning information:
 roslaunch proper_workcell proper_bagplay.launch filename:=scan.bag
 ```
 
-To convert a bag file with the scanning information to a point cloud in xyz format:
+To convert a bag file with the scanning information to a point cloud in xyz
+format:
 
 ```shell
 roscore
@@ -119,8 +128,9 @@ roslaunch proper_workcell proper_bagplay.launch filename:=scan.bag
 
 ## Acknowledgement
 
-This work is been supported by the European Commission through the research project
-"Laser equipment ASsessment for High impAct innovation in the manufactuRing European
-industry (LASHARE)", FP7-2013-NMP-ICT-FOF - Grant Agreement Nº 609046.
+This work is been supported by the European Commission through the research
+project "Laser equipment ASsessment for High impAct innovation in the
+manufactuRing European industry (LASHARE)", FP7-2013-NMP-ICT-FOF - Grant
+Agreement Nº 609046.
 
 [http://www.lashare.eu/](http://www.lashare.eu/)
