@@ -40,7 +40,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>logo.jpg</normaloff>logo.jpg</iconset>
+    <normaloff>proper.png</normaloff>proper.png</iconset>
   </property>
   <property name="autoFillBackground">
    <bool>false</bool>
@@ -630,25 +630,6 @@ border: 1px solid gray;</string>
       </property>
      </widget>
     </item>
-    <item row="1" column="1">
-     <widget class="QLabel" name="lblLogo">
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
-      <property name="text">
-       <string/>
-      </property>
-      <property name="pixmap">
-       <pixmap>logo.jpg</pixmap>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
     <item row="3" column="1">
      <widget class="QPushButton" name="btnLoad">
       <property name="minimumSize">
@@ -752,6 +733,25 @@ border: 1px solid gray;</string>
       </property>
       <property name="checkable">
        <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="1">
+     <widget class="QLabel" name="lblLogo">
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+      <property name="pixmap">
+       <pixmap>proper.png</pixmap>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>
