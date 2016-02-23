@@ -33,7 +33,7 @@ class ServerRobot(Robot):
         self.set_speed([speed, 500, 50, 50])
 
     def zone(self, zone):
-        self.set_zone(zone_key=zone)
+        self.set_zone(manual_zone=zone)
 
 
 if __name__ == '__main__':

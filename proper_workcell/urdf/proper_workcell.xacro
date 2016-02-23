@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<robot name="mashes_workcell" xmlns:xacro="http://ros.org/wiki/xacro">
+<robot name="proper_workcell" xmlns:xacro="http://ros.org/wiki/xacro">
   <property name="pi" value="3.141592654" />
 
   <xacro:property name="workobject_frame">
@@ -13,7 +13,7 @@
   <link name="world" />
 
   <!-- Robot -->
-  <xacro:include filename="$(find etna_workcell)/urdf/abb_robot.xacro"/>
+  <xacro:include filename="$(find proper_workcell)/urdf/abb_robot.xacro"/>
 
   <joint name="world-abb_robot" type="fixed">
     <parent link="world"/>
@@ -22,7 +22,7 @@
   </joint>
 
   <!-- Head -->
-  <xacro:include filename="$(find etna_workcell)/urdf/wt03_head.xacro"/>
+  <xacro:include filename="$(find proper_workcell)/urdf/wt03_head.xacro"/>
 
   <joint name="tool0-head0" type="fixed">
     <parent link="tool0"/>
