@@ -60,8 +60,7 @@ class Robot:
             while True:
                 #data = map(float, s.recv(4096).split())
                 data = s.recv(4096).split()
-                if data[1] == '0':
-                    print data[4:]
+                print data[0:]
                 #result =
                 #if   int(data[1]) == 0:
                 #    self.pose.append([data[2:5], data[5:]])
@@ -302,9 +301,9 @@ class Robot:
         For this to work you're going to need to edit the RAPID function
         and fill in the DIO you want this to switch.
         '''
-        msg = '97 ' + str(int(bool(value))) + ' #'
-        return
-        #return self.send(msg)
+        msg = '97 ' + str(int(id)) + ' ' + str(int(bool(value))) + ' #'
+        #return
+        return self.send(msg)
 
     def send(self, message, wait_for_response=True):
         '''

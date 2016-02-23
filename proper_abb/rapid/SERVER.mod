@@ -27,6 +27,7 @@ VAR num nParams;
 !PERS string ipController:= "192.168.125.1"; !robot default IP
 PERS string ipController:= "172.20.0.32"; !local IP for testing in simulation
 PERS num serverPort:= 5000;
+PERS bool joints_notcartesians:= TRUE;
 
 !//Motion of the robot
 VAR robtarget cartesianTarget;
@@ -404,6 +405,14 @@ PROC main()
                 ELSE
                     ok:=SERVER_BAD_MSG;
                 ENDIF
+				
+			CASE 97: !Set or reset a digital output
+                IF nParams = 2 THEN
+					!TODO:Seleccionar o tipo de entrada
+                    SetDO SimOut1, params{2};
+                ELSE
+                    ok :=SERVER_BAD_MSG;
+                ENDIF	
 				
             CASE 98: !returns current robot info: serial number, robotware version, and robot type
                 IF nParams = 0 THEN
