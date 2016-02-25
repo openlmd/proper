@@ -1,11 +1,12 @@
 '''
 Michael Dawson-Haggerty
 
-abb.py: contains classes and support functions which interact with an ABB Robot running our software stack (RAPID code module SERVER)
+abb.py: contains classes and support functions which interact with an ABB Robot
+ running our software stack (RAPID code module SERVER)
 
 
-For functions which require targets (XYZ positions with quaternion orientation),
-targets can be passed as [[XYZ], [Quats]] OR [XYZ, Quats]
+For functions which require targets (XYZ positions with quaternion
+orientation), targets can be passed as [[XYZ], [Quats]] OR [XYZ, Quats]
 
 '''
 
@@ -13,23 +14,24 @@ import socket
 import json
 import time
 import inspect
-from threading import Thread
+#from threading import Thread
 from collections import deque
 import logging
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())
 
+
 class Robot:
-    def __init__ (self):
-        self.delay   = .08
+    def __init__(self):
+        self.delay = .08
 
     def init_ant(self,
-                 ip          = '192.168.125.1',
-                 port_motion = 5000,
-                 port_logger = 5001):
+                 ip='192.168.125.1',
+                 port_motion=5000,
+                 port_logger=5001):
 
-        self.delay   = .08
+        self.delay = .08
 
         self.connect_motion((ip, port_motion))
         #log_thread = Thread(target = self.get_net,
@@ -42,15 +44,16 @@ class Robot:
         self.set_zone()
 
     def connect_motion(self, remote):
-        log.info('Attempting to connect to robot motion server at %s', str(remote))
+        log.info('Attempting to connect to robot motion server at %s',
+                 str(remote))
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.sock.settimeout(2.5)
         self.sock.connect(remote)
         self.sock.settimeout(None)
         log.info('Connected to robot motion server at %s', str(remote))
 
-    def connect_logger(self, remote, maxlen=None):
-        self.pose   = deque(maxlen=maxlen)
+    def connect_logger(self, remote, maxlen=10):
+        self.pose = deque(maxlen=maxlen)
         self.joints = deque(maxlen=maxlen)
 
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -58,31 +61,27 @@ class Robot:
         s.setblocking(1)
         try:
             while True:
-                #data = map(float, s.recv(4096).split())
                 data = s.recv(4096).split()
-                print data[0:]
-                #result =
-                #if   int(data[1]) == 0:
-                #    self.pose.append([data[2:5], data[5:]])
-                #elif int(data[1]) == 1: self.joints.append([a[2:5], a[5:]])
+                #print data[0:]
+                self.joints.append(data)
         finally:
             s.shutdown(socket.SHUT_RDWR)
 
     def set_units(self, linear, angular):
         units_l = {'millimeters': 1.0,
-                   'meters'     : 1000.0,
-                   'inches'     : 25.4}
-        units_a = {'degrees' : 1.0,
-                   'radians' : 57.2957795}
+                   'meters': 1000.0,
+                   'inches': 25.4}
+        units_a = {'degrees': 1.0,
+                   'radians': 57.2957795}
         self.scale_linear = units_l[linear]
-        self.scale_angle  = units_a[angular]
+        self.scale_angle = units_a[angular]
 
     def set_cartesian(self, pose, response=True):
         '''
         Executes a move immediately from the current pose,
         to 'pose', with units of millimeters.
         '''
-        msg  = "01 " + self.format_pose(pose)
+        msg = "01 " + self.format_pose(pose)
         return self.send(msg, response)
 
     def set_joints(self, joints, response=True):
@@ -90,9 +89,11 @@ class Robot:
         Executes a move immediately, from current joint angles,
         to 'joints', in degrees.
         '''
-        if len(joints) <> 6: return False
+        if len(joints) != 6:
+            return False
         msg = "02 "
-        for joint in joints: msg += format(joint*self.scale_angle, "+08.2f") + " "
+        for joint in joints:
+            msg += format(joint*self.scale_angle, "+08.2f") + " "
         msg += "#"
         return self.send(msg, response)
 
@@ -134,7 +135,7 @@ class Robot:
         log.debug('get_robotinfo result: %s', str(data))
         return data
 
-    def set_tool(self, tool=[[0,0,0], [1,0,0,0]]):
+    def set_tool(self, tool=[[0, 0, 0], [1, 0, 0, 0]]):
         '''
         Sets the tool centerpoint (TCP) of the robot.
         When you command a cartesian move,
@@ -143,13 +144,13 @@ class Robot:
         Offsets are from tool0, which is defined at the intersection of the
         tool flange center axis and the flange face.
         '''
-        msg       = "06 " + self.format_pose(tool)
+        msg = "06 " + self.format_pose(tool)
         self.send(msg)
         self.tool = tool
 
     def load_json_tool(self, file_obj):
         if file_obj.__class__.__name__ == 'str':
-            file_obj = open(filename, 'rb');
+            file_obj = open(filename, 'rb')
         tool = check_coordinates(json.load(file_obj))
         self.set_tool(tool)
 
@@ -157,7 +158,7 @@ class Robot:
         log.debug('get_tool returning: %s', str(self.tool))
         return self.tool
 
-    def set_workobject(self, work_obj=[[0,0,0],[1,0,0,0]]):
+    def set_workobject(self, work_obj=[[0, 0, 0], [1, 0, 0, 0]]):
         '''
         The workobject is a local coordinate frame you can define on the robot,
         then subsequent cartesian moves will be in this coordinate frame.
@@ -165,13 +166,14 @@ class Robot:
         msg = "07 " + self.format_pose(work_obj)
         self.send(msg)
 
-    def set_speed(self, speed=[100,50,50,50]):
+    def set_speed(self, speed=[100, 50, 50, 50]):
         '''
         speed: [robot TCP linear speed (mm/s), TCP orientation speed (deg/s),
                 external axis linear, external axis orientation]
         '''
 
-        if len(speed) <> 4: return False
+        if len(speed) != 4:
+            return False
         msg = "08 "
         msg += format(speed[0], "+08.1f") + " "
         msg += format(speed[1], "+08.2f") + " "
@@ -180,19 +182,19 @@ class Robot:
         self.send(msg)
 
     def set_zone(self,
-                 zone_key     = 'z1',
-                 point_motion = False,
-                 manual_zone  = []):
-        zone_dict = {'z0'  : [.3,.3,.03],
-                    'z1'  : [1,1,.1],
-                    'z5'  : [5,8,.8],
-                    'z10' : [10,15,1.5],
-                    'z15' : [15,23,2.3],
-                    'z20' : [20,30,3],
-                    'z30' : [30,45,4.5],
-                    'z50' : [50,75,7.5],
-                    'z100': [100,150,15],
-                    'z200': [200,300,30]}
+                 zone_key='z1',
+                 point_motion=False,
+                 manual_zone=[]):
+        zone_dict = {'z0': [.3, .3, .03],
+                     'z1': [1, 1, .1],
+                     'z5': [5, 8, .8],
+                     'z10': [10, 15, 1.5],
+                     'z15': [15, 23, 2.3],
+                     'z20': [20, 30, 3],
+                     'z30': [30, 45, 4.5],
+                     'z50': [50, 75, 7.5],
+                     'z100': [100, 150, 15],
+                     'z200': [200, 300, 30]}
         '''
         Sets the motion zone of the robot. This can also be thought of as
         the flyby zone, AKA if the robot is going from point A -> B -> C,
@@ -212,12 +214,13 @@ class Robot:
         '''
 
         if point_motion:
-            zone = [0,0,0]
+            zone = [0, 0, 0]
         elif len(manual_zone) == 3:
             zone = manual_zone
         elif zone_key in zone_dict.keys():
             zone = zone_dict[zone_key]
-        else: return False
+        else:
+            return False
 
         msg = "09 "
         msg += str(int(point_motion)) + " "
@@ -229,7 +232,8 @@ class Robot:
     def buffer_add(self, pose):
         '''
         Appends single pose to the remote buffer
-        Move will execute at current speed (which you can change between buffer_add calls)
+        Move will execute at current speed (which you can change between
+        buffer_add calls)
         '''
         msg = "30 " + self.format_pose(pose)
         self.send(msg)
@@ -253,7 +257,7 @@ class Robot:
     def clear_buffer(self):
         msg = "31 #"
         data = self.send(msg)
-        if self.buffer_len() <> 0:
+        if self.buffer_len() != 0:
             log.warn('clear_buffer failed! buffer_len: %i', self.buffer_len())
             raise NameError('clear_buffer failed!')
         return data
@@ -273,8 +277,9 @@ class Robot:
         msg = "33 #"
         return self.send(msg)
 
-    def set_external_axis(self, axis_unscaled=[-550,0,0,0,0,0]):
-        if len(axis_values) <> 6: return False
+    def set_external_axis(self, axis_unscaled=[-550, 0, 0, 0, 0, 0]):
+        if len(axis_values) != 6:
+            return False
         msg = "34 "
         for axis in axis_values:
             msg += format(axis, "+08.2f") + " "
@@ -290,7 +295,7 @@ class Robot:
         msg_1 = "36 " + self.format_pose(pose_end)
 
         data = self.send(msg_0).split()
-        if data[1] <> '1':
+        if data[1] != '1':
             log.warn('move_circular incorrect response, bailing!')
             return False
         return self.send(msg_1)
@@ -314,14 +319,15 @@ class Robot:
         log.debug('%-14s sending: %s', caller, message)
         self.sock.send(message)
         time.sleep(self.delay)
-        if not wait_for_response: return
+        if not wait_for_response:
+            return
         data = self.sock.recv(4096)
         log.debug('%-14s recieved: %s', caller, data)
         return data
 
     def format_pose(self, pose):
         pose = check_coordinates(pose)
-        msg  = ''
+        msg = ''
         for cartesian in pose[0]:
             msg += format(cartesian * self.scale_linear,  "+08.1f") + " "
         for quaternion in pose[1]:
@@ -341,10 +347,10 @@ class Robot:
     def __exit__(self, type, value, traceback):
         self.close()
 
+
 def check_coordinates(coordinates):
-    if ((len(coordinates) == 2) and
-        (len(coordinates[0]) == 3) and
-        (len(coordinates[1]) == 4)):
+    if ((len(coordinates) == 2) and (len(coordinates[0]) == 3)
+       and (len(coordinates[1]) == 4)):
         return coordinates
     elif (len(coordinates) == 7):
         return [coordinates[0:3], coordinates[3:7]]
