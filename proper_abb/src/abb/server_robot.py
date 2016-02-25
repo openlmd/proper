@@ -1,5 +1,7 @@
 import yaml
+import json
 from abb import Robot
+
 
 class ServerRobot(Robot):
     def __init__(self):
@@ -35,14 +37,42 @@ class ServerRobot(Robot):
     def zone(self, zone):
         self.set_zone(manual_zone=zone)
 
+    def load_file(self, data_file):
+        try:
+            path_file = open(data_file, 'r')
+            for line in path_file:
+                self.proc_command(line)
+            path_file.close()
+        except IOError as e:
+            print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        except:
+            print "Unexpected error"
+
+    def proc_command(self, comando):
+        datos = json.loads(comando)
+        for dato in datos:
+            if dato == 'vel':
+                self.speed(datos[dato])
+            elif dato == 'pose':
+                self.buffer_add(datos[dato])
+            elif dato == 'workobject':
+                self.workobject(datos[dato])
+            elif dato == 'tool':
+                self.tool(datos[dato])
+            else:
+                print 'Dato deconocido: ' + dato
+        #if 'pos' in datos:
+        #    self.buffer_add(datos['pos'])
+
 
 if __name__ == '__main__':
     server_robot = ServerRobot()
     server_robot.connect('172.20.0.32')
     # server_robot.workobject([[1.655, -0.087, 0.932], [1, 0, 0, 0]])
     # server_robot.tool([[0.216, -0.022, 0.474], [0.5, 0, -0.866025, 0]])
-    server_robot.speed(50)
-    server_robot.move([[1000, 0, 1000], [0, 0, 1, 0]])
-    server_robot.speed(100)
-    server_robot.move([[900, 0, 900], [0, 0, 1, 0]])
+    # server_robot.speed(50)
+    # server_robot.move([[1000, 0, 1000], [0, 0, 1, 0]])
+    # server_robot.speed(100)
+    # server_robot.move([[900, 0, 900], [0, 0, 1, 0]])
+    server_robot.load_file('puntos.txt')
     server_robot.disconnect()
