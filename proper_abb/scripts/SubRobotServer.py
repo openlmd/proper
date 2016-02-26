@@ -15,9 +15,9 @@ def listener():
     # anonymous=True flag means that rospy will choose a unique
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
-    rospy.init_node('robot_server_listener', anonymous=False)
+    rospy.init_node('robot_state_server', anonymous=False)
 
-    rospy.Subscriber('robot_state_chatter', MsgRobotCommand, callback)
+    rospy.Subscriber('robot_state_json', MsgRobotCommand, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

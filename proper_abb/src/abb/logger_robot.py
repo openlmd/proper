@@ -14,7 +14,7 @@ class LoggerRobot(Robot):
         self.t.start()
 
     def disconnect(self):
-        pass
+        self.control = False
 
 if __name__ == '__main__':
     logger_robot = LoggerRobot()
