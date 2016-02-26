@@ -24,6 +24,7 @@ log.addHandler(logging.NullHandler())
 
 class Robot:
     def __init__(self):
+        self.control = True
         self.delay = .08
 
     def init_ant(self,
@@ -56,16 +57,16 @@ class Robot:
         self.pose = deque(maxlen=maxlen)
         self.joints = deque(maxlen=maxlen)
 
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(remote)
-        s.setblocking(1)
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.s.connect(remote)
+        self.s.setblocking(1)
         try:
-            while True:
-                data = s.recv(4096).split()
+            while self.control:
+                data = self.s.recv(4096).split()
                 #print data[0:]
                 self.joints.append(data)
         finally:
-            s.shutdown(socket.SHUT_RDWR)
+            self.s.shutdown(socket.SHUT_RDWR)
 
     def set_units(self, linear, angular):
         units_l = {'millimeters': 1.0,

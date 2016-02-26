@@ -1,0 +1,1 @@
+string joints_pose

@@ -14,6 +14,7 @@ catkin_python_setup()
 add_message_files(
   FILES
   MsgRobotCommand.msg
+  MsgRobotJointsPose.msg
 )
 
 generate_messages(
