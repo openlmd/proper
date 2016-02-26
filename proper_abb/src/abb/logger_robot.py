@@ -1,15 +1,17 @@
-import abb
+from abb import Robot
 from threading import Thread
 
 
-class LoggerRobot():
+class LoggerRobot(Robot):
     def __init__(self):
-        self.robot = abb.Robot()
+        #self.robot = abb.Robot()
+        Robot.__init__(self)
 
     def connect(self, ip):
-        t = Thread(target=self.robot.connect_logger, args=((ip, 5001), ))
+        self.control = True
+        self.t = Thread(target=self.connect_logger, args=((ip, 5001), ))
         #self.robot.connect_logger((ip, 5001))
-        t.start()
+        self.t.start()
 
     def disconnect(self):
         pass
