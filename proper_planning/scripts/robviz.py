@@ -19,7 +19,7 @@ import numpy as np
 from std_msgs.msg import String
 import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import PointCloud2, PointField
-from mashes_measures.msg import MsgVelocity
+#from mashes_measures.msg import MsgVelocity
 
 from markers import MeshMarker, TriangleListMarker
 from robpath import RobPath
@@ -154,7 +154,7 @@ class RobPathUI(QtGui.QMainWindow):
         self.tmrInfo.start(100)
 
         # Subscribers
-        rospy.Subscriber('velocity', MsgVelocity, self.updateSpeed)
+        #rospy.Subscriber('velocity', MsgVelocity, self.updateSpeed)
 
     def timeInfoEvent(self):
         #cmd = self._detach_command()
