@@ -7,15 +7,19 @@ from visualization_msgs.msg import MarkerArray
 
 
 class ShapeMarker():
-    def __init__(self, frame_id="/world"):
+    def __init__(self, frame_id='/world'):
         self.marker = Marker()
-        self.marker.header.frame_id = frame_id
         self.marker.lifetime = rospy.Duration()
+
+        self.set_frame(frame_id)
 
         self.set_scale()
         self.set_color()
         self.set_position()
         self.set_orientation()
+
+    def set_frame(self, frame_id):
+        self.marker.header.frame_id = frame_id
 
     def set_color(self, color=(1, 1, 1, 1)):
         self.marker.color.r = color[0]
@@ -42,7 +46,7 @@ class ShapeMarker():
 
 class ArrowMarker(ShapeMarker):
     def __init__(self, length):
-        ShapeMarker.__init__(self, frame_id='/world')
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.ARROW
         self.set_length(length)
 
@@ -52,51 +56,57 @@ class ArrowMarker(ShapeMarker):
 
 class CubeMarker(ShapeMarker):
     def __init__(self):
-        ShapeMarker.__init__(self, frame_id='/world')
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.CUBE
 
 
 class SphereMarker(ShapeMarker):
     def __init__(self):
-        ShapeMarker.__init__(self, frame_id='/world')
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.SPHERE
 
 
 class CylinderMarker(ShapeMarker):
     def __init__(self):
-        ShapeMarker.__init__(self, frame_id='/world')
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.CYLINDER
 
 
 class LinesMarker(ShapeMarker):
     def __init__(self):
-        ShapeMarker.__init__(self, frame_id='/world')
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.LINE_STRIP
-        self.marker.points = cloud = [Point(0, 0, 0),
-                                      Point(1, 0, 0),
-                                      Point(1, 1, 0)]
+        self.marker.points = [Point(0, 0, 0),
+                              Point(1, 0, 0),
+                              Point(1, 1, 0)]
         self.set_size()
 
-    def set_size(self, size=0.010):
-        self.set_scale(scale=(size,size,1.0))
+    def set_size(self, size=0.001):
+        self.set_scale(scale=(size, size, 1.0))
+
+    def set_points(self, points):
+        self.marker.points = [Point(x, y, z) for x, y, z in points]
 
 
 class PointsMarker(ShapeMarker):
     def __init__(self):
-        ShapeMarker.__init__(self, frame_id='/world')
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.POINTS
-        self.marker.points = cloud = [Point(0, 0, 0),
-                                      Point(1, 0, 0),
-                                      Point(1, 1, 0)]
+        self.marker.points = [Point(0, 0, 0),
+                              Point(1, 0, 0),
+                              Point(1, 1, 0)]
         self.set_size()
 
     def set_size(self, size=0.025):
         self.set_scale(scale=(size, size, 1.0))
 
+    def set_points(self, points):
+        self.marker.points = [Point(x, y, z) for x, y, z in points]
+
 
 class TextMarker(ShapeMarker):
     def __init__(self, text):
-        ShapeMarker.__init__(self, frame_id='/world')
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.TEXT_VIEW_FACING
         self.set_text(text)
         self.set_size()
@@ -110,7 +120,7 @@ class TextMarker(ShapeMarker):
 
 class MeshMarker(ShapeMarker):
     def __init__(self, mesh_resource="package://etna_triangulation/meshes/robot.dae", frame_id='/world'):
-        ShapeMarker.__init__(self, frame_id=frame_id)
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.MESH_RESOURCE
         self.marker.mesh_resource = mesh_resource
         self.marker.mesh_use_embedded_materials = True
@@ -118,7 +128,7 @@ class MeshMarker(ShapeMarker):
 
 class TriangleListMarker(ShapeMarker):
     def __init__(self, frame_id='/world'):
-        ShapeMarker.__init__(self, frame_id=frame_id)
+        ShapeMarker.__init__(self)
         self.marker.type = self.marker.TRIANGLE_LIST
         self.marker.points = [Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0),
                               Point(0, 0, 0), Point(1, 0, 0), Point(1, 0, 1)]
@@ -129,26 +139,53 @@ class TriangleListMarker(ShapeMarker):
 
 
 if __name__ == '__main__':
+    import numpy as np
+    
     rospy.init_node("markers")
 
-    publisher = rospy.Publisher('visualization_marker', Marker, queue_size=10)
+    pub_marker = rospy.Publisher('visualization_marker', Marker, queue_size=10)
+    pub_marker_array = rospy.Publisher(
+        'visualization_marker_array', MarkerArray, queue_size=10)
 
     #mesh_marker = MeshMarker(mesh_resource="package://etna_triangulation/meshes/test.dae")
     mesh_marker = TriangleListMarker()
     mesh_marker.set_color(color=(1.0, 0.5, 0.0, 0.75))
 
+    points = np.array([[0.0, 0.0, 0.0],
+                       [0.1, 0.0, 0.0],
+                       [0.1, 0.1, 0.0],
+                       [0.1, 0.1, 0.1],
+                       [0.0, 0.1, 0.1],
+                       [0.0, 0.0, 0.1],
+                       [0.0, 0.0, 0.0]])
+
+    marker_array = MarkerArray()
+    cube = CubeMarker()
+    cube.set_scale((0.1, 0.1, 0.1))
+    cube.set_color((1, 1, 1, 0.7))
+    cube.set_frame('/workobject')
+    marker_array.markers.append(cube.marker)
+    lines = LinesMarker()
+    lines.set_points(points)
+    lines.set_color((1, 0, 0, 1))
+    lines.set_frame('/workobject')
+    marker_array.markers.append(lines.marker)
+
+    # Renumber the marker IDs
+    id = 0
+    for m in marker_array.markers:
+        m.id = id
+        id += 1
+
+    k = 0
     while not rospy.is_shutdown():
-        publisher.publish(mesh_marker.marker)
-        rospy.sleep(0.1)
+        pub_marker.publish(mesh_marker.marker)
+        pub_marker_array.publish(marker_array)
+        k = k + 0.01
+        cube.set_position((k, 0, 0))
+        rospy.sleep(1.0)
 
 
-    # topic = 'visualization_marker_array'
-    # publisher = rospy.Publisher(topic, MarkerArray, queue_size=10)
-    #
-    # rospy.init_node('register')
-    #
-    # markerArray = MarkerArray()
-    #
     # count = 0
     # MARKERS_MAX = 100
     #
@@ -181,10 +218,3 @@ if __name__ == '__main__':
     #    for m in markerArray.markers:
     #        m.id = id
     #        id += 1
-    #
-    #    # Publish the MarkerArray
-    #    publisher.publish(markerArray)
-    #
-    #    count += 1
-    #
-    #    rospy.sleep(1.0)
