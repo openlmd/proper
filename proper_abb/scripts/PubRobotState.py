@@ -9,9 +9,16 @@ def talker():
     rospy.init_node('robot_state', anonymous=False)
     pub = rospy.Publisher('joint_state',
                           JointState, queue_size=10)
+    if rospy.has_param("configuration/robot_ip"):
+        ip = rospy.get_param("configuration/robot_ip")
+    else:
+        ip = "172.20.0.32"
     logger_robot = LoggerRobot()
-    logger_robot.connect('172.20.0.32')
-    j23_coupled = True
+    logger_robot.connect(ip)
+    if rospy.has_param("configuration/J23_coupled"):
+        j23_coupled = bool(rospy.get_param("configuration/J23_coupled"))
+    else:
+        j23_coupled = True
     msg_joint_state = JointState()
     msg_joint_state.name = ['joint_1', 'joint_2', 'joint_3',
                             'joint_4', 'joint_5', 'joint_6']
