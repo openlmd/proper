@@ -49,18 +49,25 @@ class ServerRobot(Robot):
             print "Unexpected error"
 
     def proc_command(self, comando):
-        datos = json.loads(comando)
-        for dato in datos:
-            if dato == 'vel':
-                self.speed(datos[dato])
-            elif dato == 'pose':
-                self.buffer_add(datos[dato])
-            elif dato == 'workobject':
-                self.workobject(datos[dato])
-            elif dato == 'tool':
-                self.tool(datos[dato])
-            else:
-                print 'Dato deconocido: ' + dato
+        try:
+            datos = json.loads(comando)
+        except ValueError, e:
+            print "Command is not json"
+            print e
+        else:
+            for dato in datos:
+                if dato == 'vel':
+                    self.speed(datos[dato])
+                elif dato == 'pose':
+                    self.buffer_add(datos[dato])
+                elif dato == 'workobject':
+                    self.workobject(datos[dato])
+                elif dato == 'tool':
+                    self.tool(datos[dato])
+                elif dato == 'move':
+                    self.move(datos[dato])
+                else:
+                    print 'Dato deconocido: ' + dato
         #if 'pos' in datos:
         #    self.buffer_add(datos['pos'])
 
