@@ -4,23 +4,30 @@ from proper_abb.msg import MsgRobotCommand
 from abb.server_robot import ServerRobot
 
 
-def callback(data):
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data)
+class SubRobotServer():
+    def __init__(self):
+        self.server_robot = ServerRobot()
+        rospy.init_node('robot_server', anonymous=False)
+        rospy.Subscriber('robot_command_json', MsgRobotCommand, self.callback)
 
+    def callback(self, data):
+        rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.command)
+        self.server_robot.proc_command(data.command)
 
-def listener():
+    def connect(self, ip="172.20.0.32"):
+        if rospy.has_param("configuration/robot_ip"):
+            ip = rospy.get_param("configuration/robot_ip")
+        self.server_robot.connect(ip)
 
-    # In ROS, nodes are uniquely named. If two nodes with the same
-    # node are launched, the previous one is kicked off. The
-    # anonymous=True flag means that rospy will choose a unique
-    # name for our 'listener' node so that multiple listeners can
-    # run simultaneously.
-    rospy.init_node('robot_state_server', anonymous=False)
+    def listener(self):
+        # spin() simply keeps python from exiting until this node is stopped
+        rospy.spin()
 
-    rospy.Subscriber('robot_state_json', MsgRobotCommand, callback)
-
-    # spin() simply keeps python from exiting until this node is stopped
-    rospy.spin()
+    def close_connection(self):
+        self.server_robot.disconnect()
 
 if __name__ == '__main__':
-    listener()
+    robot_subscriber = SubRobotServer()
+    robot_subscriber.connect()
+    robot_subscriber.listener()
+    robot_subscriber.close_connection()

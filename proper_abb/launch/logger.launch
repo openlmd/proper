@@ -4,7 +4,7 @@
   <!--<param name="config" type="str" value="robot_abb.yaml" />-->
   <rosparam file="$(find proper_abb)/config/robot_abb.yaml" command="load" />
 <!--  <param name="config" textfile="$(find proper_abb)/config/robot_abb.yaml" />-->
-  <node name="logger" pkg="proper_abb" type="PubRobotState.py" />
+  <node name="robot_state" pkg="proper_abb" type="PubRobotState.py" />
 
   <!-- <param name="configfile" textfile="$(find roslaunch)/example.xml" />upload the contents of a file to the server -->
 
