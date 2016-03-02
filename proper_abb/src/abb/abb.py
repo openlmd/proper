@@ -149,7 +149,7 @@ class Robot:
         self.send(msg)
         self.tool = tool
 
-    def load_json_tool(self, file_obj):
+    def load_json_tool(self, file_obj, filename):
         if file_obj.__class__.__name__ == 'str':
             file_obj = open(filename, 'rb')
         tool = check_coordinates(json.load(file_obj))
@@ -279,10 +279,10 @@ class Robot:
         return self.send(msg)
 
     def set_external_axis(self, axis_unscaled=[-550, 0, 0, 0, 0, 0]):
-        if len(axis_values) != 6:
+        if len(axis_unscaled) != 6:
             return False
         msg = "34 "
-        for axis in axis_values:
+        for axis in axis_unscaled:
             msg += format(axis, "+08.2f") + " "
         msg += "#"
         return self.send(msg)
@@ -359,7 +359,9 @@ def check_coordinates(coordinates):
     raise NameError('Malformed coordinate!')
 
 if __name__ == '__main__':
-    formatter = logging.Formatter("[%(asctime)s] %(levelname)-7s (%(filename)s:%(lineno)3s) %(message)s", "%Y-%m-%d %H:%M:%S")
+    formatter = logging.Formatter(
+        "[%(asctime)s] %(levelname)-7s (%(filename)s:%(lineno)3s) %(message)s",
+        "%Y-%m-%d %H:%M:%S")
     handler_stream = logging.StreamHandler()
     handler_stream.setFormatter(formatter)
     handler_stream.setLevel(logging.DEBUG)
