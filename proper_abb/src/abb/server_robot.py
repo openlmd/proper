@@ -66,6 +66,13 @@ class ServerRobot(Robot):
                     self.tool(datos[dato])
                 elif dato == 'move':
                     self.move(datos[dato])
+                elif dato == 'path_move':
+                    if self.buffer_len() > 0:
+                        self.buffer_execute()
+                elif dato == 'path_clear':
+                    self.clear_buffer()
+                elif dato == 'path_load':
+                    self.load_file(datos[dato])
                 else:
                     print 'Dato deconocido: ' + dato
         #if 'pos' in datos:
