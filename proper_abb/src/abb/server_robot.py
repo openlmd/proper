@@ -22,13 +22,13 @@ class ServerRobot(Robot):
     def workobject(self, work_obj):
         self.set_workobject(work_obj)
 
-    def tool(self, tool_pose):
-        self.set_tool(tool_pose)
-
     def configure(self, filename):
         print filename
 
     def move(self, pose, movel=True):
+        '''
+        Movimiento (lineal si movel==True) a posicion cartesiana
+        '''
         self.set_cartesian(pose, linear=movel)
 
     def speed(self, speed):
@@ -37,7 +37,24 @@ class ServerRobot(Robot):
     def zone(self, zone):
         self.set_zone(manual_zone=zone)
 
+    def set_digital(self, digital):
+        '''
+        Dato digital 0 = Valor
+        Dato digital 1 = Numero de salida
+        '''
+        self.set_dio(digital[0], digital[1])
+
+    def set_analog(self, digital):
+        '''
+        Dato analogico 0 = Valor
+        Dato analogico 1 = Numero de salida
+        '''
+        self.set_ao(digital[0], digital[1])
+
     def load_file(self, data_file):
+        '''
+        Carga y procesa un archivo con comandos JSON
+        '''
         try:
             path_file = open(data_file, 'r')
             for line in path_file:
@@ -49,6 +66,9 @@ class ServerRobot(Robot):
             print "Unexpected error"
 
     def proc_command(self, comando):
+        '''
+        Procesa comandos en formato JSON
+        '''
         try:
             datos = json.loads(comando)
         except ValueError, e:
@@ -63,7 +83,7 @@ class ServerRobot(Robot):
                 elif dato == 'workobject':
                     self.workobject(datos[dato])
                 elif dato == 'tool':
-                    self.tool(datos[dato])
+                    self.set_tool(datos[dato])
                 elif dato == 'move':
                     self.move(datos[dato])
                 elif dato == 'movej':
@@ -75,6 +95,10 @@ class ServerRobot(Robot):
                     self.clear_buffer()
                 elif dato == 'path_load':
                     self.load_file(datos[dato])
+                elif dato == 'set_dio':
+                    self.set_digital(datos[dato])
+                elif dato == 'set_ao':
+                    self.set_analog(datos[dato])
                 else:
                     print 'Dato deconocido: ' + dato
         #if 'pos' in datos:
