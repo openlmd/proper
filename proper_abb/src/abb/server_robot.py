@@ -28,8 +28,8 @@ class ServerRobot(Robot):
     def configure(self, filename):
         print filename
 
-    def move(self, pose):
-        self.set_cartesian(pose)
+    def move(self, pose, movel=True):
+        self.set_cartesian(pose, linear=movel)
 
     def speed(self, speed):
         self.set_speed([speed, 500, 50, 50])
@@ -66,6 +66,8 @@ class ServerRobot(Robot):
                     self.tool(datos[dato])
                 elif dato == 'move':
                     self.move(datos[dato])
+                elif dato == 'movej':
+                    self.move(datos[dato], movel=False)
                 elif dato == 'path_move':
                     if self.buffer_len() > 0:
                         self.buffer_execute()

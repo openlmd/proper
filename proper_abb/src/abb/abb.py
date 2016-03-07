@@ -77,12 +77,15 @@ class Robot:
         self.scale_linear = units_l[linear]
         self.scale_angle = units_a[angular]
 
-    def set_cartesian(self, pose, response=True):
+    def set_cartesian(self, pose, linear=True, response=True):
         '''
         Executes a move immediately from the current pose,
         to 'pose', with units of millimeters.
         '''
-        msg = "01 " + self.format_pose(pose)
+        if linear:
+            msg = "01 " + self.format_pose(pose)
+        else:
+            msg = "10 " + self.format_pose(pose)
         return self.send(msg, response)
 
     def set_joints(self, joints, response=True):
