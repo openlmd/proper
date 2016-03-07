@@ -419,11 +419,35 @@ PROC main()
                 ELSE
                     ok:=SERVER_BAD_MSG;
                 ENDIF
+			
+			CASE 96: !Set an analog output
+                IF nParams = 2 THEN
+					!TODO:Seleccionar o tipo de entrada
+					TEST params{1}
+						CASE 0:
+                    		SetAO AoGTV_ExternDisk, params{2};
+						CASE 1:
+							SetAO AoGTV_ExternMassflow, params{2};
+						DEFAULT:
+                			TPWrite "SERVER: Illegal output code";
+                			ok := SERVER_BAD_MSG;
+					ENDTEST
+                ELSE
+                    ok :=SERVER_BAD_MSG;
+                ENDIF	
 				
 			CASE 97: !Set or reset a digital output
                 IF nParams = 2 THEN
 					!TODO:Seleccionar o tipo de entrada
-                    SetDO doGTV_StartExtern, params{2};
+					TEST params{1}
+						CASE 0:
+                    		SetDO doGTV_StartExtern, params{2};
+						CASE 1:
+							SetDO doGTV_StopExtern, params{2};
+						DEFAULT:
+                			TPWrite "SERVER: Illegal output code";
+                			ok := SERVER_BAD_MSG;
+					ENDTEST
                 ELSE
                     ok :=SERVER_BAD_MSG;
                 ENDIF	
