@@ -129,26 +129,37 @@ class TriangleListMarker(ShapeMarker):
 
 
 if __name__ == '__main__':
-    rospy.init_node("markers")
+    rospy.init_node('markers')
 
-    publisher = rospy.Publisher('visualization_marker', Marker, queue_size=10)
+    pub_marker = rospy.Publisher('visualization_marker', Marker, queue_size=10)
+    pub_marker_array = rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=10)
 
     #mesh_marker = MeshMarker(mesh_resource="package://etna_triangulation/meshes/test.dae")
     mesh_marker = TriangleListMarker()
     mesh_marker.set_color(color=(1.0, 0.5, 0.0, 0.75))
 
+    marker_array = MarkerArray()
+
+    marker_array.markers.append(mesh_marker.marker)
+    marker_array.markers.append(ArrowMarker(1).marker)
+    marker_array.markers.append(CubeMarker().marker)
+    marker_array.markers.append(CylinderMarker().marker)
+    marker_array.markers.append(SphereMarker().marker)
+    marker_array.markers.append(LinesMarker().marker)
+    marker_array.markers.append(PointsMarker().marker)
+    # Renumber the marker IDs
+    id = 0
+    for m in marker_array.markers:
+        m.id = id
+        id += 1
+
     while not rospy.is_shutdown():
-        publisher.publish(mesh_marker.marker)
+        pub_marker.publish(mesh_marker.marker)
+        pub_marker_array.publish(marker_array)
+        rospy.loginfo(rospy.get_time())
         rospy.sleep(0.1)
 
 
-    # topic = 'visualization_marker_array'
-    # publisher = rospy.Publisher(topic, MarkerArray, queue_size=10)
-    #
-    # rospy.init_node('register')
-    #
-    # markerArray = MarkerArray()
-    #
     # count = 0
     # MARKERS_MAX = 100
     #
