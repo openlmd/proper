@@ -8,7 +8,7 @@ Panels:
         - /Status1
         - /TF1/Frames1
       Splitter Ratio: 0.5
-    Tree Height: 211
+    Tree Height: 584
   - Class: rviz/Views
     Expanded:
       - /Current View1
@@ -141,6 +141,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        table0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         tcp0:
           Alpha: 1
           Show Axes: false
@@ -149,12 +154,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        wall1:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        wall2:
+        walls:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -163,7 +163,6 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
         world:
           Alpha: 1
           Show Axes: false
@@ -174,28 +173,6 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Alpha: 1
-      Buffer Length: 1
-      Class: rviz/Path
-      Color: 255; 85; 255
-      Enabled: true
-      Name: Path
-      Topic: /path
-      Value: true
-    - Alpha: 1
-      Axes Length: 0.1
-      Axes Radius: 0.01
-      Class: rviz/Pose
-      Color: 255; 25; 0
-      Enabled: true
-      Head Length: 0.08
-      Head Radius: 0.04
-      Name: Pose
-      Shaft Length: 0.1
-      Shaft Radius: 0.01
-      Shape: Axes
-      Topic: /pose
-      Value: true
     - Class: rviz/TF
       Enabled: true
       Frame Timeout: 15
@@ -239,13 +216,13 @@ Visualization Manager:
           Value: true
         link_d4:
           Value: true
+        table0:
+          Value: true
         tcp0:
           Value: true
         tool0:
           Value: true
-        wall1:
-          Value: true
-        wall2:
+        walls:
           Value: true
         workobject:
           Value: true
@@ -272,32 +249,31 @@ Visualization Manager:
                             {}
                           tcp0:
                             {}
-              link_d1:
-                {}
+                  link_d1:
+                    {}
               link_d2:
                 {}
               link_d3:
                 {}
               link_d4:
                 {}
+            workobject:
+              {}
           irbp_a250/base_link:
             irbp_a250/link_1:
               irbp_a250/link_2:
                 irbp_a250/link_3:
                   irbp_a250/link_4:
                     irbp_a250/tool0:
-                      {}
-          wall1:
-            {}
-          wall2:
-            {}
-          workobject:
+                      table0:
+                        {}
+          walls:
             {}
       Update Interval: 0
       Value: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /camera/peaks
+      Image Topic: /camera/image
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -335,12 +311,12 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Class: rviz/Marker
+    - Class: rviz/MarkerArray
       Enabled: true
-      Marker Topic: visualization_marker
-      Name: Marker
+      Marker Topic: visualization_marker_array
+      Name: MarkerArray
       Namespaces:
-        {}
+        "": true
       Queue Size: 100
       Value: true
   Enabled: true
@@ -460,7 +436,7 @@ Window Geometry:
   Hide Right Dock: false
   Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000011f00000403fc020000000bfb0000001200530065006c0065006300740069006f006e0000000000000000820000000000000000fb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000000000000162000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006100000002f5000000160000000000000000fb0000000a0049006d0061006700650100000134000000910000000000000000fb0000000a0049006d00610067006501000001680000029b0000001600ffffff000000010000010f00000403fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000000000000403000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000005ff0000003efc0100000002fb0000000800540069006d00650000000000000005ff0000000000000000fb0000000800540069006d006501000000000000045000000000000000000000061a0000040300000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730000000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000011f00000403fc020000000bfb0000001200530065006c0065006300740069006f006e0000000000000000820000000000000000fb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c0061007900730100000000000002d7000000dd00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000c00430061006d00650072006100000002f5000000160000000000000000fb0000000a0049006d00610067006501000000fd000000650000000000000000fb0000000a0049006d00610067006501000002dd000001260000001600ffffff000000010000010f00000403fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000000000000403000000b000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000005ff0000003efc0100000002fb0000000800540069006d00650000000000000005ff0000000000000000fb0000000800540069006d006501000000000000045000000000000000000000061a0000040300000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730000000000ffffffff0000000000000000
   Views:
     collapsed: false
   Width: 1855
