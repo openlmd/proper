@@ -326,6 +326,20 @@ PROC main()
                 ELSE
                     ok:=SERVER_BAD_MSG;
                 ENDIF
+				
+			CASE 10: !Joint Move to Pos
+                IF nParams = 7 THEN
+                    cartesianTarget :=[[params{1},params{2},params{3}],
+                                       [params{4},params{5},params{6},params{7}],
+                                       [0,0,0,0],
+                                       externalAxis];
+                    ok := SERVER_OK;
+                    moveCompleted := FALSE;
+                    MoveJ cartesianTarget, currentSpeed, currentZone, currentTool \WObj:=currentWobj ;
+                    moveCompleted := TRUE;
+                ELSE
+                    ok := SERVER_BAD_MSG;
+                ENDIF
 
             CASE 30: !Add Cartesian Coordinates to buffer
                 IF nParams = 7 THEN
@@ -409,7 +423,7 @@ PROC main()
 			CASE 97: !Set or reset a digital output
                 IF nParams = 2 THEN
 					!TODO:Seleccionar o tipo de entrada
-                    SetDO SimOut1, params{2};
+                    SetDO doGTV_StartExtern, params{2};
                 ELSE
                     ok :=SERVER_BAD_MSG;
                 ENDIF	
