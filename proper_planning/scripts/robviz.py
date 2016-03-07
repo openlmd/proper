@@ -19,16 +19,20 @@ import numpy as np
 from std_msgs.msg import String
 import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import PointCloud2, PointField
-from mashes_measures.msg import MsgVelocity
+#from mashes_measures.msg import MsgVelocity
 
 from markers import MeshMarker, TriangleListMarker
 from robpath import RobPath
+
+from qt_path import QtPath
+
+
+path = rospkg.RosPack().get_path('proper_planning')
 
 
 class MyViz(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        path = rospkg.RosPack().get_path('etna_planning')
 
         ## rviz.VisualizationFrame is the main container widget of the
         ## regular RViz application. In this example, we disable everything
@@ -40,9 +44,7 @@ class MyViz(QtGui.QWidget):
         # Read the configuration from the config file for visualization.
         reader = rviz.YamlConfigReader()
         config = rviz.Config()
-#        rospack = rospkg.RosPack()
-#        package_path = rospack.get_path('rviz_python_tutorial')
-#        reader.readFile( config, package_path + "config.myviz" )
+
         reader.readFile(config, os.path.join(path, 'config', 'workcell.rviz'))
         self.frame.load(config)
 
@@ -105,7 +107,6 @@ class MyViz(QtGui.QWidget):
 class RobPathUI(QtGui.QMainWindow):
     def __init__(self):
         super(RobPathUI, self).__init__()
-        path = rospkg.RosPack().get_path('proper_planning')
         loadUi(os.path.join(path, 'resources', 'robviz.ui'), self)
 
         self.boxPlot.addWidget(MyViz())
@@ -114,6 +115,10 @@ class RobPathUI(QtGui.QMainWindow):
         self.btnProcessMesh.clicked.connect(self.btnProcessMeshClicked)
         self.btnSaveRapid.clicked.connect(self.btnSaveRapidClicked)
         self.btnRecord.clicked.connect(self.btnRecordClicked)
+
+        # Add path tab
+        self.tabWidget.addTab(QtGui.QPushButton('Tab X'), 'Tab X')
+        self.tabWidget.addTab(QtPath(), 'Tab XX')
 
         # Path buttons
         self.btnLoadPath.clicked.connect(self.btnLoadPathClicked)
@@ -154,7 +159,7 @@ class RobPathUI(QtGui.QMainWindow):
         self.tmrInfo.start(100)
 
         # Subscribers
-        rospy.Subscriber('velocity', MsgVelocity, self.updateSpeed)
+        #rospy.Subscriber('velocity', MsgVelocity, self.updateSpeed)
 
     def timeInfoEvent(self):
         #cmd = self._detach_command()
