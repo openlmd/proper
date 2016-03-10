@@ -16,17 +16,23 @@ from visualization_msgs.msg import Marker
 
 import tf
 import numpy as np
+from std_msgs.msg import String
 import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import PointCloud2, PointField
+#from mashes_measures.msg import MsgVelocity
 
 from markers import MeshMarker, TriangleListMarker
 from robpath import RobPath
+
+from qt_path import QtPath
+
+
+path = rospkg.RosPack().get_path('proper_planning')
 
 
 class MyViz(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        path = rospkg.RosPack().get_path('etna_planning')
 
         ## rviz.VisualizationFrame is the main container widget of the
         ## regular RViz application. In this example, we disable everything
@@ -35,31 +41,19 @@ class MyViz(QtGui.QWidget):
         self.frame.setSplashPath("")
         self.frame.initialize()
 
-        ## The reader reads config file data into the config object.
-        ## VisualizationFrame reads its data from the config object.
+        # Read the configuration from the config file for visualization.
         reader = rviz.YamlConfigReader()
         config = rviz.Config()
 
-#        rospack = rospkg.RosPack()
-#        package_path = rospack.get_path('rviz_python_tutorial')
-#        reader.readFile( config, package_path + "config.myviz" )
         reader.readFile(config, os.path.join(path, 'config', 'workcell.rviz'))
         self.frame.load(config)
 
-        ## You can also store any other application data you like in the
-        ## config object.  Here we read the window title from the map key
-        ## called "Title", which has been added by hand to the config file.
         self.setWindowTitle(config.mapGetChild("Title").getValue())
 
         self.frame.setMenuBar(None)
         self.frame.setHideButtonVisibility(False)
 
         self.manager = self.frame.getManager()
-
-        ## Since the config file is part of the source code for this
-        ## example, we know that the first display in the list is the
-        ## grid we want to control.  Here we just save a reference to
-        ## it for later.
         self.grid_display = self.manager.getRootDisplayGroup().getDisplayAt(0)
 
         layout = QtGui.QVBoxLayout()
@@ -113,7 +107,6 @@ class MyViz(QtGui.QWidget):
 class RobPathUI(QtGui.QMainWindow):
     def __init__(self):
         super(RobPathUI, self).__init__()
-        path = rospkg.RosPack().get_path('etna_planning')
         loadUi(os.path.join(path, 'resources', 'robviz.ui'), self)
 
         self.boxPlot.addWidget(MyViz())
@@ -123,6 +116,16 @@ class RobPathUI(QtGui.QMainWindow):
         self.btnSaveRapid.clicked.connect(self.btnSaveRapidClicked)
         self.btnRecord.clicked.connect(self.btnRecordClicked)
 
+        # Add path tab
+        self.tabWidget.addTab(QtGui.QPushButton('Tab X'), 'Tab X')
+        self.tabWidget.addTab(QtPath(), 'Tab XX')
+
+        # Path buttons
+        self.btnLoadPath.clicked.connect(self.btnLoadPathClicked)
+        self.btnSavePath.clicked.connect(self.btnSavePathClicked)
+        self.btnRunPath.clicked.connect(self.btnRunPathClicked)
+
+        # Process buttons
         self.sbSpeed.valueChanged.connect(self.changeSpeed)
         self.sbPower.valueChanged.connect(self.changePower)
 
@@ -143,13 +146,65 @@ class RobPathUI(QtGui.QMainWindow):
         rospy.Subscriber(cloud_topic, PointCloud2, self.callback_point_cloud, queue_size=1)
 
         self.listener = tf.TransformListener()
-        #rospy.spin()
 
         self.processing = False
         self.timer = QtCore.QTimer(self.boxPlot)
         self.timer.timeout.connect(self.updateProcess)
 
         self.robpath = RobPath()
+
+        # Timer
+        self.tmrInfo = QtCore.QTimer(self)
+        self.tmrInfo.timeout.connect(self.timeInfoEvent)
+        self.tmrInfo.start(100)
+
+        # Subscribers
+        #rospy.Subscriber('velocity', MsgVelocity, self.updateSpeed)
+
+    def timeInfoEvent(self):
+        #cmd = self._detach_command()
+        #if not cmd == None:
+        #    if self.alasHead.client.send_command(cmd) == 0:
+        #        self._insert_command(cmd)
+        print self.lblInfo.text()
+
+    def insertPose(self, pose):
+        (x, y, z), (qx, qy, qz, qw) = pose
+        str_pose = '((%.3f, %.3f, %.3f), (%.4f, %.4f, %.4f, %.4f))' %(x, y, z, qx, qy, qz, qw)
+        #item = QtGui.QListWidgetItem('item_text')
+        #self.listWidgetPoses.addItem(item)
+        self.listWidgetPoses.addItem(str_pose)
+        #self.listWidgetPoses.insertItem(0, '0, 1, 2')
+
+    def removePose(self):
+        item = self.listWidgetPoses.takeItem(0)
+        if item:
+            print item.text()
+            return item.text()
+        else:
+            return None
+
+    def btnLoadPathClicked(self):
+        filename = QtGui.QFileDialog.getOpenFileName(
+            self, 'Load Path Routine', './', 'Path Routine Files (*.path)')[0]
+        print 'Load path:', filename
+        #file = open(filename, 'r')
+        #cmds = file.readlines()
+        #for cmd in cmds:
+        #    self._append_command(cmd)
+        #self._append_command_file(self.filename)
+
+    def btnSavePathClicked(self):
+        print 'Save path'
+
+    def btnRunPathClicked(self):
+        print 'Run path'
+        pose = np.array([[0.150, 0.100, 0.200], [1.0, 0.1, 0.1, 0.1]])
+        self.insertPose(pose)
+
+    def updateSpeed(self, data):
+        rospy.loginfo(rospy.get_caller_id() + " Speed: %s ", data.speed)
+        self.lblInfo.setText('Transverse speed: %.3f m/s' % data.speed)
 
     def changeSpeed(self):
         speed = self.Window.sbSpeed.value()
@@ -191,32 +246,29 @@ class RobPathUI(QtGui.QMainWindow):
     def btnLoadClicked(self):
         self.blockSignals(True)
 
-        filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file', './',
-                                                     'Mesh Files (*.stl)')[0]
+        filename = QtGui.QFileDialog.getOpenFileName(
+            self, 'Open file', './', 'Mesh Files (*.stl)')[0]
         print 'Filename:', filename
+        self.setWindowTitle(filename)
         self.robpath.load_mesh(filename)
 
-        self.updatePosition(self.robpath.mesh.bpoint1) # Rename to position
-        self.updateSize(self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1) # Change by size
+        self.mesh_size = self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1
+        self.updatePosition(self.robpath.mesh.bpoint1)  # Rename to position
+        self.updateSize(self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1)
 
         #self.marker = MeshMarker(mesh_resource="file://"+filename, frame_id="/workobject")
         self.marker = TriangleListMarker(frame_id="/workobject")
         self.marker.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
-        self.marker.set_color((0.75,0.25,0.25,0.5))
+        self.marker.set_color((0.75, 0.25, 0.25, 0.5))
 #        #rospy.loginfo()
 #        self.marker.set_position((0, 0, 0))
 #        self.marker.set_scale(scale=(0.001, 0.001, 0.001))
         self.publisher.publish(self.marker.marker)
 
-        #self.Window.setWindowTitle('Mesh Viewer: %s' %filename)
-        #self.robpath.load_mesh(filename)
-        ## -----
-        ## TODO: Change bpoints.
-        #self.updatePosition(self.robpath.mesh.bpoint1) # Rename to position
-        #self.updateSize(self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1) # Change by size
+        #TODO: Change bpoints.
         #self.Window.lblInfo.setText('Info:\n')
-        ## -----
         #self.plot.drawMesh(self.robpath.mesh)
+        #TODO: Add info from velocity estimation module.
 
         self.blockSignals(False)
 
@@ -231,9 +283,9 @@ class RobPathUI(QtGui.QMainWindow):
     def point_cloud_to_world(self, stamp, points3d):
         """Transforms the point cloud in camera coordinates to the world frame."""
         self.listener.waitForTransform("/world", "/camera0", stamp, rospy.Duration(1.0))
-        (position, quaternion) =  self.listener.lookupTransform("/world", "/camera0", stamp)
+        (position, quaternion) = self.listener.lookupTransform("/world", "/camera0", stamp)
         matrix = tf.transformations.quaternion_matrix(quaternion)
-        matrix[:3,3] = position
+        matrix[:3, 3] = position
         points = np.zeros((len(points3d), 3), dtype=np.float32)
         for k, point3d in enumerate(points3d):
             point = np.ones(4)
@@ -262,7 +314,8 @@ class RobPathUI(QtGui.QMainWindow):
             self.recording = False
         else:
             print 'Recording...'
-            with open('test.xyz', 'w') as f: pass
+            with open('test.xyz', 'w') as f:
+                pass
             self.recording = True
 
     def changePosition(self):
@@ -279,8 +332,10 @@ class RobPathUI(QtGui.QMainWindow):
         sy = self.sbSizeY.value()
         sz = self.sbSizeZ.value()
         self.robpath.resize_mesh(np.float32([sx, sy, sz]))
+        scale = np.float32([sx, sy, sz]) / self.mesh_size
         #TODO: Scale the marker or change the mesh loaded in the mesh.
-        self.changePosition()
+        self.marker.set_scale(scale=scale)
+        self.publisher.publish(self.marker.marker)
 
     def btnProcessMeshClicked(self):
         if self.processing:
@@ -305,11 +360,12 @@ class RobPathUI(QtGui.QMainWindow):
         self.robpath.save_rapid()
 
     def btnQuitClicked(self):
+        self.tmrInfo.stop()
         QtCore.QCoreApplication.instance().quit()
 
 
 if __name__ == '__main__':
-    rospy.init_node('myviz')
+    rospy.init_node('robviz')
 
     app = QtGui.QApplication(sys.argv)
     robpath = RobPathUI()
