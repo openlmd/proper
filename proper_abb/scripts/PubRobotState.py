@@ -9,7 +9,7 @@ class PubRobotState():
     def __init__(self):
         self.logger_robot = LoggerRobot()
         rospy.init_node('robot_state', anonymous=False)
-        self.pub = rospy.Publisher('joint_state',
+        self.pub = rospy.Publisher('joint_states',
                                    JointState, queue_size=10)
         self.msg_joint_state = JointState()
         self.msg_joint_state.name = ['joint_1', 'joint_2', 'joint_3',

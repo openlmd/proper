@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>proper_abb</name>
-  <version>0.0.1</version>
+  <version>0.1.0</version>
   <description>The abb control package.</description>
   <author email="baltasar.lodeiro@aimen.es">Baltasar Lodeiro-Señarís</author>
   <maintainer email="baltasar.lodeiro@aimen.es">Baltasar Lodeiro-Señarís</maintainer>
