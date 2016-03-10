@@ -88,6 +88,17 @@ class Robot:
             msg = "10 " + self.format_pose(pose)
         return self.send(msg, response)
 
+    def set_cartesian_trigg(self, pose, trigger=False, response=True):
+        '''
+        Executes a move immediately from the current pose,
+        to 'pose', with units of millimeters. And triggers
+        a digital output.
+        '''
+        msg = "11 " + self.format_pose(pose)
+        msg = msg[:-1]
+        msg += str(int(trigger)) + " #"
+        return self.send(msg, response)
+
     def set_joints(self, joints, response=True):
         '''
         Executes a move immediately, from current joint angles,
@@ -233,13 +244,16 @@ class Robot:
         msg += format(zone[2], "+08.4f") + " #"
         self.send(msg)
 
-    def buffer_add(self, pose):
+    def buffer_add(self, pose, trigger=False, trigger_set=False):
         '''
         Appends single pose to the remote buffer
         Move will execute at current speed (which you can change between
         buffer_add calls)
         '''
         msg = "30 " + self.format_pose(pose)
+        if trigger:
+            msg = msg[:-1]
+            msg += str(int(trigger_set)) + " #"
         self.send(msg)
 
     def buffer_set(self, pose_list):

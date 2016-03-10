@@ -5,8 +5,8 @@ MODULE SERVER
 !////////////////
 
 !//Robot configuration
-PERS tooldata currentTool := [TRUE,[[0,0,0],[1,0,0,0]],[0.001,[0,0,0.001],[1,0,0,0],0,0,0]];    
-PERS wobjdata currentWobj := [FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];   
+PERS tooldata currentTool := [TRUE,[[0,0,0],[1,0,0,0]],[0.001,[0,0,0.001],[1,0,0,0],0,0,0]];
+PERS wobjdata currentWobj := [FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];
 PERS speeddata currentSpeed;
 PERS zonedata currentZone;
 
@@ -34,12 +34,18 @@ VAR robtarget cartesianTarget;
 VAR jointtarget jointsTarget;
 VAR bool moveCompleted; !Set to true after finishing a Move instruction.
 
+!//Control of the laser
+VAR triggdata laserON;
+VAR triggdata laserOFF;
+
 !//Buffered move variables
 CONST num MAX_BUFFER := 512;
 VAR num BUFFER_POS := 0;
 VAR robtarget bufferTargets{MAX_BUFFER};
 VAR speeddata bufferSpeeds{MAX_BUFFER};
 VAR zonedata bufferZones{MAX_BUFFER};
+VAR bool bufferTriggSet{MAX_BUFFER};
+VAR bool bufferTrigg{MAX_BUFFER};
 
 !//External axis position variables
 VAR extjoint externalAxis;
@@ -54,7 +60,7 @@ CONST num SERVER_OK := 1;
 
 
 
-	
+
 !////////////////
 !LOCAL METHODS
 !////////////////
@@ -73,7 +79,7 @@ PROC ParseMsg(string msg)
     VAR num indParam:=1;
     VAR string subString;
     VAR bool end := FALSE;
-	
+
     !//Find the end character
     length := StrMatch(msg,1,"#");
     IF length > StrLen(msg) THEN
@@ -99,7 +105,7 @@ PROC ParseMsg(string msg)
                     auxOk := StrToVal(subString, params{indParam});
                     indParam := indParam + 1;
                     ind := newInd;
-                ENDIF	   
+                ENDIF
             ENDWHILE
             nParams:= indParam - 1;
         ENDIF
@@ -112,7 +118,7 @@ ENDPROC
 !// - Waits for incoming TCP connection.
 PROC ServerCreateAndConnect(string ip, num port)
     VAR string clientIP;
-	
+
     SocketCreate serverSocket;
     SocketBind serverSocket, ip, port;
     SocketListen serverSocket;
@@ -137,11 +143,12 @@ ENDPROC
 !// - Zone.
 !// - Speed.
 PROC Initialize()
-    currentTool := [TRUE,[[0,0,0],[1,0,0,0]],[0.001,[0,0,0.001],[1,0,0,0],0,0,0]];    
+    currentTool := [TRUE,[[0,0,0],[1,0,0,0]],[0.001,[0,0,0.001],[1,0,0,0],0,0,0]];
     currentWobj := [FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];
     currentSpeed := [100, 50, 0, 0];
     currentZone := [FALSE, 0.3, 0.3,0.3,0.03,0.3,0.03]; !z0
-	
+		TriggIO laserON, 0\DOp:=Do_RF_ExterGate, 1;
+		TriggIO laserOFF, 0\DOp:=Do_RF_ExterGate, 0;
 	!Find the current external axis values so they don't move when we start
 	jointsTarget := CJointT();
 	externalAxis := jointsTarget.extax;
@@ -160,31 +167,31 @@ PROC main()
     VAR bool reconnected;        !//Drop and reconnection happened during serving a command
     VAR robtarget cartesianPose;
     VAR jointtarget jointsPose;
-    			
+
     !//Motion configuration
     ConfL \Off;
     SingArea \Wrist;
     moveCompleted:= TRUE;
-	
-    !//Initialization of WorkObject, Tool, Speed and Zone
+
+    !//Initialization of WorkObject, Tool, Speed, Zone and Laser
     Initialize;
 
     !//Socket connection
     connected:=FALSE;
-    ServerCreateAndConnect ipController,serverPort;	
+    ServerCreateAndConnect ipController,serverPort;
     connected:=TRUE;
-    
+
     !//Server Loop
     WHILE TRUE DO
         !//Initialization of program flow variables
         ok:=SERVER_OK;              !//Correctness of executed instruction.
         reconnected:=FALSE;         !//Has communication dropped after receiving a command?
-        addString := "";            
+        addString := "";
 
         !//Wait for a command
         SocketReceive clientSocket \Str:=receivedString \Time:=WAIT_MAX;
         ParseMsg receivedString;
-	
+
         !//Execution of the command
         TEST instructionCode
             CASE 0: !Ping
@@ -206,8 +213,8 @@ PROC main()
                     moveCompleted := TRUE;
                 ELSE
                     ok := SERVER_BAD_MSG;
-                ENDIF	
-				
+                ENDIF
+
             CASE 2: !Joint Move
                 IF nParams = 6 THEN
                     jointsTarget:=[[params{1},params{2},params{3},params{4},params{5},params{6}], externalAxis];
@@ -221,14 +228,14 @@ PROC main()
 
             CASE 3: !Get Cartesian Coordinates (with current tool and workobject)
                 IF nParams = 0 THEN
-                    cartesianPose := CRobT(\Tool:=currentTool \WObj:=currentWObj);		
+                    cartesianPose := CRobT(\Tool:=currentTool \WObj:=currentWObj);
                     addString := NumToStr(cartesianPose.trans.x,2) + " ";
                     addString := addString + NumToStr(cartesianPose.trans.y,2) + " ";
                     addString := addString + NumToStr(cartesianPose.trans.z,2) + " ";
                     addString := addString + NumToStr(cartesianPose.rot.q1,3) + " ";
                     addString := addString + NumToStr(cartesianPose.rot.q2,3) + " ";
                     addString := addString + NumToStr(cartesianPose.rot.q3,3) + " ";
-                    addString := addString + NumToStr(cartesianPose.rot.q4,3); !End of string	
+                    addString := addString + NumToStr(cartesianPose.rot.q4,3); !End of string
                     ok := SERVER_OK;
                 ELSE
                     ok :=SERVER_BAD_MSG;
@@ -259,8 +266,8 @@ PROC main()
                     ok := SERVER_OK;
                 ELSE
                     ok:=SERVER_BAD_MSG;
-                ENDIF	
-		
+                ENDIF
+
             CASE 6: !Set Tool
                 IF nParams = 7 THEN
 		   			WHILE (frameMutex) DO
@@ -276,6 +283,7 @@ PROC main()
                     currentTool.tframe.rot.q4:=params{7};
                     ok := SERVER_OK;
 		    		frameMutex:= FALSE;
+					TPWrite "Tool set";
                 ELSE
                     ok:=SERVER_BAD_MSG;
                 ENDIF
@@ -290,6 +298,7 @@ PROC main()
                     currentWobj.oframe.rot.q3:=params{6};
                     currentWobj.oframe.rot.q4:=params{7};
                     ok := SERVER_OK;
+					TPWrite "Work Object Set";
                 ELSE
                     ok:=SERVER_BAD_MSG;
                 ENDIF
@@ -300,10 +309,12 @@ PROC main()
                     currentSpeed.v_ori:=params{2};
                     currentSpeed.v_leax:=params{3};
                     currentSpeed.v_reax:=params{4};
+					TPWrite "Speed Set: ", \Num:=currentSpeed.v_tcp;
                     ok := SERVER_OK;
                 ELSEIF nParams = 2 THEN
 					currentSpeed.v_tcp:=params{1};
 					currentSpeed.v_ori:=params{2};
+					TPWrite "Speed Set: ", \Num:=currentSpeed.v_tcp;
 					ok := SERVER_OK;
 				ELSE
                     ok:=SERVER_BAD_MSG;
@@ -326,7 +337,7 @@ PROC main()
                 ELSE
                     ok:=SERVER_BAD_MSG;
                 ENDIF
-				
+
 			CASE 10: !Joint Move to Pos
                 IF nParams = 7 THEN
                     cartesianTarget :=[[params{1},params{2},params{3}],
@@ -341,8 +352,27 @@ PROC main()
                     ok := SERVER_BAD_MSG;
                 ENDIF
 
-            CASE 30: !Add Cartesian Coordinates to buffer
-                IF nParams = 7 THEN
+            CASE 11: !Trigger Move linear
+                IF nParams = 8 THEN
+                    cartesianTarget :=[[params{1},params{2},params{3}],
+                                       [params{4},params{5},params{6},params{7}],
+                                       [0,0,0,0],
+                                       externalAxis];
+                    ok := SERVER_OK;
+                    TPWrite "valor "\Num:=params{8};
+                    moveCompleted := FALSE;
+										IF params{8} < 1 THEN
+                    	TriggL cartesianTarget, currentSpeed, laserOFF, currentZone, currentTool \WObj:=currentWobj ;
+										ELSE
+											TriggL cartesianTarget, currentSpeed, laserON, currentZone, currentTool \WObj:=currentWobj ;
+										ENDIF
+                    moveCompleted := TRUE;
+                ELSE
+                    ok := SERVER_BAD_MSG;
+                ENDIF
+
+            CASE 30: !Add Cartesian Coordinates to buffer as trigger or move
+                IF nParams = 7 OR nParams = 8 THEN
                     cartesianTarget :=[[params{1},params{2},params{3}],
                                         [params{4},params{5},params{6},params{7}],
                                         [0,0,0,0],
@@ -351,7 +381,15 @@ PROC main()
                         BUFFER_POS := BUFFER_POS + 1;
                         bufferTargets{BUFFER_POS} := cartesianTarget;
                         bufferSpeeds{BUFFER_POS} := currentSpeed;
-						bufferZones{BUFFER_POS} := currentZone;
+						            bufferZones{BUFFER_POS} := currentZone;
+                        IF nParams = 8 THEN
+                          bufferTrigg{BUFFER_POS} := TRUE;
+                          bufferTriggSet{BUFFER_POS} := params{8} > 0;
+                        ELSE
+                          bufferTrigg{BUFFER_POS} := FALSE;
+                          bufferTriggSet{BUFFER_POS} := FALSE;
+                        ENDIF
+						TPWrite "Added pose to buffer, N: ", \Num:=BUFFER_POS;
                     ENDIF
                     ok := SERVER_OK;
                 ELSE
@@ -360,8 +398,9 @@ PROC main()
 
             CASE 31: !Clear Cartesian Buffer
                 IF nParams = 0 THEN
-                    BUFFER_POS := 0;	
+                    BUFFER_POS := 0;
                     ok := SERVER_OK;
+					TPWrite "Buffer clear";
                 ELSE
                     ok:=SERVER_BAD_MSG;
                 ENDIF
@@ -374,11 +413,22 @@ PROC main()
                     ok:=SERVER_BAD_MSG;
                 ENDIF
 
-            CASE 33: !Execute moves in cartesianBuffer as linear moves
+            CASE 33: !Execute moves in cartesianBuffer as linear moves or trigger
                 IF nParams = 0 THEN
-                    FOR i FROM 1 TO (BUFFER_POS) DO 
+					TPWrite "buffer size: ", \Num:=BUFFER_POS;
+                    FOR i FROM 1 TO (BUFFER_POS) DO
+						TPWrite "Moving to pose: ", \Num:=i;
+                      IF bufferTrigg{i} = FALSE THEN
                         MoveL bufferTargets{i}, bufferSpeeds{i}, bufferZones{i}, currentTool \WObj:=currentWobj ;
-                    ENDFOR			
+                      ELSE
+                        IF bufferTriggSet{i} = FALSE THEN
+                    	    TriggL bufferTargets{i}, bufferSpeeds{i}, laserOFF, bufferZones{i}, currentTool \WObj:=currentWobj ;
+										    ELSE
+												TriggL bufferTargets{i}, bufferSpeeds{i}, laserON, bufferZones{i}, currentTool \WObj:=currentWobj ;
+									      ENDIF
+                      ENDIF
+                    ENDFOR
+					TPWrite "Buffer finished";
                     ok := SERVER_OK;
                 ELSE
                     ok:=SERVER_BAD_MSG;
@@ -419,7 +469,7 @@ PROC main()
                 ELSE
                     ok:=SERVER_BAD_MSG;
                 ENDIF
-			
+
 			CASE 96: !Set an analog output
                 IF nParams = 2 THEN
 					!TODO:Seleccionar o tipo de entrada
@@ -434,8 +484,8 @@ PROC main()
 					ENDTEST
                 ELSE
                     ok :=SERVER_BAD_MSG;
-                ENDIF	
-				
+                ENDIF
+
 			CASE 97: !Set or reset a digital output
                 IF nParams = 2 THEN
 					!TODO:Seleccionar o tipo de entrada
@@ -450,8 +500,8 @@ PROC main()
 					ENDTEST
                 ELSE
                     ok :=SERVER_BAD_MSG;
-                ENDIF	
-				
+                ENDIF
+
             CASE 98: !returns current robot info: serial number, robotware version, and robot type
                 IF nParams = 0 THEN
                     addString := GetSysInfo(\SerialNo) + "*";
@@ -461,7 +511,7 @@ PROC main()
                 ELSE
                     ok :=SERVER_BAD_MSG;
                 ENDIF
-			
+
             CASE 99: !Close Connection
                 IF nParams = 0 THEN
                     TPWrite "SERVER: Client has closed connection.";
@@ -482,7 +532,7 @@ PROC main()
                 TPWrite "SERVER: Illegal instruction code";
                 ok := SERVER_BAD_MSG;
         ENDTEST
-		
+
         !Compose the acknowledge string to send back to the client
         IF connected = TRUE THEN
             IF reconnected = FALSE THEN
@@ -512,7 +562,7 @@ ERROR (LONG_JMP_ALL_ERR)
             ServerCreateAndConnect ipController,serverPort;
             reconnected:= TRUE;
             connected:= TRUE;
-            RETRY; 
+            RETRY;
         DEFAULT:
             TPWrite "SERVER: Unknown error.";
             TPWrite "SERVER: Closing socket and restarting.";
