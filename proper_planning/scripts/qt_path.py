@@ -26,12 +26,49 @@ class QtPath(QtGui.QWidget):
 
         self.pub_path = rospy.Publisher('path', String, queue_size=1)
 
+        # Path buttons
+        self.btnLoadPath.clicked.connect(self.btnLoadPathClicked)
+        self.btnSavePath.clicked.connect(self.btnSavePathClicked)
+        self.btnRunPath.clicked.connect(self.btnRunPathClicked)
         self.btnStatus.clicked.connect(self.btnStatusClicked)
 
         self.tmrStatus = QtCore.QTimer(self)
         self.tmrStatus.timeout.connect(self.timeStatusEvent)
-
         self.tmrStatus.start(1000)  # time in ms
+
+    def insertPose(self, pose):
+        (x, y, z), (qx, qy, qz, qw) = pose
+        str_pose = '((%.3f, %.3f, %.3f), (%.4f, %.4f, %.4f, %.4f))' %(x, y, z, qx, qy, qz, qw)
+        #item = QtGui.QListWidgetItem('item_text')
+        #self.listWidgetPoses.addItem(item)
+        self.listWidgetPoses.addItem(str_pose)
+        #self.listWidgetPoses.insertItem(0, '0, 1, 2')
+
+    def removePose(self):
+        item = self.listWidgetPoses.takeItem(0)
+        if item:
+            print item.text()
+            return item.text()
+        else:
+            return None
+
+    def btnLoadPathClicked(self):
+        filename = QtGui.QFileDialog.getOpenFileName(
+            self, 'Load Path Routine', './', 'Path Routine Files (*.path)')[0]
+        print 'Load path:', filename
+        #file = open(filename, 'r')
+        #cmds = file.readlines()
+        #for cmd in cmds:
+        #    self._append_command(cmd)
+        #self._append_command_file(self.filename)
+
+    def btnSavePathClicked(self):
+        print 'Save path'
+
+    def btnRunPathClicked(self):
+        print 'Run path'
+        pose = np.array([[0.150, 0.100, 0.200], [1.0, 0.1, 0.1, 0.1]])
+        self.insertPose(pose)
 
     def btnStatusClicked(self):
         print 'Button pressed'

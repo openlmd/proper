@@ -179,6 +179,12 @@ if __name__ == '__main__':
     lines.set_color((1, 0, 0, 1))
     lines.set_frame('/workobject')
     marker_array.markers.append(lines.marker)
+    arrow = ArrowMarker(0.1)
+    arrow.set_color((0, 0, 1, 1))
+    arrow.set_frame('/workobject')
+    arrow.set_position((0.2, 0.2, 0.2))
+    arrow.set_orientation((0, 0, 0, 1))
+    marker_array.markers.append(arrow.marker)
 
     # Renumber the marker IDs
     id = 0
