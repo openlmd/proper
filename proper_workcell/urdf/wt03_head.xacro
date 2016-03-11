@@ -10,7 +10,7 @@
   <link name="head0">
     <visual>
       <geometry>
-        <mesh filename="package://etna_workcell/meshes/head_wt03/visual/head_wt03.stl" />
+        <mesh filename="package://proper_workcell/meshes/head_wt03/visual/head_wt03.stl" />
       </geometry>
       <material name="dark_gray">
         <color rgba="0.3 0.4 0.3 1"/>
@@ -18,7 +18,7 @@
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://etna_workcell/meshes/head_wt03/collision/head_wt03.stl" />
+        <mesh filename="package://proper_workcell/meshes/head_wt03/collision/head_wt03.stl" />
       </geometry>
       <material name="yellow">
         <color rgba="0 1 1 1" />
