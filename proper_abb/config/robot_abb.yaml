@@ -1,0 +1,3 @@
+configuration:
+  robot_ip: "172.20.0.32"
+  J23_coupled: 1
