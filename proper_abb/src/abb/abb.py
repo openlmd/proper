@@ -60,13 +60,11 @@ class Robot:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect(remote)
         self.s.setblocking(1)
-        try:
-            while self.control:
-                data = self.s.recv(4096).split()
-                #print data[0:]
-                self.joints.append(data)
-        finally:
-            self.s.shutdown(socket.SHUT_RDWR)
+
+    def read_logger(self):
+        data = self.s.recv(4096).split()
+            #print data[0:]
+        self.joints.append(data)
 
     def set_units(self, linear, angular):
         units_l = {'millimeters': 1.0,

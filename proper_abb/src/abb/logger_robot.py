@@ -1,5 +1,5 @@
 from abb import Robot
-from threading import Thread
+import socket
 
 
 class LoggerRobot(Robot):
@@ -9,12 +9,12 @@ class LoggerRobot(Robot):
 
     def connect(self, ip):
         self.control = True
-        self.t = Thread(target=self.connect_logger, args=((ip, 5001), ))
+        self.connect_logger((ip, 5001))
+        #self.t = Thread(target=self.connect_logger, args=((ip, 5001), ))
         #self.robot.connect_logger((ip, 5001))
-        self.t.start()
 
     def disconnect(self):
-        self.control = False
+        self.s.shutdown(socket.SHUT_RDWR)
 
 if __name__ == '__main__':
     logger_robot = LoggerRobot()
