@@ -27,6 +27,7 @@ class PubRobotState():
 
         rate = rospy.Rate(10)  # 10hz
         while not rospy.is_shutdown():
+            self.logger_robot.read_logger()
             if len(self.logger_robot.joints) > 0:
                 joints_pose = self.logger_robot.joints.popleft()
                 for i in range(0, 6):
