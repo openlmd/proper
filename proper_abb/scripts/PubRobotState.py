@@ -25,7 +25,6 @@ class PubRobotState():
         if rospy.has_param("configuration/J23_coupled"):
             j23_coupled = bool(rospy.get_param("configuration/J23_coupled"))
 
-        rate = rospy.Rate(10)  # 10hz
         while not rospy.is_shutdown():
             self.logger_robot.read_logger()
             if len(self.logger_robot.joints) > 0:
@@ -39,7 +38,7 @@ class PubRobotState():
                 self.msg_joint_state.header.stamp = rospy.Time.now()
                 #rospy.loginfo(len(logger_robot.joints))
                 self.pub.publish(self.msg_joint_state)
-                rate.sleep()
+                rospy.sleep(0.01)
 
     def close_connection(self):
         self.logger_robot.disconnect()
