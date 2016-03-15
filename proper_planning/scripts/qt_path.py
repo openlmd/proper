@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import os
-import os
 import tf
 import sys
 import rospy
@@ -34,6 +33,7 @@ class QtPath(QtGui.QWidget):
 
         self.tmrStatus = QtCore.QTimer(self)
         self.tmrStatus.timeout.connect(self.timeStatusEvent)
+
         self.tmrStatus.start(1000)  # time in ms
 
     def insertPose(self, pose):
@@ -70,6 +70,11 @@ class QtPath(QtGui.QWidget):
         pose = np.array([[0.150, 0.100, 0.200], [1.0, 0.1, 0.1, 0.1]])
         self.insertPose(pose)
 
+    def btnSaveRapidClicked(self):
+        #filename = QtGui.QFileDialog.getOpenFileName(self.plot, 'Save file', './',
+        #                                             'Rapid Modules (*.mod)')[0]
+        self.robpath.save_rapid()
+
     def btnStatusClicked(self):
         print 'Button pressed'
         self.pub_path.publish(String('[1, 2, 3]'))
@@ -85,7 +90,6 @@ class QtPath(QtGui.QWidget):
 #     path.header = Header(frame_id='workobject')
 #     #path.header = Header(frame_id='tool0')
 #     #path.poses = [PoseStamped(pose=Pose(Point(0, 0, 0.5), Quaternion(0, 0, 0, 1))),
-#     #PoseStamped(pose=Pose(Point(0, 1, 1.4), Quaternion(0, 0, 0, 1)))]
 #
 #     cut_path = (((0, 0.0, 0.0), (0, 0, 0, 1), False),
 #                 ((0, 0.0, 0.1), (0, 0, 0, 1), False),
@@ -96,23 +100,10 @@ class QtPath(QtGui.QWidget):
 #         path.poses.append(PoseStamped(pose=Pose(Point(x/1000, y/1000, z/1000), Quaternion(q0, q1, q2, q3))))
 #
 #     pub_path.publish(path)
-#     rospy.sleep(2.0)
-#
-#     k = 0
-#     N = len(cut_path)
-#     while not rospy.is_shutdown() and (k < N):
-#         (x, y, z), (q0, q1, q2, q3), proc = cut_path[k]
-#         rospy.loginfo("%s, %s" %(cut_path[k], rospy.get_time()))
-#         pose = PoseStamped(Header(frame_id='workobject'),
-#                            Pose(Point(x/1000, y/1000, z/1000),
-#                                 Quaternion(q0, q1, q2, q3)))
-#         pub_pose.publish(pose)
-#         k = k + 1
-#         rospy.sleep(1.0)
 
 
 if __name__ == "__main__":
-    rospy.init_node('path_publisher')
+    rospy.init_node('path_panel')
 
     app = QtGui.QApplication(sys.argv)
     qt_path = QtPath()

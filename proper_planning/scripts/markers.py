@@ -127,7 +127,7 @@ class MeshMarker(ShapeMarker):
 
 
 class TriangleListMarker(ShapeMarker):
-    def __init__(self, frame_id='/world'):
+    def __init__(self):
         ShapeMarker.__init__(self)
         self.marker.type = self.marker.TRIANGLE_LIST
         self.marker.points = [Point(0, 0, 0), Point(1, 0, 0), Point(1, 1, 0),
