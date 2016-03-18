@@ -8,6 +8,7 @@ import rospkg
 import rosparam
 import numpy as np
 from std_msgs.msg import String, Header
+from proper_abb.msg import MsgRobotCommand
 # from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 # from nav_msgs.msg import Path
 
@@ -24,17 +25,20 @@ class QtPath(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         loadUi(os.path.join(path, 'resources', 'path.ui'), self)
 
-        self.pub_path = rospy.Publisher('path', String, queue_size=1)
+        #self.pub_path = rospy.Publisher('path', String, queue_size=1)
+        self.pub = rospy.Publisher('robot_command_json',
+                                   MsgRobotCommand, queue_size=10)
 
         # Path buttons
         self.btnLoadPath.clicked.connect(self.btnLoadPathClicked)
         self.btnSavePath.clicked.connect(self.btnSavePathClicked)
         self.btnRunPath.clicked.connect(self.btnRunPathClicked)
-        self.btnStatus.clicked.connect(self.btnStatusClicked)
+        self.btnDelete.clicked.connect(self.btnDeleteClicked)
+        self.btnLoadPose.clicked.connect(self.btnLoadPoseClicked)
+        self.btnStep.clicked.connect(self.btnStepClicked)
 
         self.tmrStatus = QtCore.QTimer(self)
         self.tmrStatus.timeout.connect(self.timeStatusEvent)
-        self.tmrStatus.start(1000)  # time in ms
 
     def insertPose(self, pose):
         (x, y, z), (qx, qy, qz, qw) = pose
@@ -44,7 +48,13 @@ class QtPath(QtGui.QWidget):
         self.listWidgetPoses.addItem(str_pose)
         #self.listWidgetPoses.insertItem(0, '0, 1, 2')
 
-    def removePose(self):
+    def insertCommand(self, command, insert=False, position=0):
+        if not insert:
+            self.listWidgetPoses.addItem(command)
+        else:
+            self.listWidgetPoses.insertItem(position, command)
+
+    def removeComamnd(self):
         item = self.listWidgetPoses.takeItem(0)
         if item:
             print item.text()
@@ -58,62 +68,76 @@ class QtPath(QtGui.QWidget):
         print 'Load path:', filename
         #file = open(filename, 'r')
         #cmds = file.readlines()
-        #for cmd in cmds:
-        #    self._append_command(cmd)
+        cmds = [line.rstrip('\n') for line in open(filename, 'r')]
+        for line in cmds:
+            self.insertCommand(line)
         #self._append_command_file(self.filename)
 
     def btnSavePathClicked(self):
-        print 'Save path'
+        filename = QtGui.QFileDialog.getSaveFileName(
+            self, 'Load Path Routine', './', 'Path Routine Files (*.path)')[0]
+        if filename[-5:] != ".path":
+            filename += ".path"
+        n_row = self.listWidgetPoses.count()
+        if n_row > 0:
+            with open(filename, 'w+') as myfile:
+                for row in range(n_row):
+                    item_text = self.listWidgetPoses.item(row)
+                    myfile.write(item_text.text() + '\n')
+        print 'Saved file:', filename
 
     def btnRunPathClicked(self):
-        print 'Run path'
-        pose = np.array([[0.150, 0.100, 0.200], [1.0, 0.1, 0.1, 0.1]])
-        self.insertPose(pose)
+        if self.tmrStatus.isActive():
+            self.tmrStatus.stop()
+        else:
+            self.tmrStatus.start(1000)  # time in ms
 
-    def btnStatusClicked(self):
-        print 'Button pressed'
-        self.pub_path.publish(String('[1, 2, 3]'))
+    def btnDeleteClicked(self):
+        row = self.listWidgetPoses.currentRow()
+        self.listWidgetPoses.takeItem(row)
+        #self.listWidgetPoses.clear()
+
+    def btnStepClicked(self):
+        n_row = self.listWidgetPoses.count()
+        if n_row > 0:
+            row = self.listWidgetPoses.currentRow()
+            if row == -1:
+                row = 0
+            item_text = self.listWidgetPoses.item(row)
+            self.pub.publish(item_text.text())
+            print item_text.text()
+            row += 1
+            if row == n_row:
+                row = 0
+            self.listWidgetPoses.setCurrentRow(row)
+
+    def btnLoadPoseClicked(self):
+        str_command = QtGui.QInputDialog.getText(
+            self, "Load Json Command", "Comamnd:")
+        row = self.listWidgetPoses.currentRow()
+        row += 1
+        self.insertCommand(str_command[0], insert=True, position=row)
+        print str_command
 
     def timeStatusEvent(self):
         print 'Timer event'
-        path = String('[0, 0, 0]')
-        self.pub_path.publish(path)
-
-
-#     path = Path()
-#     rospy.loginfo(tf.transformations.quaternion_from_euler(0, 0, 0))
-#     path.header = Header(frame_id='workobject')
-#     #path.header = Header(frame_id='tool0')
-#     #path.poses = [PoseStamped(pose=Pose(Point(0, 0, 0.5), Quaternion(0, 0, 0, 1))),
-#     #PoseStamped(pose=Pose(Point(0, 1, 1.4), Quaternion(0, 0, 0, 1)))]
-#
-#     cut_path = (((0, 0.0, 0.0), (0, 0, 0, 1), False),
-#                 ((0, 0.0, 0.1), (0, 0, 0, 1), False),
-#                 ((0, 0.3, 0.1), (0, 0, 0, 1), False))
-#
-#     for cut_pose in cut_path:
-#         (x, y, z), (q0, q1, q2, q3), proc = cut_pose
-#         path.poses.append(PoseStamped(pose=Pose(Point(x/1000, y/1000, z/1000), Quaternion(q0, q1, q2, q3))))
-#
-#     pub_path.publish(path)
-#     rospy.sleep(2.0)
-#
-#     k = 0
-#     N = len(cut_path)
-#     while not rospy.is_shutdown() and (k < N):
-#         (x, y, z), (q0, q1, q2, q3), proc = cut_path[k]
-#         rospy.loginfo("%s, %s" %(cut_path[k], rospy.get_time()))
-#         pose = PoseStamped(Header(frame_id='workobject'),
-#                            Pose(Point(x/1000, y/1000, z/1000),
-#                                 Quaternion(q0, q1, q2, q3)))
-#         pub_pose.publish(pose)
-#         k = k + 1
-#         rospy.sleep(1.0)
+        n_row = self.listWidgetPoses.count()
+        if n_row > 0:
+            row = self.listWidgetPoses.currentRow()
+            if row == -1:
+                row = 0
+            item_text = self.listWidgetPoses.item(row)
+            self.pub.publish(item_text.text())
+            print item_text.text()
+            row += 1
+            if row == n_row:
+                row = 0
+                self.tmrStatus.stop()
+            self.listWidgetPoses.setCurrentRow(row)
 
 
 if __name__ == "__main__":
     rospy.init_node('path_publisher')
-
     app = QtGui.QApplication(sys.argv)
     qt_path = QtPath()
     qt_path.show()
