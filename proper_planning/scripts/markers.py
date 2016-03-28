@@ -76,9 +76,7 @@ class LinesMarker(ShapeMarker):
     def __init__(self):
         ShapeMarker.__init__(self)
         self.marker.type = self.marker.LINE_STRIP
-        self.marker.points = [Point(0, 0, 0),
-                              Point(1, 0, 0),
-                              Point(1, 1, 0)]
+        self.marker.points = [Point(0, 0, 0)]
         self.set_size()
 
     def set_size(self, size=0.001):
@@ -138,6 +136,20 @@ class TriangleListMarker(ShapeMarker):
         self.marker.points = [Point(x, y, z) for x, y, z in points]
 
 
+class PartMarkers():
+    def __init__(self):
+        marker_array = MarkerArray()
+
+        # marker_array.markers.append(mesh_marker.marker)
+        # marker_array.markers.append(ArrowMarker(1).marker)
+        # marker_array.markers.append(CubeMarker().marker)
+        # marker_array.markers.append(CylinderMarker().marker)
+        # marker_array.markers.append(SphereMarker().marker)
+        # marker_array.markers.append(LinesMarker().marker)
+        # marker_array.markers.append(PointsMarker().marker)
+
+
+
 if __name__ == '__main__':
     import numpy as np
 
@@ -147,19 +159,11 @@ if __name__ == '__main__':
     pub_marker_array = rospy.Publisher(
         'visualization_marker_array', MarkerArray, queue_size=10)
 
+    marker_array = MarkerArray()
+
     #mesh_marker = MeshMarker(mesh_resource="package://etna_triangulation/meshes/test.dae")
     mesh_marker = TriangleListMarker()
     mesh_marker.set_color(color=(1.0, 0.5, 0.0, 0.75))
-
-    marker_array = MarkerArray()
-
-    # marker_array.markers.append(mesh_marker.marker)
-    # marker_array.markers.append(ArrowMarker(1).marker)
-    # marker_array.markers.append(CubeMarker().marker)
-    # marker_array.markers.append(CylinderMarker().marker)
-    # marker_array.markers.append(SphereMarker().marker)
-    # marker_array.markers.append(LinesMarker().marker)
-    # marker_array.markers.append(PointsMarker().marker)
 
     points = np.array([[0.0, 0.0, 0.0],
                        [0.1, 0.0, 0.0],
@@ -187,10 +191,8 @@ if __name__ == '__main__':
     marker_array.markers.append(arrow.marker)
 
     # Renumber the marker IDs
-    id = 0
-    for m in marker_array.markers:
+    for id, m in enumerate(marker_array.markers):
         m.id = id
-        id += 1
 
     k = 0
     while not rospy.is_shutdown():

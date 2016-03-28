@@ -22,6 +22,26 @@ class QtData(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         loadUi(os.path.join(path, 'resources', 'data.ui'), self)
 
+        self.btnConnect.clicked.connect(self.btnConnectClickced)
+        self.btnJob.clicked.connect(self.btnJobClicked)
+        self.btnPredict.clicked.connect(self.btnPredictClicked)
+        self.btnRecord.clicked.connect(self.btnRecordClicked)
+
+    def btnConnectClickced(self):
+        print 'Connect'
+        print 'User:', self.txtUser.text()
+        print 'Password:', self.txtPassword.text()
+
+    def btnJobClicked(self):
+        print 'Job:', self.txtName.text()
+
+    def btnPredictClicked(self):
+        print 'Predict'
+
+    def btnRecordClicked(self):
+        print 'Base Material:', self.txtBaseMaterial.text()
+        print 'Powder Material:', self.txtPowderMaterial.text()
+
 
 if __name__ == "__main__":
     rospy.init_node('data_panel')
