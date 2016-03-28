@@ -53,11 +53,12 @@ class RobPath():
                                             self.track_height)
 
     def update_process(self):
+        if self.k == 0:
+            self.mesh.resort_triangles()
         slice = self.mesh.get_slice(self.levels[self.k])
         if slice is not None:
             if self.filled:
                 fill_lines = self.mesh.get_grated(slice, self.track_distance)
-
                 # Reverse the order of the slicer fill lines
                 if self.pair:
                     fill_lines.reverse()

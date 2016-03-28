@@ -8,10 +8,12 @@ import rospkg
 import rosparam
 import numpy as np
 from std_msgs.msg import String, Header
-from visualization_msgs.msg import Marker
+from visualization_msgs.msg import Marker, MarkerArray
 # from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
-# from nav_msgs.msg import Path
-from markers import MeshMarker, TriangleListMarker
+
+from markers import MeshMarker
+from markers import LinesMarker
+from markers import TriangleListMarker
 
 from python_qt_binding import loadUi
 from python_qt_binding import QtGui
@@ -24,15 +26,18 @@ path = rospkg.RosPack().get_path('proper_planning')
 
 
 class QtPart(QtGui.QWidget):
+    saved = QtCore.pyqtSignal(str)
+
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         loadUi(os.path.join(path, 'resources', 'part.ui'), self)
 
         self.pub_part = rospy.Publisher('part', String, queue_size=1)
-        self.publisher = rospy.Publisher('visualization_marker', Marker, queue_size=1)
+        self.pub_marker_array = rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=1)
 
         self.btnLoad.clicked.connect(self.btnLoadClicked)
         self.btnProcessMesh.clicked.connect(self.btnProcessMeshClicked)
+        self.btnProcessLayer.clicked.connect(self.btnProcessLayerClicked)
         self.btnSaveProgram.clicked.connect(self.btnSaveProgramClicked)
 
         self.sbPositionX.valueChanged.connect(self.changePosition)
@@ -62,15 +67,24 @@ class QtPart(QtGui.QWidget):
         self.updatePosition(self.robpath.mesh.bpoint1)  # Rename to position
         self.updateSize(self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1)
 
-        self.marker = MeshMarker(mesh_resource="file://"+filename, frame_id="/workobject")
-        #self.marker = TriangleListMarker()
-        #self.marker.set_frame('/workobject')
-        #self.marker.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
-        self.marker.set_color((0.9, 0.9, 0.9, 0.6))
+        self.marker_array = MarkerArray()
+        #self.marker = MeshMarker(mesh_resource="file://"+filename, frame_id="/workobject")
+        self.mesh = TriangleListMarker()
+        self.mesh.set_frame('/workobject')
+        self.mesh.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
+        self.mesh.set_color((0.66, 0.66, 0.99, 0.66))
+        self.marker_array.markers.append(self.mesh.marker)
+        self.path = LinesMarker()
+        self.path.set_frame('/workobject')
+        self.path.set_color((1.0, 0.0, 0.0, 1.0))
+        self.marker_array.markers.append(self.path.marker)
+        for id, m in enumerate(self.marker_array.markers):
+            m.id = id
+        self.npoints = 0
 #        #rospy.loginfo()
 #        self.marker.set_position((0, 0, 0))
 #        self.marker.set_scale(scale=(0.001, 0.001, 0.001))
-        self.publisher.publish(self.marker.marker)
+        self.pub_marker_array.publish(self.marker_array)
 
         #TODO: Change bpoints.
         #self.lblInfo.setText('Info:\n')
@@ -79,10 +93,22 @@ class QtPart(QtGui.QWidget):
 
         self.blockSignals(False)
 
+    def updateParameters(self):
+        height = self.sbHeight.value()
+        width = self.sbWidth.value()
+        overlap = 0.01 * self.sbOverlap.value()
+        print height, width, overlap
+        self.robpath.set_track(height, width, overlap)
+
     def updateProcess(self):
         if self.robpath.k < len(self.robpath.levels):
             self.robpath.update_process()
             #self.plot.drawSlice(self.robpath.slices, self.robpath.path)
+            points = np.array([pose[0] for pose in self.robpath.path[self.npoints:-1]])
+            self.npoints = self.npoints + len(points)
+            self.path.set_points(0.001 * points)
+            print len(points)
+            self.pub_marker_array.publish(self.marker_array)
             #self.plot.progress.setValue(100.0 * self.robpath.k / len(self.robpath.levels))
         else:
             self.processing = False
@@ -93,22 +119,25 @@ class QtPart(QtGui.QWidget):
             self.processing = False
             self.timer.stop()
         else:
-            height = self.sbHeight.value()
-            width = self.sbWidth.value()
-            overlap = 0.01 * self.sbOverlap.value()
-            self.robpath.set_track(height, width, overlap)
-
-            #self.plot.drawWorkingArea()
-
+            self.updateParameters()
             self.robpath.init_process()
-
             self.processing = True
             self.timer.start(100)
+
+    def btnProcessLayerClicked(self):
+        if self.processing:
+            self.updateParameters()
+            self.updateProcess()
+        else:
+            self.updateParameters()
+            self.robpath.init_process()
+            self.processing = True
 
     def btnSaveProgramClicked(self):
         #filename = QtGui.QFileDialog.getOpenFileName(self.plot, 'Save file', './',
         #                                             'Rapid Modules (*.mod)')[0]
         self.robpath.save_rapid()
+        self.saved.emit("File saved, event emited.")
 
     def updatePosition(self, position):
         x, y, z = position
@@ -122,8 +151,8 @@ class QtPart(QtGui.QWidget):
         z = self.sbPositionZ.value()
         self.robpath.translate_mesh(np.float32([x, y, z]))
         #self.marker.set_position((x, y, z))
-        self.marker.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
-        self.publisher.publish(self.marker.marker)
+        self.mesh.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
+        self.pub_marker_array.publish(self.marker_array)
 
     def updateSize(self, size):
         sx, sy, sz = size
@@ -137,8 +166,8 @@ class QtPart(QtGui.QWidget):
         sz = self.sbSizeZ.value()
         self.robpath.resize_mesh(np.float32([sx, sy, sz]))
         #scale = np.float32([sx, sy, sz]) / self.mesh_size
-        self.marker.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
-        self.publisher.publish(self.marker.marker)
+        self.mesh.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
+        self.pub_marker_array.publish(self.marker_array)
 
     def blockSignals(self, value):
         self.sbPositionX.blockSignals(value)

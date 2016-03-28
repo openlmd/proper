@@ -52,7 +52,9 @@ class Mesh:
             self.bounding_box()
         if self.valid:
             self.translate(np.float32([0, 0, 0]))  # translates the piece to the origin
-            self.resort_triangles()
+            #TODO: Resort only for calculation
+            #self.resort_triangles()
+        print '> Load file:', filename
 
     def load_binary_mesh(self, filename):
         try:

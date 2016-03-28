@@ -23,8 +23,15 @@ class QtParam(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         loadUi(os.path.join(path, 'resources', 'param.ui'), self)
 
+        # self.sbShield.valueChanged.connect(self.changeShield)
+        # self.sbCarrier.valueChanged.connect(self.changeCarrier)
+        # self.sbStirrer.valueChanged.connect(self.changeStirrer)
+        # self.sbTurntable.valueChanged.connect(self.changeTurntable)
+
         self.sbSpeed.valueChanged.connect(self.changeSpeed)
         self.sbPower.valueChanged.connect(self.changePower)
+
+        self.btnAccept.clicked.connect(self.btnAcceptClicked)
 
     def updateSpeed(self, data):
         rospy.loginfo(rospy.get_caller_id() + " Speed: %s ", data.speed)
@@ -40,6 +47,14 @@ class QtParam(QtGui.QWidget):
         power = self.sbPower.value()
         #self.robpath.set_power(power)
         print 'Power:', power
+
+    def btnAcceptClicked(self):
+        print 'Shield:', self.sbShield.value()
+        print 'Carrier:', self.sbCarrier.value()
+        print 'Stirrer:', self.sbStirrer.value()
+        print 'Turntable:', self.sbTurntable.value()
+        print 'Speed:', self.sbSpeed.value()
+        print 'Power:', self.sbPower.value()
 
 
 
