@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import os
-import os
 import tf
 import sys
 import rospy
