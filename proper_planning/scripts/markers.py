@@ -75,7 +75,7 @@ class CylinderMarker(ShapeMarker):
 class LinesMarker(ShapeMarker):
     def __init__(self):
         ShapeMarker.__init__(self)
-        self.marker.type = self.marker.LINE_STRIP
+        self.marker.type = self.marker.LINE_STRIP  #self.marker.LINE_LIST
         self.marker.points = [Point(0, 0, 0)]
         self.set_size()
 
@@ -231,7 +231,5 @@ if __name__ == '__main__':
     #    markerArray.markers.append(marker)
     #
     #    # Renumber the marker IDs
-    #    id = 0
-    #    for m in markerArray.markers:
-    #        m.id = id
-    #        id += 1
+    #   for id, m in enumerate(marker_array.markers):
+    #       m.id = id
