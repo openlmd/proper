@@ -62,10 +62,11 @@ class QtPart(QtGui.QWidget):
         self.updatePosition(self.robpath.mesh.bpoint1)  # Rename to position
         self.updateSize(self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1)
 
-        #self.marker = MeshMarker(mesh_resource="file://"+filename, frame_id="/workobject")
-        self.marker = TriangleListMarker(frame_id='/workobject')
-        self.marker.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
-        self.marker.set_color((0.75, 0.25, 0.25, 0.5))
+        self.marker = MeshMarker(mesh_resource="file://"+filename, frame_id="/workobject")
+        #self.marker = TriangleListMarker()
+        #self.marker.set_frame('/workobject')
+        #self.marker.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
+        self.marker.set_color((0.9, 0.9, 0.9, 0.6))
 #        #rospy.loginfo()
 #        self.marker.set_position((0, 0, 0))
 #        self.marker.set_scale(scale=(0.001, 0.001, 0.001))
@@ -116,12 +117,12 @@ class QtPart(QtGui.QWidget):
         self.sbPositionZ.setValue(z)
 
     def changePosition(self):
-        x = 0.001 * self.sbPositionX.value()
-        y = 0.001 * self.sbPositionY.value()
-        z = 0.001 * self.sbPositionZ.value()
-        #self.mesh.translate(position)
-        self.marker.set_position((x, y, z))
-        #TODO: Change mesh position. Include offset position.
+        x = self.sbPositionX.value()
+        y = self.sbPositionY.value()
+        z = self.sbPositionZ.value()
+        self.robpath.translate_mesh(np.float32([x, y, z]))
+        #self.marker.set_position((x, y, z))
+        self.marker.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
         self.publisher.publish(self.marker.marker)
 
     def updateSize(self, size):
@@ -135,9 +136,8 @@ class QtPart(QtGui.QWidget):
         sy = self.sbSizeY.value()
         sz = self.sbSizeZ.value()
         self.robpath.resize_mesh(np.float32([sx, sy, sz]))
-        scale = np.float32([sx, sy, sz]) / self.mesh_size
-        #TODO: Scale the marker or change the mesh loaded in the mesh.
-        self.marker.set_scale(scale=scale)
+        #scale = np.float32([sx, sy, sz]) / self.mesh_size
+        self.marker.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
         self.publisher.publish(self.marker.marker)
 
     def blockSignals(self, value):
@@ -149,41 +149,10 @@ class QtPart(QtGui.QWidget):
         self.sbSizeZ.blockSignals(value)
 
 
-#     path = Path()
-#     rospy.loginfo(tf.transformations.quaternion_from_euler(0, 0, 0))
-#     path.header = Header(frame_id='workobject')
-#     #path.header = Header(frame_id='tool0')
-#     #path.poses = [PoseStamped(pose=Pose(Point(0, 0, 0.5), Quaternion(0, 0, 0, 1))),
-#     #PoseStamped(pose=Pose(Point(0, 1, 1.4), Quaternion(0, 0, 0, 1)))]
-#
-#     cut_path = (((0, 0.0, 0.0), (0, 0, 0, 1), False),
-#                 ((0, 0.0, 0.1), (0, 0, 0, 1), False),
-#                 ((0, 0.3, 0.1), (0, 0, 0, 1), False))
-#
-#     for cut_pose in cut_path:
-#         (x, y, z), (q0, q1, q2, q3), proc = cut_pose
-#         path.poses.append(PoseStamped(pose=Pose(Point(x/1000, y/1000, z/1000), Quaternion(q0, q1, q2, q3))))
-#
-#     pub_path.publish(path)
-#     rospy.sleep(2.0)
-#
-#     k = 0
-#     N = len(cut_path)
-#     while not rospy.is_shutdown() and (k < N):
-#         (x, y, z), (q0, q1, q2, q3), proc = cut_path[k]
-#         rospy.loginfo("%s, %s" %(cut_path[k], rospy.get_time()))
-#         pose = PoseStamped(Header(frame_id='workobject'),
-#                            Pose(Point(x/1000, y/1000, z/1000),
-#                                 Quaternion(q0, q1, q2, q3)))
-#         pub_pose.publish(pose)
-#         k = k + 1
-#         rospy.sleep(1.0)
-
-
 if __name__ == "__main__":
-    rospy.init_node('part_publisher')
+    rospy.init_node('part_panel')
 
     app = QtGui.QApplication(sys.argv)
-    qt_path = QtPart()
-    qt_path.show()
+    qt_part = QtPart()
+    qt_part.show()
     app.exec_()
