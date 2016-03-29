@@ -15,7 +15,7 @@ from python_qt_binding import loadUi
 from python_qt_binding import QtGui
 from python_qt_binding import QtCore
 
-from jason.json import Jason
+from jason.jason import Jason
 
 
 path = rospkg.RosPack().get_path('proper_jason')
@@ -67,7 +67,8 @@ class QtPath(QtGui.QWidget):
 
     def btnLoadPathClicked(self):
         filename = QtGui.QFileDialog.getOpenFileName(
-            self, 'Load Path Routine', './', 'Jason Routine Files (*.jas)')[0]
+            self, 'Load Path Routine', os.path.join(path, 'routines'),
+            'Jason Routine Files (*.jas)')[0]
         print 'Load routine:', filename
         cmds = self.jason.load_commands(filename)
         for line in cmds:
@@ -76,7 +77,8 @@ class QtPath(QtGui.QWidget):
 
     def btnSavePathClicked(self):
         filename = QtGui.QFileDialog.getSaveFileName(
-            self, 'Load Path Routine', './', 'Jason Routine Files (*.jas)')[0]
+            self, 'Load Path Routine', os.path.join(path, 'routines'),
+            'Jason Routine Files (*.jas)')[0]
         n_row = self.listWidgetPoses.count()
         if n_row > 0:
             cmds = [str(self.listWidgetPoses.item(row).text()) for row in range(n_row)]
