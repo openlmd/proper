@@ -1,4 +1,5 @@
 import os
+import json
 
 
 class Jason():
@@ -24,11 +25,11 @@ class Jason():
         self.workobject = [[1655, -87, 932], [1, 0, 0, 0]]
 
     def path2cmds(self, path):
-        cmds = ['{"tool": %s}' % self.tool,
-                '{"workobject": %s}' % self.workobject,
-                '{"vel": %i}' % self.track_speed]
+        cmds = [json.dumps({'tool': self.tool}),
+                json.dumps({'workobject': self.workobject}),
+                json.dumps({'vel': self.track_speed})]
         for k, pose in enumerate(path):
-            cmds.append('{"move": %s}' % pose)
+            cmds.append(json.dumps({'move': pose}))
         return cmds
 
     def load_commands(self, filename):
@@ -52,7 +53,7 @@ if __name__ == '__main__':
     path = [[[800, 0, 800], [0, 0, 1, 0]],
             [[1000, 0, 800], [0, 0, 1, 0]],
             [[1000, 0, 1000], [0, 0, 1, 0]]]
-    filename = 'proper.jas'
+    filename = '../../routines/proper.jas'
     cmds = routine.path2cmds(path)
     routine.save_commands(filename, cmds)
     print cmds
