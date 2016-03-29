@@ -90,3 +90,7 @@ class RobPath():
         self.rob_parser.save_file(filename, routine)
         self.rob_parser.upload_file(filename, directory)
         print routine
+
+
+if __name__ == "__main__":
+    robpath = RobPath()

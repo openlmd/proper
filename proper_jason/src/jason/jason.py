@@ -29,7 +29,11 @@ class Jason():
                 json.dumps({'workobject': self.workobject}),
                 json.dumps({'vel': self.track_speed})]
         for k, pose in enumerate(path):
-            cmds.append(json.dumps({'move': pose}))
+            position, orientation, laser = pose
+            x, y, z = position.round(1)
+            qx, qy, qz, qw = orientation.round(4)
+            print position, orientation, laser
+            cmds.append(json.dumps({'move': [[x, y, z], [qw, qx, qy, qz]]}))
         return cmds
 
     def load_commands(self, filename):
