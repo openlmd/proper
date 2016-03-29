@@ -71,9 +71,7 @@ class QtPath(QtGui.QWidget):
             'Jason Routine Files (*.jas)')[0]
         print 'Load routine:', filename
         cmds = self.jason.load_commands(filename)
-        for line in cmds:
-            self.insertCommand(line)
-        #self._append_command_file(self.filename)
+        [self.insertCommand(cmd) for cmd in cmds]
 
     def btnSavePathClicked(self):
         filename = QtGui.QFileDialog.getSaveFileName(

@@ -110,17 +110,18 @@ class RobPathUI(QtGui.QMainWindow):
 
         self.boxPlot.addWidget(MyViz())
 
-        qtPart = QtPart()
+        self.qtPart = QtPart()
+        self.qtPath = QtPath()
 
         # Add tabs
         self.tabWidget.addTab(QtData(), 'Data')
         self.tabWidget.addTab(QtParam(), 'Parameters')
-        self.tabWidget.addTab(qtPart, 'Part')
+        self.tabWidget.addTab(self.qtPart, 'Part')
         self.tabWidget.addTab(QtScan(), 'Scan')
-        self.tabWidget.addTab(QtPath(), 'Path')
+        self.tabWidget.addTab(self.qtPath, 'Path')
         # self.tabWidget.addTab(QtControl(), 'Control')
 
-        qtPart.saved.connect(self.qtPartSaved)
+        self.qtPart.accepted.connect(self.qtPartAccepted)
 
         self.btnQuit.clicked.connect(self.btnQuitClicked)
 
@@ -139,8 +140,10 @@ class RobPathUI(QtGui.QMainWindow):
         #        self._insert_command(cmd)
         print self.lblInfo.text()
 
-    def qtPartSaved(self, data):
-        print data
+    def qtPartAccepted(self, path):
+        cmds = self.qtPath.jason.path2cmds(path)
+        [self.qtPath.insertCommand(cmd) for cmd in cmds]
+        self.tabWidget.setCurrentWidget(self.qtPath)
 
     def btnQuitClicked(self):
         self.tmrInfo.stop()

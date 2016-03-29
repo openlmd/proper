@@ -26,7 +26,7 @@ path = rospkg.RosPack().get_path('proper_planning')
 
 
 class QtPart(QtGui.QWidget):
-    saved = QtCore.pyqtSignal(str)
+    accepted = QtCore.pyqtSignal(list)
 
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -38,7 +38,7 @@ class QtPart(QtGui.QWidget):
         self.btnLoad.clicked.connect(self.btnLoadClicked)
         self.btnProcessMesh.clicked.connect(self.btnProcessMeshClicked)
         self.btnProcessLayer.clicked.connect(self.btnProcessLayerClicked)
-        self.btnSaveProgram.clicked.connect(self.btnSaveProgramClicked)
+        self.btnAcceptPath.clicked.connect(self.btnAcceptPathClicked)
 
         self.sbPositionX.valueChanged.connect(self.changePosition)
         self.sbPositionY.valueChanged.connect(self.changePosition)
@@ -58,7 +58,7 @@ class QtPart(QtGui.QWidget):
         self.blockSignals(True)
 
         filename = QtGui.QFileDialog.getOpenFileName(
-            self, 'Open file', './', 'Mesh Files (*.stl)')[0]
+            self, 'Open file', os.path.join(path, 'data'), 'Mesh Files (*.stl)')[0]
         print 'Filename:', filename
         self.setWindowTitle(filename)
         self.robpath.load_mesh(filename)
@@ -82,8 +82,6 @@ class QtPart(QtGui.QWidget):
             m.id = id
         self.npoints = 0
 #        #rospy.loginfo()
-#        self.marker.set_position((0, 0, 0))
-#        self.marker.set_scale(scale=(0.001, 0.001, 0.001))
         self.pub_marker_array.publish(self.marker_array)
 
         #TODO: Change bpoints.
@@ -133,11 +131,8 @@ class QtPart(QtGui.QWidget):
             self.robpath.init_process()
             self.processing = True
 
-    def btnSaveProgramClicked(self):
-        #filename = QtGui.QFileDialog.getOpenFileName(self.plot, 'Save file', './',
-        #                                             'Rapid Modules (*.mod)')[0]
-        self.robpath.save_rapid()
-        self.saved.emit("File saved, event emited.")
+    def btnAcceptPathClicked(self):
+        self.accepted.emit(self.robpath.path)
 
     def updatePosition(self, position):
         x, y, z = position
