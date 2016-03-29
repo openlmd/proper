@@ -159,7 +159,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QPushButton" name="btnSaveProgram">
+    <widget class="QPushButton" name="btnAcceptPath">
      <property name="minimumSize">
       <size>
        <width>0</width>
@@ -180,7 +180,7 @@
       </font>
      </property>
      <property name="text">
-      <string>Save Program</string>
+      <string>Accept Path</string>
      </property>
     </widget>
    </item>

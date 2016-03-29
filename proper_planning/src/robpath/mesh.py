@@ -337,6 +337,7 @@ if __name__ == '__main__':
 
     # Triangle mesh is composed by a set of faces (triangles)
     mesh = Mesh(filename)
+    mesh.resort_triangles()
 
     t0 = time.time()
     slice = mesh.get_slice(0.1)
