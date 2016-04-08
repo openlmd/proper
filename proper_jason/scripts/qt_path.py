@@ -127,11 +127,13 @@ class QtPath(QtGui.QWidget):
             self.listWidgetPoses.setCurrentRow(row)
 
     def btnLoadPoseClicked(self):
+        rob_pose = self.send_command('{"get_pose":1}')
+        default_command = '{"move":' + rob_pose.response + '}'
         str_command = QtGui.QInputDialog.getText(
-            self, "Load Jason Command", "Comamnd:")
+            self, "Load Jason Command", "Comamnd:", text=default_command)
         row = self.listWidgetPoses.currentRow()
-        row += 1
-        self.insertCommand(str_command[0], insert=True, position=row)
+        if len(str_command[0]) > 3:
+            self.insertCommand(str_command[0], insert=True, position=row)
         print str_command
 
     def timeStatusEvent(self):
