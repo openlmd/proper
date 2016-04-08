@@ -13,8 +13,12 @@ class SubRobotServer():
 
     def callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.command)
+        if data.command[2:10] == 'get_pose':
+            pose_rob = self.server_robot.proc_command(data.command)
+            rospy.loginfo(rospy.get_caller_id()
+                          + "get_pose command %s", data.command)
+            return SrvRobotCommandResponse(str(pose_rob))
         self.server_robot.proc_command(data.command)
-        rospy.loginfo(rospy.get_caller_id() + " Processed %s", data.command)
         return SrvRobotCommandResponse("OK")
         #return {'respone': "OK"}
 

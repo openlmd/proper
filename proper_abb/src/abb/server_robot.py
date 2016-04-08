@@ -92,6 +92,8 @@ class ServerRobot(Robot):
                     self.set_digital(comando_json[dato])
                 elif dato == 'set_ao':
                     self.set_analog(comando_json[dato])
+                elif dato == 'get_pose':
+                    return self.get_cartesian()
                 else:
                     print 'Dato deconocido: ' + dato
         #if 'pos' in comando_json:
