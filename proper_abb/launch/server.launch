@@ -1,5 +1,5 @@
 <launch>
   <rosparam file="$(find proper_abb)/config/robot_abb.yaml" command="load" />
-  <node name="robot_server" pkg="proper_abb" type="SubRobotServer.py" />
+  <node name="robot_service_server" pkg="proper_abb" type="ServiceRobotServer.py" />
   <!-- <include file="$(find rosbridge_server)/launch/rosbridge_websocket.launch" /> -->
 </launch>
