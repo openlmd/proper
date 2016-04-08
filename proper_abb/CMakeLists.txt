@@ -17,6 +17,11 @@ add_message_files(
   MsgRobotJointsPose.msg
 )
 
+add_service_files(
+  FILES
+  SrvRobotCommand.srv
+)
+
 generate_messages(
   DEPENDENCIES
   std_msgs
