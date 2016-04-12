@@ -15,7 +15,7 @@ from python_qt_binding import QtGui
 from python_qt_binding import QtCore
 
 
-path = rospkg.RosPack().get_path('proper_planning')
+path = rospkg.RosPack().get_path('proper_robviz')
 
 
 class QtParam(QtGui.QWidget):
