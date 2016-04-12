@@ -33,7 +33,8 @@ class QtPart(QtGui.QWidget):
         loadUi(os.path.join(path, 'resources', 'part.ui'), self)
 
         self.pub_part = rospy.Publisher('part', String, queue_size=1)
-        self.pub_marker_array = rospy.Publisher('visualization_marker_array', MarkerArray, queue_size=1)
+        self.pub_marker_array = rospy.Publisher(
+            'visualization_marker_array', MarkerArray, queue_size=1)
 
         self.btnLoad.clicked.connect(self.btnLoadClicked)
         self.btnProcessMesh.clicked.connect(self.btnProcessMeshClicked)
