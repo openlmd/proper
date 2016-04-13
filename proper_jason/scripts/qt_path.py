@@ -42,6 +42,8 @@ class QtPath(QtGui.QWidget):
         self.btnDelete.clicked.connect(self.btnDeleteClicked)
         self.btnLoadPose.clicked.connect(self.btnLoadPoseClicked)
         self.btnStep.clicked.connect(self.btnStepClicked)
+        self.listWidgetPoses.itemDoubleClicked.connect(self.qlistDoubleClicked)
+        self.btnCancel.clicked.connect(self.btnCancelClicked)
 
         self.jason = Jason()
         self.stop = True
@@ -135,6 +137,19 @@ class QtPath(QtGui.QWidget):
         if len(str_command[0]) > 3:
             self.insertCommand(str_command[0], insert=True, position=row)
         print str_command
+
+    def qlistDoubleClicked(self):
+        row = self.listWidgetPoses.currentRow()
+        item_text = self.listWidgetPoses.item(row)
+        str_command = QtGui.QInputDialog.getText(
+            self, "Load Jason Command", "Comamnd:", text=item_text.text())
+        if len(str_command[0]) > 3:
+            self.listWidgetPoses.takeItem(row)
+            self.insertCommand(str_command[0], insert=True, position=row)
+
+    def btnCancelClicked(self):
+        command = '{"cancel":1}'
+        rob_response = self.send_command(command)
 
     def timeStatusEvent(self):
         '''

@@ -84,6 +84,13 @@ class Robot:
         rsp = self.send(msg, response=True)
         return rsp
 
+    def cancel_motion(self, response=True):
+        '''
+        Stops robot movement and cancels active paths.
+        '''
+        msg = "100 #"
+        return self.send(msg, response)
+
     def set_cartesian(self, pose, linear=True, response=True):
         '''
         Executes a move immediately from the current pose,

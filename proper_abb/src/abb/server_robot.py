@@ -94,6 +94,8 @@ class ServerRobot(Robot):
                     self.set_analog(comando_json[dato])
                 elif dato == 'get_pose':
                     return self.get_cartesian()
+                elif dato == 'cancel':
+                    self.cancel_motion()
                 else:
                     print 'Dato deconocido: ' + dato
         #if 'pos' in comando_json:
