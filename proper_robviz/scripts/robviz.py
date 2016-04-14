@@ -19,14 +19,13 @@ from std_msgs.msg import String
 #from mashes_measures.msg import MsgVelocity
 
 
-from qt_data import QtData
 from qt_param import QtParam
 from qt_part import QtPart
 from qt_scan import QtScan
 from qt_path import QtPath
 
 
-path = rospkg.RosPack().get_path('proper_planning')
+path = rospkg.RosPack().get_path('proper_robviz')
 
 
 class MyViz(QtGui.QWidget):
@@ -113,13 +112,10 @@ class RobPathUI(QtGui.QMainWindow):
         self.qtPart = QtPart()
         self.qtPath = QtPath()
 
-        # Add tabs
-        self.tabWidget.addTab(QtData(), 'Data')
         self.tabWidget.addTab(QtParam(), 'Parameters')
         self.tabWidget.addTab(self.qtPart, 'Part')
         self.tabWidget.addTab(QtScan(), 'Scan')
         self.tabWidget.addTab(self.qtPath, 'Path')
-        # self.tabWidget.addTab(QtControl(), 'Control')
 
         self.qtPart.accepted.connect(self.qtPartAccepted)
 

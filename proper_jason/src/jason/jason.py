@@ -33,7 +33,8 @@ class Jason():
             x, y, z = position.round(1)
             qx, qy, qz, qw = orientation.round(4)
             print position, orientation, laser
-            cmds.append(json.dumps({'move': [[x, y, z], [qw, qx, qy, qz]]}))
+            #cmds.append(json.dumps({'move': [[x, y, z], [qw, qx, qy, qz]]}))
+            cmds.append('{"move": [[%.1f, %.1f, %.1f], [%.4f, %.4f, %.4f, %.4f]]}' %(x, y, z, qw, qx, qy, qz))
         return cmds
 
     def load_commands(self, filename):
