@@ -120,21 +120,13 @@ class RobPathUI(QtGui.QMainWindow):
         self.qtPart.accepted.connect(self.qtPartAccepted)
 
         self.btnQuit.clicked.connect(self.btnQuitClicked)
+        icon = QtGui.QIcon.fromTheme('application-exit')
+        self.btnQuit.setIcon(icon)
 
-        # Timer
-        self.tmrInfo = QtCore.QTimer(self)
-        self.tmrInfo.timeout.connect(self.timeInfoEvent)
-        self.tmrInfo.start(100)
-
-        # Subscribers
-        #rospy.Subscriber('velocity', MsgVelocity, self.updateSpeed)
-
-    def timeInfoEvent(self):
-        #cmd = self._detach_command()
-        #if not cmd == None:
-        #    if self.alasHead.client.send_command(cmd) == 0:
-        #        self._insert_command(cmd)
-        print self.lblInfo.text()
+    #     rospy.Subscriber('velocity', MsgVelocity, self.updateSpeed)
+    #
+    # def updateSpeed(self, msg_velocity):
+    #     print self.lblInfo.text()
 
     def qtPartAccepted(self, path):
         cmds = self.qtPath.jason.path2cmds(path)
