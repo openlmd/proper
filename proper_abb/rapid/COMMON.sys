@@ -10,15 +10,15 @@ PERS zonedata currentZone;
 PERS bool startLog:=TRUE;
 PERS bool startRob:=TRUE;
 
-!PERS string ipController:= "192.168.125.1"; !robot default IP
-PERS string ipController:= "172.20.0.100"; !local IP for testing in simulation
+PERS string ipController:= "192.168.30.4"; !robot default IP
+!PERS string ipController:= "172.20.0.100"; !local IP for testing in simulation
 PERS num serverPort:= 5000;
 PERS bool joints_notcartesians:= TRUE;
 
 !//Motion of the robot
 CONST num max_cartesian := 50;
-PERS num n_cartesian_motion := 34;
-PERS num n_cartesian_command := 34;
+PERS num n_cartesian_motion := 1;
+PERS num n_cartesian_command := 1;
 PERS num command_type{max_cartesian};
 PERS robtarget cartesianTarget{max_cartesian};
 PERS speeddata cartesian_speed{max_cartesian};
@@ -39,6 +39,7 @@ PERS robtarget circPoint;
 
 !// Mutex between logger and changing the tool and work objects
 PERS bool frameMutex:=FALSE;
+PERS bool connectMutex := FALSE;
 
 !//Buffered move variables
 CONST num MAX_BUFFER := 100;
@@ -51,5 +52,6 @@ PERS bool bufferTrigg{MAX_BUFFER};
 
 PERS bool trajectory_lock := FALSE;
 PERS bool new_trajectory := FALSE;
+PERS bool cancel_motion := FALSE;
 
 ENDMODULE

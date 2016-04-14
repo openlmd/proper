@@ -332,6 +332,16 @@ class Robot:
             return False
         return self.send(msg_1)
 
+    def set_gdo(self, value, id=0):
+        '''
+        A function to set a value to a group of DO on the robot.
+        For this to work you're going to need to edit the RAPID function
+        and fill in the AO you want this to switch.
+        '''
+        msg = '95 ' + str(int(id)) + ' ' + str(int(value)) + ' #'
+        #return
+        return self.send(msg)
+
     def set_ao(self, value, id=0):
         '''
         A function to set a physical AO line on the robot.

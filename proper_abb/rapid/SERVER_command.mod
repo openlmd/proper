@@ -110,6 +110,7 @@ PROC main()
     connected:=FALSE;
     ServerCreateAndConnect ipController,serverPort;
     connected:=TRUE;
+	cancel_motion := FALSE;
 
     !//Server Loop
     WHILE TRUE DO
@@ -369,32 +370,52 @@ PROC main()
                     ok:=SERVER_BAD_MSG;
                 ENDIF
 
-			      CASE 96: !Set an analog output
+			CASE 95: !Value to GO
+				IF nParams = 2 THEN
+                !TODO:Seleccionar o tipo de entrada
+    					TEST params{1}
+    						CASE 0:
+								IF params{2} > 31
+									params{2} := 31;
+                  				SetGO GO_FL_Programa, params{2};
+								
+							CASE 1:
+                  				SetGO GO_FL_PotenciaLaser1, params{2};
+								
+    						DEFAULT:
+                  				TPWrite "SERVER: Illegal output code GO =", \Num:=params{1};
+                  				ok := SERVER_BAD_MSG;
+					    ENDTEST
+                ELSE
+                    ok :=SERVER_BAD_MSG;
+                ENDIF
+
+			CASE 96: !Set an analog output
                 IF nParams = 2 THEN
                 !TODO:Seleccionar o tipo de entrada
     					TEST params{1}
     						CASE 0:
-                  SetAO AoGTV_ExternDisk, params{2};
+                  				SetAO AoGTV_ExternDisk, params{2};
     						CASE 1:
     							SetAO AoGTV_ExternMassflow, params{2};
     						DEFAULT:
-                  TPWrite "SERVER: Illegal output code";
+                  				TPWrite "SERVER: Illegal output code AO =", \Num:=params{1};
                   ok := SERVER_BAD_MSG;
 					    ENDTEST
                 ELSE
                     ok :=SERVER_BAD_MSG;
                 ENDIF
 
-    			CASE 97: !Set or reset a digital output
+    		CASE 97: !Set or reset a digital output
               IF nParams = 2 THEN
       					!TODO:Seleccionar o tipo de entrada
       					TEST params{1}
       						CASE 0:
-                    SetDO doGTV_StartExtern, params{2};
-                  CASE 1:
-      							SetDO doGTV_StopExtern, params{2};
+                    			SetDO doGTV_StartExtern, params{2};
+                  			CASE 1:
+      							SetDO Do_FL_RayoLaserEnc, params{2};
       						DEFAULT:
-                			TPWrite "SERVER: Illegal output code";
+                			TPWrite "SERVER: Illegal output code DO =", \Num:=params{1};
                 			ok := SERVER_BAD_MSG;
       					ENDTEST
               ELSE
@@ -423,6 +444,17 @@ PROC main()
                     ServerCreateAndConnect ipController,serverPort;
                     connected := TRUE;
                     reconnected := TRUE;
+                    ok := SERVER_OK;
+                ELSE
+                    ok := SERVER_BAD_MSG;
+                ENDIF
+			CASE 100: !Stop
+				IF nParams = 0 THEN
+					IF cancel_motion = TRUE
+						cancel_motion := FALSE;
+					TPWrite "Cancel command";
+					n_cartesian_command := n_cartesian_motion;
+					cancel_motion := TRUE;
                     ok := SERVER_OK;
                 ELSE
                     ok := SERVER_BAD_MSG;
