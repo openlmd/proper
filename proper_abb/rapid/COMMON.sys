@@ -1,0 +1,57 @@
+MODULE SERVER_common(SYSMODULE)
+
+!//Robot configuration
+PERS tooldata currentTool := [TRUE,[[215.7,-22.4,473.8],[0.5,0,-0.86603,0]],[0.001,[0,0,0.001],[1,0,0,0],0,0,0]];
+PERS wobjdata currentWobj := [FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[1655,-87,932],[1,0,0,0]]];
+PERS speeddata currentSpeed;
+PERS zonedata currentZone;
+
+!// Clock Synchronization
+PERS bool startLog:=TRUE;
+PERS bool startRob:=TRUE;
+
+PERS string ipController:= "192.168.30.4"; !robot default IP
+!PERS string ipController:= "172.20.0.100"; !local IP for testing in simulation
+PERS num serverPort:= 5000;
+PERS bool joints_notcartesians:= TRUE;
+
+!//Motion of the robot
+CONST num max_cartesian := 50;
+PERS num n_cartesian_motion := 1;
+PERS num n_cartesian_command := 1;
+PERS num command_type{max_cartesian};
+PERS robtarget cartesianTarget{max_cartesian};
+PERS speeddata cartesian_speed{max_cartesian};
+PERS bool moveCompleted; !Set to true after finishing a Move instruction.
+PERS bool cartesianTriggSet{max_cartesian};
+
+!//Control of the laser
+!PERS triggdata laserON;
+!PERS triggdata laserOFF;
+
+
+!//External axis position variables
+PERS extjoint externalAxis;
+
+!//Circular move buffer
+PERS robtarget circPoint;
+
+
+!// Mutex between logger and changing the tool and work objects
+PERS bool frameMutex:=FALSE;
+PERS bool connectMutex := FALSE;
+
+!//Buffered move variables
+CONST num MAX_BUFFER := 100;
+PERS num BUFFER_POS := 6;
+PERS robtarget bufferTargets{MAX_BUFFER};
+PERS speeddata bufferSpeeds{MAX_BUFFER};
+PERS zonedata bufferZones{MAX_BUFFER};
+PERS bool bufferTriggSet{MAX_BUFFER};
+PERS bool bufferTrigg{MAX_BUFFER};
+
+PERS bool trajectory_lock := FALSE;
+PERS bool new_trajectory := FALSE;
+PERS bool cancel_motion := FALSE;
+
+ENDMODULE

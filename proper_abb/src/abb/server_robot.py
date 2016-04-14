@@ -54,6 +54,9 @@ class ServerRobot(Robot):
         '''
         self.set_ao(digital[0], digital[1])
 
+    def set_group(self, digital):
+        self.set_gdo(digital[0], digital[1])
+
     def buffer_pose(self, pose):
         if len(pose) == 2:
             self.buffer_add(pose)
@@ -65,7 +68,7 @@ class ServerRobot(Robot):
         Procesa comandos en formato JSON
         '''
         try:
-            comando_json = json.loads(comando)
+            comando_json = json.loads(comando.lower())
         except ValueError, e:
             print "Command is not json"
             print e
@@ -92,6 +95,20 @@ class ServerRobot(Robot):
                     self.set_digital(comando_json[dato])
                 elif dato == 'set_ao':
                     self.set_analog(comando_json[dato])
+                elif dato == 'prog_sel':
+                    program = comando_json[dato]
+                    if program > 31:
+                        program = 31
+                    self.set_group((program, 0))
+                elif dato == 'laser_pow':
+                    power = comando_json[dato]
+                    if power > 65535:
+                        power = 65535
+                    self.set_group((power, 1))
+                elif dato == 'get_pose':
+                    return self.get_cartesian()
+                elif dato == 'cancel':
+                    self.cancel_motion()
                 else:
                     print 'Dato deconocido: ' + dato
         #if 'pos' in comando_json:
