@@ -9,9 +9,10 @@ LOCAL VAR bool trajectoryTriggSet{MAX_BUFFER};
 LOCAL VAR bool trajectoryTrigg{MAX_BUFFER};
 LOCAL VAR num trajectory_size := 0;
 LOCAL VAR intnum intr_new_trajectory;
+LOCAL VAR intnum intr_cancel_motion;
 !//Control of the laser
-VAR triggdata laserON;
-VAR triggdata laserOFF;
+VAR triggdata laserON_fl015;
+VAR triggdata laserOFF_fl015;
 
 !//Parameter initialization
 !// Loads default values for
@@ -24,8 +25,8 @@ PROC Initialize()
     !currentWobj := [FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[0,0,0],[1,0,0,0]]];
     !currentSpeed := [100, 50, 0, 0];
     !currentZone := [FALSE, 0.3, 0.3,0.3,0.03,0.3,0.03]; !z0
-		TriggIO laserON, 0\DOp:=Do_RF_ExterGate, 1;
-		TriggIO laserOFF, 0\DOp:=Do_RF_ExterGate, 0;
+		TriggIO laserON_fl015, 0\DOp:=Do_FL_StandByEnc, 1;
+		TriggIO laserOFF_fl015, 0\DOp:=Do_FL_StandByEnc, 0;
 	n_cartesian_command := 1;
 	n_cartesian_motion := 1;
 	!Find the current external axis values so they don't move when we start
@@ -36,7 +37,7 @@ ENDPROC
 
 
 PROC main()
-    VAR num i;
+    VAR num i_fl015;
     VAR jointtarget target;
     VAR speeddata move_speed := v10;  ! default speed
     VAR zonedata stop_mode;
@@ -51,8 +52,11 @@ PROC main()
 
     ! Set up interrupt to watch for new trajectory
     IDelete intr_new_trajectory;    ! clear interrupt handler, in case restarted with ExitCycle
+	IDelete intr_cancel_motion;
     CONNECT intr_new_trajectory WITH new_trajectory_handler;
+	CONNECT intr_cancel_motion WITH new_cancel_motion_handler;
     IPers new_trajectory, intr_new_trajectory;
+	IPers cancel_motion, intr_cancel_motion;
 
     WHILE true DO
         ! Check for new Trajectory
@@ -62,15 +66,15 @@ PROC main()
 
         ! execute all points in this trajectory
         IF (trajectory_size > 0) THEN
-            FOR i FROM 1 TO trajectory_size DO
-              TPWrite "Moving to pose: ", \Num:=i;
-              IF trajectoryTrigg{i} = FALSE THEN
-                MoveL trajectoryTargets{i}, trajectorySpeeds{i}, trajectoryZones{i}, currentTool \WObj:=currentWobj ;
+            FOR i_fl015 FROM 1 TO trajectory_size DO
+              TPWrite "Moving to pose: ", \Num:=i_fl015;
+              IF trajectoryTrigg{i_fl015} = FALSE THEN
+                MoveL trajectoryTargets{i_fl015}, trajectorySpeeds{i_fl015}, trajectoryZones{i_fl015}, currentTool \WObj:=currentWobj ;
               ELSE
-                IF trajectoryTriggSet{i} = FALSE THEN
-                  TriggL trajectoryTargets{i}, trajectorySpeeds{i}, laserOFF, trajectoryZones{i}, currentTool \WObj:=currentWobj ;
+                IF trajectoryTriggSet{i_fl015} = FALSE THEN
+                  TriggL trajectoryTargets{i_fl015}, trajectorySpeeds{i_fl015}, laserOFF_fl015, trajectoryZones{i_fl015}, currentTool \WObj:=currentWobj ;
                 ELSE
-                  TriggL trajectoryTargets{i}, trajectorySpeeds{i}, laserON, trajectoryZones{i}, currentTool \WObj:=currentWobj ;
+                  TriggL trajectoryTargets{i_fl015}, trajectorySpeeds{i_fl015}, laserON_fl015, trajectoryZones{i_fl015}, currentTool \WObj:=currentWobj ;
                 ENDIF
               ENDIF
             ENDFOR
@@ -92,12 +96,12 @@ PROC main()
 
             CASE 110: !Trigger linear OFF
               moveCompleted := FALSE;
-              TriggL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, laserOFF, currentZone, currentTool \WObj:=currentWobj ;
+              TriggL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, laserOFF_fl015, currentZone, currentTool \WObj:=currentWobj ;
 							moveCompleted := TRUE;
 
             CASE 111: !Trigger linear ON
               moveCompleted := FALSE;
-              TriggL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, laserON, currentZone, currentTool \WObj:=currentWobj ;
+              TriggL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, laserON_fl015, currentZone, currentTool \WObj:=currentWobj ;
 							moveCompleted := TRUE;
 
             DEFAULT:
@@ -107,7 +111,7 @@ PROC main()
           IF n_cartesian_motion > 49
             n_cartesian_motion := 1;
         ENDIF
-        WaitTime 0.05;  ! Throttle loop while waiting for new command
+        WaitTime 0.1;  ! Throttle loop while waiting for new command
     ENDWHILE
 ERROR
     ErrWrite \W, "Motion Error", "Error executing motion.  Aborting trajectory.";
@@ -141,7 +145,14 @@ LOCAL TRAP new_trajectory_handler
 
     abort_trajectory;
 ENDTRAP
-
+LOCAL TRAP new_cancel_motion_handler	
+	IF (NOT cancel_motion) RETURN;
+	! Reset
+	cancel_motion := FALSE;
+	n_cartesian_motion := n_cartesian_command;
+	abort_trajectory;
+	!clear_path;
+ENDTRAP
 
 
 ENDMODULE

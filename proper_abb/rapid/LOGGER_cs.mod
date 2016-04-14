@@ -1,4 +1,4 @@
-MODULE LOGGER_cs
+MODULE LOGGER
 
 !////////////////
 !GLOBAL VARIABLES/
@@ -8,20 +8,20 @@ VAR socketdev clientSocket;
 VAR socketdev serverSocket;
 PERS num loggerPort:= 5001;
 
-!Robot configuration
-!VAR tooldata currentTool;
+!Robot configuration	
+!VAR tooldata currentTool;    
 !VAR wobjdata currentWobj;
 !VAR speeddata currentSpeed;
 !VAR zonedata currentZone;
 
 !//Logger sampling rate
-!PERS num loggerWaitTime:= 0.01;  !Recommended for real controller
-PERS num loggerWaitTime:= 0.1;    !Recommended for virtual controller
+PERS num loggerWaitTime:= 0.02;  !Recommended for real controller
+!PERS num loggerWaitTime:= 0.1;    !Recommended for virtual controller
 !PERS bool joints_notcartesians:= TRUE;
 
 PROC ServerCreateAndConnect(string ip, num port)
 	VAR string clientIP;
-
+	
 	SocketCreate serverSocket;
 	SocketBind serverSocket, ip, port;
 	SocketListen serverSocket;
@@ -52,9 +52,11 @@ PROC main()
 	date:= CDate();
 	time:= CTime();
     ClkStart timer;
-
+    
+	
 	connected:=FALSE;
-	ServerCreateAndConnect ipController,loggerPort;
+	WaitTime 1;
+	ServerCreateAndConnect ipController,loggerPort;	
 	connected:=TRUE;
 	WHILE TRUE DO
 		IF joints_notcartesians = FALSE THEN
@@ -69,13 +71,13 @@ PROC main()
 			data := data + NumToStr(position.rot.q1,3) + " ";
 			data := data + NumToStr(position.rot.q2,3) + " ";
 			data := data + NumToStr(position.rot.q3,3) + " ";
-			data := data + NumToStr(position.rot.q4,3); !End of string
+			data := data + NumToStr(position.rot.q4,3) + " "; !End of string	
 			IF connected = TRUE THEN
 				SocketSend clientSocket \Str:=data;
 			ENDIF
 			WaitTime loggerWaitTime;
 		ENDIF
-
+	
 		IF joints_notcartesians = TRUE THEN
 			!Joint Coordinates
 			joints := CJointT();
@@ -87,7 +89,7 @@ PROC main()
 			data := data + NumToStr(joints.robax.rax_3,2) + " ";
 			data := data + NumToStr(joints.robax.rax_4,2) + " ";
 			data := data + NumToStr(joints.robax.rax_5,2) + " ";
-			data := data + NumToStr(joints.robax.rax_6,2); !End of string
+			data := data + NumToStr(joints.robax.rax_6,2) + " "; !End of string
 			IF connected = TRUE THEN
 				SocketSend clientSocket \Str:=data;
 			ENDIF
