@@ -63,7 +63,6 @@ class Robot:
 
     def read_logger(self):
         data = self.s.recv(4096).split()
-            #print data[0:]
         self.joints.append(data)
 
     def set_units(self, linear, angular):

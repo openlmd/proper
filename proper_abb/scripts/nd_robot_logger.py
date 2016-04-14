@@ -1,53 +1,49 @@
 #!/usr/bin/env python
 import rospy
-import math
+import numpy as np
 from sensor_msgs.msg import JointState
 from abb.logger_robot import LoggerRobot
 
 
-class PubRobotState():
+class NdRobotLogger():
     def __init__(self):
-        self.logger_robot = LoggerRobot()
         rospy.init_node('robot_state', anonymous=False)
-        self.pub = rospy.Publisher('joint_states',
-                                   JointState, queue_size=10)
+
+        self.pub = rospy.Publisher(
+            'joint_states', JointState, queue_size=10)
+
         self.msg_joint_state = JointState()
         self.msg_joint_state.name = ['joint_1', 'joint_2', 'joint_3',
                                      'joint_4', 'joint_5', 'joint_6']
         self.msg_joint_state.position = [0, 0, 0, 0, 0, 0]
 
-    def connect(self, ip="172.20.0.32"):
-        if rospy.has_param("configuration/robot_ip"):
-            ip = rospy.get_param("configuration/robot_ip")
-        self.logger_robot.connect(ip)
+        robot_ip = rospy.get_param('~robot_ip', '192.168.30.4')
+        j23_coupled = rospy.get_param('~J23_coupled', True)
+
+        self.logger_robot = LoggerRobot()
+        self.logger_robot.connect(robot_ip)
+        self.talker(j23_coupled)
 
     def talker(self, j23_coupled=True):
-        if rospy.has_param("configuration/J23_coupled"):
-            j23_coupled = bool(rospy.get_param("configuration/J23_coupled"))
-
         while not rospy.is_shutdown():
             self.logger_robot.read_logger()
             if len(self.logger_robot.joints) > 0:
                 joints_pose = self.logger_robot.joints.popleft()
                 for i in range(0, 6):
-                    self.msg_joint_state.position[i] = (math.radians(
-                        float(joints_pose[i+3])))
+                    self.msg_joint_state.position[i] = (
+                        np.deg2rad(float(joints_pose[i+3])))
                 if j23_coupled:
                     self.msg_joint_state.position[2] += (
                         -1 * self.msg_joint_state.position[1])
                 self.msg_joint_state.header.stamp = rospy.Time.now()
                 #rospy.loginfo(len(logger_robot.joints))
                 self.pub.publish(self.msg_joint_state)
-                rospy.sleep(0.01)
-
-    def close_connection(self):
+            rospy.sleep(0.01)
         self.logger_robot.disconnect()
+
 
 if __name__ == '__main__':
     try:
-        robot_publisher = PubRobotState()
-        robot_publisher.connect()
-        robot_publisher.talker()
-        robot_publisher.close_connection()
+        NdRobotLogger()
     except rospy.ROSInterruptException:
         pass
