@@ -9,7 +9,7 @@
 
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
 
-  <include file="$(find abb_driver)/launch/robot_interface.launch" unless="$(arg sim)">
+  <include file="$(find proper_abb)/launch/robot_interface.launch" unless="$(arg sim)">
     <arg name="robot_ip" value="192.168.30.4" />
     <arg name="J23_coupled" value="true" />
   </include>
