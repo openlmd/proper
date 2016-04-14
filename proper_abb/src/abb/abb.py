@@ -75,6 +75,22 @@ class Robot:
         self.scale_linear = units_l[linear]
         self.scale_angle = units_a[angular]
 
+    def ping(self, response=True):
+        '''
+        Sends a ping to check if the robot is connected.
+        '''
+        msg = "0 #"
+        rsp = ""
+        rsp = self.send(msg, response=True)
+        return rsp
+
+    def cancel_motion(self, response=True):
+        '''
+        Stops robot movement and cancels active paths.
+        '''
+        msg = "100 #"
+        return self.send(msg, response)
+
     def set_cartesian(self, pose, linear=True, response=True):
         '''
         Executes a move immediately from the current pose,
@@ -315,6 +331,16 @@ class Robot:
             log.warn('move_circular incorrect response, bailing!')
             return False
         return self.send(msg_1)
+
+    def set_gdo(self, value, id=0):
+        '''
+        A function to set a value to a group of DO on the robot.
+        For this to work you're going to need to edit the RAPID function
+        and fill in the AO you want this to switch.
+        '''
+        msg = '95 ' + str(int(id)) + ' ' + str(int(value)) + ' #'
+        #return
+        return self.send(msg)
 
     def set_ao(self, value, id=0):
         '''
