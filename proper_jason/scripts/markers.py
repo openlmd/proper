@@ -1,15 +1,12 @@
 #!/usr/bin/env python
 import rospy
-import tf
-from jason.jason import Jason
+
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
-# from transformations import transformations
-from transformations import transformations as ts
-import math
-import numpy as np
 
+import numpy as np
+import robpath.transformations as tf
 
 
 class ShapeMarker():
@@ -57,10 +54,10 @@ class ArrowMarker(ShapeMarker):
         self.set_length(length)
         self.matrix = np.eye(4)
         arrow_pos0 = [0, 0, length]
-        mat_inicio = ts.translation_matrix(arrow_pos0)
-        quat = [0, math.sin(math.radians(45)),
-                0, math.cos(math.radians(45))]
-        matrix_pos_0 = ts.quaternion_matrix(quat)
+        mat_inicio = tf.translation_matrix(arrow_pos0)
+        quat = [0, np.sin(np.deg2rad(45)),
+                0, np.cos(np.deg2rad(45))]
+        matrix_pos_0 = tf.quaternion_matrix(quat)
         self.mat_trans = np.dot(mat_inicio, matrix_pos_0)
 
     def set_length(self, length):
@@ -70,14 +67,13 @@ class ArrowMarker(ShapeMarker):
         self.position = position
 
     def set_new_orientation(self, orientation):
-        self.matrix = ts.quaternion_matrix(orientation)
+        self.matrix = tf.quaternion_matrix(orientation)
         self.matrix[:3, 3] = self.position
         self.matrix = np.dot(self.matrix, self.mat_trans)
-        orientation = ts.quaternion_from_matrix(self.matrix)
+        orientation = tf.quaternion_from_matrix(self.matrix)
         position = self.matrix[:3, 3]
         self.set_orientation(orientation)
         self.set_position(position)
-
 
 
 class CubeMarker(ShapeMarker):
@@ -240,10 +236,6 @@ if __name__ == '__main__':
     #    marker.scale.x = 0.2
     #    marker.scale.y = 0.2
     #    marker.scale.z = 0.2
-    #    marker.color.a = 1.0
-    #    marker.color.r = 1.0
-    #    marker.color.g = 1.0
-    #    marker.color.b = 0.0
     #    marker.pose.orientation.w = 1.0
     #    marker.pose.position.x = math.cos(count / 50.0)
     #    marker.pose.position.y = math.cos(count / 40.0)

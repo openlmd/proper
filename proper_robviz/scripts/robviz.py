@@ -134,7 +134,6 @@ class RobPathUI(QtGui.QMainWindow):
         self.tabWidget.setCurrentWidget(self.qtPath)
 
     def btnQuitClicked(self):
-        self.tmrInfo.stop()
         QtCore.QCoreApplication.instance().quit()
 
 
