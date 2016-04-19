@@ -1,9 +1,15 @@
 #!/usr/bin/env python
 import rospy
-
+import tf
+from jason.jason import Jason
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
+# from transformations import transformations
+from transformations import transformations as ts
+import math
+import numpy as np
+
 
 
 class ShapeMarker():
@@ -49,9 +55,29 @@ class ArrowMarker(ShapeMarker):
         ShapeMarker.__init__(self)
         self.marker.type = self.marker.ARROW
         self.set_length(length)
+        self.matrix = np.eye(4)
+        arrow_pos0 = [0, 0, length]
+        mat_inicio = ts.translation_matrix(arrow_pos0)
+        quat = [0, math.sin(math.radians(45)),
+                0, math.cos(math.radians(45))]
+        matrix_pos_0 = ts.quaternion_matrix(quat)
+        self.mat_trans = np.dot(mat_inicio, matrix_pos_0)
 
     def set_length(self, length):
         self.set_scale((length, 0.1 * length, 0.1 * length))
+
+    def set_new_position(self, position):
+        self.position = position
+
+    def set_new_orientation(self, orientation):
+        self.matrix = ts.quaternion_matrix(orientation)
+        self.matrix[:3, 3] = self.position
+        self.matrix = np.dot(self.matrix, self.mat_trans)
+        orientation = ts.quaternion_from_matrix(self.matrix)
+        position = self.matrix[:3, 3]
+        self.set_orientation(orientation)
+        self.set_position(position)
+
 
 
 class CubeMarker(ShapeMarker):
@@ -80,7 +106,7 @@ class LinesMarker(ShapeMarker):
         self.set_size()
 
     def set_size(self, size=0.001):
-        self.set_scale(scale=(size, size, 1.0))
+        self.set_scale(scale=(size, size, size))
 
     def set_points(self, points):
         self.marker.points = [Point(x, y, z) for x, y, z in points]
