@@ -95,7 +95,7 @@ class ServerRobot(Robot):
                     self.set_digital(comando_json[dato])
                 elif dato == 'set_ao':
                     self.set_analog(comando_json[dato])
-                elif dato == 'prog_sel':
+                elif dato == 'laser_prog':
                     program = comando_json[dato]
                     if program > 31:
                         program = 31
@@ -105,6 +105,14 @@ class ServerRobot(Robot):
                     if power > 65535:
                         power = 65535
                     self.set_group((power, 1))
+                elif dato == 'gtv_start':
+                    self. set_digital((comando_json[dato], 0))
+                elif dato == 'gtv_stop':
+                    self. set_digital((comando_json[dato], 1))
+                elif dato == 'gtv_disk':
+                    self.set_analog((comando_json[dato], 0))
+                elif dato == 'gtv_massflow':
+                    self.set_analog((comando_json[dato], 1))
                 elif dato == 'get_pose':
                     return self.get_cartesian()
                 elif dato == 'cancel':
