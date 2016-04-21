@@ -163,12 +163,14 @@ class QtPath(QtGui.QWidget):
         str_item = item_text.text()
         command = json.loads(str_item)
         if 'move' in command:
-            new_arrow = command["move"][1]
-            new_arrow_position = (command["move"][0])
-            new_arrow_position = np.array(new_arrow_position) * 0.001
-            self.arrow.set_new_position(new_arrow_position)
-            self.arrow.set_new_orientation(new_arrow)
-            self.arrow.set_color((1, 0, 0, 1))
+            orientation = np.array([command["move"][1][1],
+                                    command["move"][1][2],
+                                    command["move"][1][3],
+                                    command["move"][1][0]])
+            position = np.array(command["move"][0]) * 0.001
+            self.arrow.set_new_position(position)
+            self.arrow.set_new_orientation(orientation)
+            self.arrow.set_color((0, 0, 1, 1))
         else:
             self.arrow.set_color((0, 0, 0, 0))
         self.pub_marker_array.publish(self.marker_array)
