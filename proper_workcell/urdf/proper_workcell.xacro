@@ -7,7 +7,7 @@
   </xacro:property>
 
   <xacro:property name="camera_frame">
-    <origin xyz="0.0560 0.2192 0.3296" rpy="-1.182273 0.309285 -2.135997" />
+    <origin xyz="0.0590 0.2170 0.3302" rpy="-1.161231 0.274247 -2.063781" />
   </xacro:property>
 
   <link name="world" />
