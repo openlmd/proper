@@ -19,7 +19,11 @@ class ServerRobot(Robot):
         self.close()
 
     def workobject(self, work_obj):
-        self.set_workobject(work_obj)
+        if len(work_obj) == 2:
+            if (len(work_obj[0]) == 3) and (len(work_obj[1]) == 4):
+                self.set_workobject(work_obj)
+        else:
+            print 'Invalid command format'
 
     def configure(self, filename):
         print filename
@@ -37,13 +41,13 @@ class ServerRobot(Robot):
             print 'Invalid command format'
 
     def speed(self, speed):
-        if len(speed) == 1:
-            self.set_speed([speed, 500, 5000, 1000])
-        else:
-            print 'Invalid command format'
+        self.set_speed([speed, 500, 5000, 1000])
 
     def zone(self, zone):
-        self.set_zone(manual_zone=zone)
+        if len(zone) == 3:
+            self.set_zone(manual_zone=zone)
+        else:
+            print 'Invalid command format'
 
     def set_digital(self, digital):
         '''
@@ -51,25 +55,33 @@ class ServerRobot(Robot):
         Dato digital 1 = Numero de salida
         '''
         if len(digital) == 2:
-            if (len(digital[0]) == 1) and (len(digital[1]) == 1):
-                self.set_dio(digital[0], digital[1])
+            self.set_dio(digital[0], digital[1])
         else:
             print 'Invalid command format'
 
-    def set_analog(self, digital):
+    def set_analog(self, analog):
         '''
         Dato analogico 0 = Valor
         Dato analogico 1 = Numero de salida
         '''
-        if len(digital) == 2:
-            if (len(digital[0]) == 1) and (len(digital[1]) == 1):
-                self.set_ao(digital[0], digital[1])
+        if len(analog) == 2:
+            analog = list(analog)
+            if analog[0] > 100:
+                analog[0] = 100
+            self.set_ao(analog[0], analog[1])
         else:
             print 'Invalid command format'
 
     def set_group(self, digital):
         if len(digital) == 2:
-            if (len(digital[0]) == 1) and (len(digital[1]) == 1):
+            if (type(digital[0]) == int) and (type(digital[1]) == int):
+                digital = list(digital)
+                if digital[1] == 0:
+                    if digital[0] > 31:
+                        digital[0] = 31
+                if digital[1] == 1:
+                    if digital[0] > 65535:
+                        digital[0] = 65535
                 self.set_gdo(digital[0], digital[1])
         else:
             print 'Invalid command format'
@@ -79,6 +91,8 @@ class ServerRobot(Robot):
             self.buffer_add(pose)
         elif len(pose) == 3:
             self.buffer_add(pose[:2], True, pose[2])
+        else:
+            print 'Invalid command format'
 
     def proc_command(self, comando):
         '''
@@ -113,15 +127,9 @@ class ServerRobot(Robot):
                 elif dato == 'set_ao':
                     self.set_analog(comando_json[dato])
                 elif dato == 'laser_prog':
-                    program = comando_json[dato]
-                    if program > 31:
-                        program = 31
-                    self.set_group((program, 0))
+                    self.set_group((comando_json[dato], 0))
                 elif dato == 'laser_pow':
-                    power = comando_json[dato]
-                    if power > 65535:
-                        power = 65535
-                    self.set_group((power, 1))
+                    self.set_group((comando_json[dato], 1))
                 elif dato == 'gtv_start':
                     self. set_digital((comando_json[dato], 0))
                 elif dato == 'gtv_stop':
