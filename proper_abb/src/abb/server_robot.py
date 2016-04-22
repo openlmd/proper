@@ -33,9 +33,14 @@ class ServerRobot(Robot):
             self.set_cartesian(pose, linear=movel)
         elif len(pose) == 3:
             self.set_cartesian_trigg(pose[:2], trigger=pose[2])
+        else:
+            print 'Invalid command format'
 
     def speed(self, speed):
-        self.set_speed([speed, 500, 5000, 1000])
+        if len(speed) == 1:
+            self.set_speed([speed, 500, 5000, 1000])
+        else:
+            print 'Invalid command format'
 
     def zone(self, zone):
         self.set_zone(manual_zone=zone)
@@ -45,17 +50,29 @@ class ServerRobot(Robot):
         Dato digital 0 = Valor
         Dato digital 1 = Numero de salida
         '''
-        self.set_dio(digital[0], digital[1])
+        if len(digital) == 2:
+            if (len(digital[0]) == 1) and (len(digital[1]) == 1):
+                self.set_dio(digital[0], digital[1])
+        else:
+            print 'Invalid command format'
 
     def set_analog(self, digital):
         '''
         Dato analogico 0 = Valor
         Dato analogico 1 = Numero de salida
         '''
-        self.set_ao(digital[0], digital[1])
+        if len(digital) == 2:
+            if (len(digital[0]) == 1) and (len(digital[1]) == 1):
+                self.set_ao(digital[0], digital[1])
+        else:
+            print 'Invalid command format'
 
     def set_group(self, digital):
-        self.set_gdo(digital[0], digital[1])
+        if len(digital) == 2:
+            if (len(digital[0]) == 1) and (len(digital[1]) == 1):
+                self.set_gdo(digital[0], digital[1])
+        else:
+            print 'Invalid command format'
 
     def buffer_pose(self, pose):
         if len(pose) == 2:
@@ -73,7 +90,7 @@ class ServerRobot(Robot):
             print "Command is not json"
             print e
         else:
-            for dato in comando_json:
+            for dato in sorted(comando_json, reverse=True):
                 if dato == 'vel':
                     self.speed(comando_json[dato])
                 elif dato == 'pose':

@@ -5,6 +5,9 @@ PERS tooldata currentTool := [TRUE,[[215.7,-22.4,473.8],[0.5,0,-0.86603,0]],[0.0
 PERS wobjdata currentWobj := [FALSE,TRUE,"",[[0,0,0],[1,0,0,0]],[[1655,-87,932],[1,0,0,0]]];
 PERS speeddata currentSpeed;
 PERS zonedata currentZone;
+PERS tooldata tPincho:=[TRUE,[[258.255,39.554,343.395],[1,0,0,0]],[5,[50,0,150],[1,0,0,0],1,1,1]];
+PERS wobjdata wMesa:=[FALSE,TRUE,"",[[1753,14.7086,929.897],[0.714138,1.04554E-05,-0.00401276,0.699993]],[[0,0,0],[1,0,0,0]]];
+
 
 !// Clock Synchronization
 PERS bool startLog:=TRUE;
