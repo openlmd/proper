@@ -28,9 +28,12 @@ class QtPath(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         loadUi(os.path.join(path, 'resources', 'path.ui'), self)
 
-        rospy.wait_for_service('robot_send_command')
-        self.send_command = rospy.ServiceProxy(
-            'robot_send_command', SrvRobotCommand)
+        try:
+            rospy.wait_for_service('robot_send_command', timeout=5)
+            self.send_command = rospy.ServiceProxy(
+                'robot_send_command', SrvRobotCommand)
+        except:
+            rospy.loginfo('ERROR connecting to service robot_send_command.')
         #self.pub = rospy.Publisher(
         #    'robot_command_json', MsgRobotCommand, queue_size=10)
 
