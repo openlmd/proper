@@ -3,7 +3,6 @@ import os
 import sys
 import rospy
 import rospkg
-import rosparam
 
 from python_qt_binding import loadUi
 from python_qt_binding import QtGui
@@ -11,13 +10,9 @@ from python_qt_binding import QtCore
 
 import rviz
 
-from geometry_msgs.msg import Pose2D
-
-import tf
 import numpy as np
 from std_msgs.msg import String
-#from mashes_measures.msg import MsgVelocity
-
+from mashes_measures.msg import MsgVelocity
 
 from qt_param import QtParam
 from qt_part import QtPart
@@ -109,24 +104,31 @@ class RobPathUI(QtGui.QMainWindow):
 
         self.boxPlot.addWidget(MyViz())
 
+        self.qtParam = QtParam()
         self.qtPart = QtPart()
+        self.qtScan = QtScan()
         self.qtPath = QtPath()
 
-        self.tabWidget.addTab(QtParam(), 'Parameters')
+        self.tabWidget.addTab(self.qtParam, 'Parameters')
         self.tabWidget.addTab(self.qtPart, 'Part')
-        self.tabWidget.addTab(QtScan(), 'Scan')
+        self.tabWidget.addTab(self.qtScan, 'Scan')
         self.tabWidget.addTab(self.qtPath, 'Path')
 
+        self.qtParam.accepted.connect(self.qtParamAccepted)
         self.qtPart.accepted.connect(self.qtPartAccepted)
 
         self.btnQuit.clicked.connect(self.btnQuitClicked)
         icon = QtGui.QIcon.fromTheme('application-exit')
         self.btnQuit.setIcon(icon)
 
-    #     rospy.Subscriber('velocity', MsgVelocity, self.updateSpeed)
-    #
-    # def updateSpeed(self, msg_velocity):
-    #     print self.lblInfo.text()
+        rospy.Subscriber(
+            '/velocity', MsgVelocity, self.cb_velocity, queue_size=1)
+
+    def cb_velocity(self, msg_velocity):
+        self.lblInfo.setText("Speed: %.1f mm/s" % (1000 * msg_velocity.speed))
+
+    def qtParamAccepted(self, params):
+        [self.qtPath.insertCommand(cmd) for cmd in params]
 
     def qtPartAccepted(self, path):
         cmds = self.qtPath.jason.path2cmds(path)
