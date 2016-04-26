@@ -194,7 +194,7 @@ class Robot:
         msg = "07 " + self.format_pose(work_obj)
         self.send(msg)
 
-    def set_speed(self, speed=[100, 50, 50, 50]):
+    def set_speed(self, speed=[0, 50, 50, 50]):
         '''
         speed: [robot TCP linear speed (mm/s), TCP orientation speed (deg/s),
                 external axis linear, external axis orientation]

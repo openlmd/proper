@@ -145,7 +145,7 @@ LOCAL TRAP new_trajectory_handler
 
     abort_trajectory;
 ENDTRAP
-LOCAL TRAP new_cancel_motion_handler	
+LOCAL TRAP new_cancel_motion_handler
 	IF (NOT cancel_motion) RETURN;
 	! Reset
 	cancel_motion := FALSE;
