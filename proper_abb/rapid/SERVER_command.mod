@@ -493,7 +493,7 @@ ERROR (LONG_JMP_ALL_ERR)
             reconnected:= TRUE;
             connected:= TRUE;
             RETRY;
-        CASE ERR_NORUNUNIT:
+	CASE ERR_NORUNUNIT:
             TPWrite "SERVER: No contact with unit.";
             TRYNEXT;
         DEFAULT:
