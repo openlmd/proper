@@ -1,14 +1,11 @@
 #!/usr/bin/env python
 import os
-import os
-import tf
 import sys
 import rospy
 import rospkg
-import rosparam
 import numpy as np
-from std_msgs.msg import String, Header
-from visualization_msgs.msg import Marker, MarkerArray
+#from visualization_msgs.msg import Marker
+from visualization_msgs.msg import MarkerArray
 # from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 
 from markers import MeshMarker
@@ -32,7 +29,6 @@ class QtPart(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         loadUi(os.path.join(path, 'resources', 'part.ui'), self)
 
-        self.pub_part = rospy.Publisher('part', String, queue_size=1)
         self.pub_marker_array = rospy.Publisher(
             'visualization_marker_array', MarkerArray, queue_size=1)
 
