@@ -131,9 +131,9 @@ class ServerRobot(Robot):
                 elif dato == 'laser_pow':
                     self.set_group((comando_json[dato], 1))
                 elif dato == 'gtv_start':
-                    self. set_digital((comando_json[dato], 0))
+                    self.set_digital((comando_json[dato], 0))
                 elif dato == 'gtv_stop':
-                    self. set_digital((comando_json[dato], 1))
+                    self.set_digital((comando_json[dato], 1))
                 elif dato == 'gtv_disk':
                     self.set_analog((comando_json[dato], 0))
                 elif dato == 'gtv_massflow':

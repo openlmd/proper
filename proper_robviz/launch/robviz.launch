@@ -1,7 +1,7 @@
 <launch>
     <arg name="sim" default="false" />
 
-    <include file="$(find mashes_workcell)/launch/mashes_workcell.launch">
+    <include file="$(find proper_workcell)/launch/proper_workcell.launch">
       <arg name="gui" value="false" />
       <arg name="sim" value="$(arg sim)" />
     </include>
