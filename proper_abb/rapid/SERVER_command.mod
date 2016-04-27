@@ -370,6 +370,16 @@ PROC main()
                     ok:=SERVER_BAD_MSG;
                 ENDIF
 
+            CASE 94: !Wait time between moves
+              IF nParams = 1 THEN
+              WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+              command_type{n_cartesian_command} := 94;
+              commandWaitTime{n_cartesian_command} := params{1};
+              n_cartesian_command := n_cartesian_command + 1;
+              IF n_cartesian_command > 49
+                n_cartesian_command := 1;
+              ENDIF
+
       			CASE 95: !Value to GO
       				IF nParams = 2 THEN
                       !TODO:Seleccionar o tipo de entrada
@@ -410,9 +420,21 @@ PROC main()
       					!TODO:Seleccionar o tipo de entrada
       					TEST params{1}
       						CASE 0:
-                    SetDO doGTV_StartExtern, params{2};
+                    !SetDO doGTV_StartExtern, params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 970;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
                   CASE 1:
-                    SetDO doGTV_Stop, params{2};
+                    !SetDO doGTV_Stop, params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 971;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
       						DEFAULT:
                 		TPWrite "SERVER: Illegal output code DO =", \Num:=params{1};
                 		ok := SERVER_BAD_MSG;

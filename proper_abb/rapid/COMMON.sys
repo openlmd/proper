@@ -27,6 +27,8 @@ PERS robtarget cartesianTarget{max_cartesian};
 PERS speeddata cartesian_speed{max_cartesian};
 PERS bool moveCompleted; !Set to true after finishing a Move instruction.
 PERS bool cartesianTriggSet{max_cartesian};
+PERS bool commandSetDO{max_cartesian};
+PERS num commandWaitTime{max_cartesian};
 
 !//Control of the laser
 !PERS triggdata laserON;
@@ -52,6 +54,7 @@ PERS speeddata bufferSpeeds{MAX_BUFFER};
 PERS zonedata bufferZones{MAX_BUFFER};
 PERS bool bufferTriggSet{MAX_BUFFER};
 PERS bool bufferTrigg{MAX_BUFFER};
+
 
 PERS bool trajectory_lock := FALSE;
 PERS bool new_trajectory := FALSE;
