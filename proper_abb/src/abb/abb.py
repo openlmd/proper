@@ -331,6 +331,14 @@ class Robot:
             return False
         return self.send(msg_1)
 
+    def wait_time(self, value):
+        '''
+        A function to set time to wait.
+        '''
+        msg = '94 ' + str(float(value)) + ' #'
+        #return
+        return self.send(msg)
+
     def set_gdo(self, value, id=0):
         '''
         A function to set a value to a group of DO on the robot.

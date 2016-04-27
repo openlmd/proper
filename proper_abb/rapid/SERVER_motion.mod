@@ -104,6 +104,23 @@ PROC main()
               TriggL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, laserON_fl015, currentZone, currentTool \WObj:=currentWobj ;
 							moveCompleted := TRUE;
 
+						CASE 94: !Wait time
+							WaitTime commandWaitTime{n_cartesian_motion};
+
+						CASE 970: !Set DO gtv START
+							IF commandSetDO{n_cartesian_motion} THEN
+								SetDO doGTV_StartExtern, 1;
+							ELSE
+								SetDO doGTV_StartExtern, 0;
+							ENDIF
+
+						CASE 971: !Set DO gtv STOP
+							IF commandSetDO{n_cartesian_motion} THEN
+								SetDO doGTV_Stop, 1;
+							ELSE
+								SetDO doGTV_Stop, 0;
+							ENDIF
+
             DEFAULT:
 				TPWrite "SERVER_motion: Illegal instruction code: ", \Num:=command_type{n_cartesian_motion};
           ENDTEST

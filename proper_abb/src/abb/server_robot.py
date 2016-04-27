@@ -140,6 +140,8 @@ class ServerRobot(Robot):
                     self.set_analog((comando_json[dato], 1))
                 elif dato == 'get_pose':
                     return self.get_cartesian()
+                elif dato == 'wait_time':
+                    return self.wait_time(comando_json[dato])
                 elif dato == 'cancel':
                     self.cancel_motion()
                 else:
