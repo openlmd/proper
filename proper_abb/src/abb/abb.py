@@ -194,7 +194,7 @@ class Robot:
         msg = "07 " + self.format_pose(work_obj)
         self.send(msg)
 
-    def set_speed(self, speed=[100, 50, 50, 50]):
+    def set_speed(self, speed=[0, 50, 50, 50]):
         '''
         speed: [robot TCP linear speed (mm/s), TCP orientation speed (deg/s),
                 external axis linear, external axis orientation]
@@ -330,6 +330,14 @@ class Robot:
             log.warn('move_circular incorrect response, bailing!')
             return False
         return self.send(msg_1)
+
+    def wait_time(self, value):
+        '''
+        A function to set time to wait.
+        '''
+        msg = '94 ' + str(float(value)) + ' #'
+        #return
+        return self.send(msg)
 
     def set_gdo(self, value, id=0):
         '''

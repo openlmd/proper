@@ -38,8 +38,15 @@ class QtPath(QtGui.QWidget):
         #    'robot_command_json', MsgRobotCommand, queue_size=10)
 
         self.btnLoadPath.clicked.connect(self.btnLoadPathClicked)
+        icon = QtGui.QIcon.fromTheme('document-open')
+        self.btnLoadPath.setIcon(icon)
         self.btnSavePath.clicked.connect(self.btnSavePathClicked)
+        icon = QtGui.QIcon.fromTheme('document-save')
+        self.btnSavePath.setIcon(icon)
         self.btnRunPath.clicked.connect(self.btnRunPathClicked)
+        icon = QtGui.QIcon.fromTheme('media-playback-start')
+        self.btnRunPath.setIcon(icon)
+
         self.btnDelete.clicked.connect(self.btnDeleteClicked)
         self.btnLoadPose.clicked.connect(self.btnLoadPoseClicked)
         self.btnStep.clicked.connect(self.btnStepClicked)
