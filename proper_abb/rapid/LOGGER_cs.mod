@@ -8,8 +8,8 @@ VAR socketdev clientSocket;
 VAR socketdev serverSocket;
 PERS num loggerPort:= 5001;
 
-!Robot configuration	
-!VAR tooldata currentTool;    
+!Robot configuration
+!VAR tooldata currentTool;
 !VAR wobjdata currentWobj;
 !VAR speeddata currentSpeed;
 !VAR zonedata currentZone;
@@ -21,7 +21,7 @@ PERS num loggerWaitTime:= 0.02;  !Recommended for real controller
 
 PROC ServerCreateAndConnect(string ip, num port)
 	VAR string clientIP;
-	
+
 	SocketCreate serverSocket;
 	SocketBind serverSocket, ip, port;
 	SocketListen serverSocket;
@@ -52,11 +52,11 @@ PROC main()
 	date:= CDate();
 	time:= CTime();
     ClkStart timer;
-    
-	
+
+
 	connected:=FALSE;
 	WaitTime 1;
-	ServerCreateAndConnect ipController,loggerPort;	
+	ServerCreateAndConnect ipController,loggerPort;
 	connected:=TRUE;
 	WHILE TRUE DO
 		IF joints_notcartesians = FALSE THEN
@@ -71,13 +71,13 @@ PROC main()
 			data := data + NumToStr(position.rot.q1,3) + " ";
 			data := data + NumToStr(position.rot.q2,3) + " ";
 			data := data + NumToStr(position.rot.q3,3) + " ";
-			data := data + NumToStr(position.rot.q4,3) + " "; !End of string	
+			data := data + NumToStr(position.rot.q4,3) + " "; !End of string
 			IF connected = TRUE THEN
 				SocketSend clientSocket \Str:=data;
 			ENDIF
 			WaitTime loggerWaitTime;
 		ENDIF
-	
+
 		IF joints_notcartesians = TRUE THEN
 			!Joint Coordinates
 			joints := CJointT();
