@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 import os
-import os
 import sys
 import rospy
 import rospkg
-import rosparam
 import numpy as np
-from std_msgs.msg import String, Header
 # from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 # from nav_msgs.msg import Path
 
@@ -19,6 +16,8 @@ path = rospkg.RosPack().get_path('proper_robviz')
 
 
 class QtParam(QtGui.QWidget):
+    accepted = QtCore.pyqtSignal(list)
+
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         loadUi(os.path.join(path, 'resources', 'param.ui'), self)
@@ -53,9 +52,12 @@ class QtParam(QtGui.QWidget):
         print 'Carrier:', self.sbCarrier.value()
         print 'Stirrer:', self.sbStirrer.value()
         print 'Turntable:', self.sbTurntable.value()
-        print 'Speed:', self.sbSpeed.value()
-        print 'Power:', self.sbPower.value()
-
+        spd = self.sbSpeed.value()
+        pwr = self.sbPower.value()
+        params = ['{"laser_prog": 11}',
+                  '{"laser_pow": %i}' % int((pwr * 65535) / 1500),
+                  '{"vel": %i}' % spd]
+        self.accepted.emit(params)
 
 
 if __name__ == "__main__":

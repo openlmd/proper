@@ -82,7 +82,7 @@ void filterSubsampling(const pcl::PointCloud<pcl::PointXYZ>::Ptr &cloud_in,
   // Voxel Grid Subsampled Filter
   pcl::VoxelGrid<pcl::PointXYZ> sor;
   sor.setInputCloud(cloud_in);
-  sor.setLeafSize(0.002f, 0.002f, 0.001f);
+  sor.setLeafSize(0.00025f, 0.00025f, 0.00025f);
   sor.filter(*cloud_out);
 }
 
