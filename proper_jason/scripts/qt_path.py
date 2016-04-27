@@ -109,12 +109,15 @@ class QtPath(QtGui.QWidget):
             return None
 
     def btnLoadPathClicked(self):
+        self.listWidgetPoses.clear()
         filename = QtGui.QFileDialog.getOpenFileName(
             self, 'Load Path Routine', os.path.join(path, 'routines'),
             'Jason Routine Files (*.jas)')[0]
         print 'Load routine:', filename
         cmds = self.jason.load_commands(filename)
         [self.insertCommand(cmd) for cmd in cmds]
+        self.arr = []
+        self.getMoveCommands()
 
     def btnSavePathClicked(self):
         filename = QtGui.QFileDialog.getSaveFileName(
@@ -194,11 +197,7 @@ class QtPath(QtGui.QWidget):
     def btnCancelClicked(self):
         self.sendCommand('{"cancel":1}')
 
-    def sendPath(self):
-        '''
-        Sends poses from the listWidget until button stop is pressed or all
-        poses have been send.
-        '''
+    def getMoveCommands(self):
         n_row = self.listWidgetPoses.count()
         # row = self.listWidgetPoses.currentRow()
         points = []
