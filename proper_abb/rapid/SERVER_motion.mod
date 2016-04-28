@@ -104,6 +104,20 @@ PROC main()
               TriggL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, laserON_fl015, currentZone, currentTool \WObj:=currentWobj ;
 							moveCompleted := TRUE;
 
+						CASE 930: !WaitDI
+							IF commandSetDO{n_cartesian_motion} THEN
+								WaitDI DI_RF_LaserBeamReady, 1;
+							ELSE
+								WaitDI DI_RF_LaserBeamReady, 0;
+							ENDIF
+
+						CASE 930: !WaitDI
+							IF commandSetDO{n_cartesian_motion} THEN
+								WaitDI DI_RF_GeneralFault, 1;
+							ELSE
+								WaitDI DI_RF_GeneralFault, 0;
+							ENDIF
+
 						CASE 94: !Wait time
 							WaitTime commandWaitTime{n_cartesian_motion};
 
@@ -119,6 +133,34 @@ PROC main()
 								SetDO doGTV_Stop, 1;
 							ELSE
 								SetDO doGTV_Stop, 0;
+							ENDIF
+
+						CASE 972: !Set DO gtv STOP
+							IF commandSetDO{n_cartesian_motion} THEN
+								SetDO Do_RF_MainOn, 1;
+							ELSE
+								SetDO Do_RF_MainOn, 0;
+							ENDIF
+
+						CASE 973: !Set DO gtv STOP
+							IF commandSetDO{n_cartesian_motion} THEN
+								SetDO Do_RF_StandByOn, 1;
+							ELSE
+								SetDO Do_RF_StandByOn, 0;
+							ENDIF
+
+						CASE 974: !Set DO gtv STOP
+							IF commandSetDO{n_cartesian_motion} THEN
+								SetDO DoWeldGas, 1;
+							ELSE
+								SetDO DoWeldGas, 0;
+							ENDIF
+
+						CASE 975: !Set DO gtv STOP
+							IF commandSetDO{n_cartesian_motion} THEN
+								SetDO DoRootGas, 1;
+							ELSE
+								SetDO DoRootGas, 0;
 							ENDIF
 
             DEFAULT:
