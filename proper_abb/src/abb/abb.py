@@ -339,6 +339,16 @@ class Robot:
         #return
         return self.send(msg)
 
+    def wait_input(self, value, id=0):
+        '''
+        A function to wait for a physical DII line on the robot.
+        For this to work you're going to need to edit the RAPID function
+        and fill in the DIO you want this to switch.
+        '''
+        msg = '93 ' + str(int(id)) + ' ' + str(int(bool(value))) + ' #'
+        #return
+        return self.send(msg)
+
     def set_gdo(self, value, id=0):
         '''
         A function to set a value to a group of DO on the robot.
