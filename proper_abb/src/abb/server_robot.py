@@ -141,14 +141,14 @@ class ServerRobot(Robot):
                 elif dato == 'get_pose':
                     return self.get_cartesian()
                 elif dato == 'wait_time':
-                    return self.wait_time(comando_json[dato])
-                elif dato == 'wait_laserbeam':
-                    return self.wait_input((comando_json[dato], 0))
+                    self.wait_time(comando_json[dato])
+                elif dato == 'wait_standby':
+                    self.wait_input(comando_json[dato], 0)
                 elif dato == 'wait_generalfault':
-                    return self.wait_input((comando_json[dato], 1))
-                elif dato == 'rf_main':
+                    self.wait_input(comando_json[dato], 1)
+                elif dato == 'laser_main':
                     self.set_digital((comando_json[dato], 2))
-                elif dato == 'rf_standby':
+                elif dato == 'laser_standby':
                     self.set_digital((comando_json[dato], 3))
                 elif dato == 'weldgas':
                     self.set_digital((comando_json[dato], 4))
