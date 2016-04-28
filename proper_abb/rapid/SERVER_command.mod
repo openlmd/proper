@@ -373,9 +373,10 @@ PROC main()
             CASE 93: !Wait for a digital input
               IF nParams = 2 THEN
                 !TODO:Seleccionar o tipo de entrada
+                !TPWrite "Digital output WaitDI =", \Num:=params{1};
                 TEST params{1}
                   CASE 0:
-                    !WaitDI DI_RF_LaserBeamReady,params{2};
+                    !WaitDI Di_FL_EstadBy,params{2};
                     WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
                     command_type{n_cartesian_command} := 930;
                     commandSetDO{n_cartesian_command} := params{2} <> 0;
@@ -383,7 +384,7 @@ PROC main()
                     IF n_cartesian_command > 49
                       n_cartesian_command := 1;
                   CASE 1:
-                  !WaitDI DI_RF_GeneralFault,params{2};
+                    !WaitDI Di_FL_ErrorLaserApagado,params{2};
                     WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
                     command_type{n_cartesian_command} := 931;
                     commandSetDO{n_cartesian_command} := params{2} <> 0;
@@ -391,7 +392,7 @@ PROC main()
                     IF n_cartesian_command > 49
                       n_cartesian_command := 1;
                   DEFAULT:
-                    TPWrite "SERVER: Illegal output code DO =", \Num:=params{1};
+                    TPWrite "SERVER: Illegal wait code DI =", \Num:=params{1};
                     ok := SERVER_BAD_MSG;
                 ENDTEST
               ELSE
@@ -446,6 +447,7 @@ PROC main()
     		    CASE 97: !Set or reset a digital output
               IF nParams = 2 THEN
       					!TODO:Seleccionar o tipo de entrada
+                !TPWrite "Digital output SetDO =", \Num:=params{1};
       					TEST params{1}
       						CASE 0:
                     !SetDO doGTV_StartExtern, params{2};
@@ -464,7 +466,7 @@ PROC main()
                     IF n_cartesian_command > 49
                       n_cartesian_command := 1;
                   CASE 2:
-                    !SetDO Do_RF_MainOn, params{2};
+                    !SetDO Do_FL_RedENC, params{2};
                     WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
                     command_type{n_cartesian_command} := 972;
                     commandSetDO{n_cartesian_command} := params{2} <> 0;
@@ -472,7 +474,7 @@ PROC main()
                     IF n_cartesian_command > 49
                       n_cartesian_command := 1;
                   CASE 3:
-                    !SetDO Do_RF_StandByOn, params{2};
+                    !SetDO Do_FL_StandByEnc, params{2};
                     WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
                     command_type{n_cartesian_command} := 973;
                     commandSetDO{n_cartesian_command} := params{2} <> 0;
