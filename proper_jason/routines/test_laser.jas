@@ -1,0 +1,15 @@
+{"tool": [[215.7, -22.4, 473.8], [0.5, 0.0, -0.8660254, 0.0]]}
+{"workobject": [[1655, -87, 932], [1, 0, 0, 0]]}
+{"vel": 10}
+{"laser_main": 1}
+{"laser_standby": 1}
+{"laser_prog":0}
+{"wait_standby": 1}
+{"wait_generalfault": 0}
+{"weldgas": 1}
+{"move": [[27, 26, 0], [1, 0, 0, 0]]}
+{"move": [[27, 26, 0], [1, 0, 0, 0],true]}
+{"move": [[27, 26, 0], [1, 0, 0, 0],false]}
+{"move": [[27, 26, 0], [1, 0, 0, 0]]}
+{"weldgas": 0}
+{"laser_standby": 0}
