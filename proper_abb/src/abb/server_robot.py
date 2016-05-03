@@ -40,6 +40,15 @@ class ServerRobot(Robot):
         else:
             print 'Invalid command format'
 
+    def move_ext(self, dato):
+        '''
+        Move external axis (axis, position, speed)
+        '''
+        if len(dato) == 3:
+            self.move_ext_axis(dato[0], dato[1], dato[2])
+        else:
+            print 'Invalid command format'
+
     def speed(self, speed):
         self.set_speed([speed, 500, 5000, 1000])
 
@@ -117,6 +126,8 @@ class ServerRobot(Robot):
                     self.move(comando_json[dato])
                 elif dato == 'movej':
                     self.move(comando_json[dato], movel=False)
+                elif dato == 'move_ext':
+                    self.move_ext(comando_json[dato])
                 elif dato == 'path_move':
                     if self.buffer_len() > 0:
                         self.buffer_execute()

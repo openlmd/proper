@@ -315,6 +315,28 @@ PROC main()
                     ok := SERVER_BAD_MSG;
                 ENDIF
 
+              CASE 12: !Move external axis
+        				IF nParams = 3 THEN
+        					ok := SERVER_OK;
+        					WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+        					command_type{n_cartesian_command} := 12;
+        					currentSpeed.v_reax := params{3};
+        					cartesian_speed{n_cartesian_command} := currentSpeed;
+        					IF params{1} = 1 THEN
+        						cartesianTarget{n_cartesian_command}.extax.eax_b := params{2};
+        						cartesianTarget{n_cartesian_command}.extax.eax_c := 9e9;
+        					ENDIF
+        					IF params{1} = 2 THEN
+        						cartesianTarget{n_cartesian_command}.extax.eax_c := params{2};
+        						cartesianTarget{n_cartesian_command}.extax.eax_b := 9e9;
+        					ENDIF
+        					n_cartesian_command := n_cartesian_command + 1;
+                  IF n_cartesian_command > 49
+                    n_cartesian_command := 1;
+                  ELSE
+                    ok := SERVER_BAD_MSG;
+                ENDIF
+
             CASE 30: !Add Cartesian Coordinates to buffer as trigger or move
                 IF nParams = 7 OR nParams = 8 THEN
                     singleCartesianTarget :=[[params{1},params{2},params{3}],
