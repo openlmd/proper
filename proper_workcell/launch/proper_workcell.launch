@@ -20,4 +20,12 @@
     <arg name="gui" value="$(arg gui)" />
     <arg name="sim" value="$(arg sim)" />
   </include>
+
+  <include file="$(find mashes_ueye)/launch/ueye.launch" unless="$(arg sim)">
+    <arg name="gui" value="$(arg gui)" />
+  </include>
+
+  <include file="$(find mashes_tachyon)/launch/tachyon.launch" unless="$(arg sim)">
+    <arg name="gui" value="$(arg gui)" />
+  </include>
 </launch>
