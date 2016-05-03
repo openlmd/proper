@@ -19,7 +19,11 @@ class ServerRobot(Robot):
         self.close()
 
     def workobject(self, work_obj):
-        self.set_workobject(work_obj)
+        if len(work_obj) == 2:
+            if (len(work_obj[0]) == 3) and (len(work_obj[1]) == 4):
+                self.set_workobject(work_obj)
+        else:
+            print 'Invalid command format'
 
     def configure(self, filename):
         print filename
@@ -33,35 +37,62 @@ class ServerRobot(Robot):
             self.set_cartesian(pose, linear=movel)
         elif len(pose) == 3:
             self.set_cartesian_trigg(pose[:2], trigger=pose[2])
+        else:
+            print 'Invalid command format'
 
     def speed(self, speed):
         self.set_speed([speed, 500, 5000, 1000])
 
     def zone(self, zone):
-        self.set_zone(manual_zone=zone)
+        if len(zone) == 3:
+            self.set_zone(manual_zone=zone)
+        else:
+            print 'Invalid command format'
 
     def set_digital(self, digital):
         '''
         Dato digital 0 = Valor
         Dato digital 1 = Numero de salida
         '''
-        self.set_dio(digital[0], digital[1])
+        if len(digital) == 2:
+            self.set_dio(digital[0], digital[1])
+        else:
+            print 'Invalid command format'
 
-    def set_analog(self, digital):
+    def set_analog(self, analog):
         '''
         Dato analogico 0 = Valor
         Dato analogico 1 = Numero de salida
         '''
-        self.set_ao(digital[0], digital[1])
+        if len(analog) == 2:
+            analog = list(analog)
+            if analog[0] > 100:
+                analog[0] = 100
+            self.set_ao(analog[0], analog[1])
+        else:
+            print 'Invalid command format'
 
     def set_group(self, digital):
-        self.set_gdo(digital[0], digital[1])
+        if len(digital) == 2:
+            if (type(digital[0]) == int) and (type(digital[1]) == int):
+                digital = list(digital)
+                if digital[1] == 0:
+                    if digital[0] > 31:
+                        digital[0] = 31
+                if digital[1] == 1:
+                    if digital[0] > 65535:
+                        digital[0] = 65535
+                self.set_gdo(digital[0], digital[1])
+        else:
+            print 'Invalid command format'
 
     def buffer_pose(self, pose):
         if len(pose) == 2:
             self.buffer_add(pose)
         elif len(pose) == 3:
             self.buffer_add(pose[:2], True, pose[2])
+        else:
+            print 'Invalid command format'
 
     def proc_command(self, comando):
         '''
@@ -73,7 +104,7 @@ class ServerRobot(Robot):
             print "Command is not json"
             print e
         else:
-            for dato in comando_json:
+            for dato in sorted(comando_json, reverse=True):
                 if dato == 'vel':
                     self.speed(comando_json[dato])
                 elif dato == 'pose':
@@ -96,15 +127,9 @@ class ServerRobot(Robot):
                 elif dato == 'set_ao':
                     self.set_analog(comando_json[dato])
                 elif dato == 'laser_prog':
-                    program = comando_json[dato]
-                    if program > 31:
-                        program = 31
-                    self.set_group((program, 0))
+                    self.set_group((comando_json[dato], 0))
                 elif dato == 'laser_pow':
-                    power = comando_json[dato]
-                    if power > 65535:
-                        power = 65535
-                    self.set_group((power, 1))
+                    self.set_group((comando_json[dato], 1))
                 elif dato == 'gtv_start':
                     self.set_digital((comando_json[dato], 0))
                 elif dato == 'gtv_stop':
@@ -115,6 +140,20 @@ class ServerRobot(Robot):
                     self.set_analog((comando_json[dato], 1))
                 elif dato == 'get_pose':
                     return self.get_cartesian()
+                elif dato == 'wait_time':
+                    self.wait_time(comando_json[dato])
+                elif dato == 'wait_standby':
+                    self.wait_input(comando_json[dato], 0)
+                elif dato == 'wait_generalfault':
+                    self.wait_input(comando_json[dato], 1)
+                elif dato == 'laser_main':
+                    self.set_digital((comando_json[dato], 2))
+                elif dato == 'laser_standby':
+                    self.set_digital((comando_json[dato], 3))
+                elif dato == 'weldgas':
+                    self.set_digital((comando_json[dato], 4))
+                elif dato == 'rootgas':
+                    self.set_digital((comando_json[dato], 5))
                 elif dato == 'cancel':
                     self.cancel_motion()
                 else:

@@ -9,8 +9,8 @@ VAR socketdev serverSocket;
 PERS string ipController;
 PERS num loggerPort:= 5001;
 
-!Robot configuration	
-PERS tooldata currentTool;    
+!Robot configuration
+PERS tooldata currentTool;
 PERS wobjdata currentWobj;
 VAR speeddata currentSpeed;
 VAR zonedata currentZone;
@@ -22,7 +22,7 @@ PERS bool joints_notcartesians:= TRUE;
 
 PROC ServerCreateAndConnect(string ip, num port)
 	VAR string clientIP;
-	
+
 	SocketCreate serverSocket;
 	SocketBind serverSocket, ip, port;
 	SocketListen serverSocket;
@@ -53,9 +53,9 @@ PROC main()
 	date:= CDate();
 	time:= CTime();
     ClkStart timer;
-    
+
 	connected:=FALSE;
-	ServerCreateAndConnect ipController,loggerPort;	
+	ServerCreateAndConnect ipController,loggerPort;
 	connected:=TRUE;
 	WHILE TRUE DO
 		IF joints_notcartesians = FALSE THEN
@@ -70,13 +70,13 @@ PROC main()
 			data := data + NumToStr(position.rot.q1,3) + " ";
 			data := data + NumToStr(position.rot.q2,3) + " ";
 			data := data + NumToStr(position.rot.q3,3) + " ";
-			data := data + NumToStr(position.rot.q4,3); !End of string	
+			data := data + NumToStr(position.rot.q4,3) + " "; !End of string
 			IF connected = TRUE THEN
 				SocketSend clientSocket \Str:=data;
 			ENDIF
 			WaitTime loggerWaitTime;
 		ENDIF
-	
+
 		IF joints_notcartesians = TRUE THEN
 			!Joint Coordinates
 			joints := CJointT();
@@ -88,7 +88,7 @@ PROC main()
 			data := data + NumToStr(joints.robax.rax_3,2) + " ";
 			data := data + NumToStr(joints.robax.rax_4,2) + " ";
 			data := data + NumToStr(joints.robax.rax_5,2) + " ";
-			data := data + NumToStr(joints.robax.rax_6,2); !End of string
+			data := data + NumToStr(joints.robax.rax_6,2) + " "; !End of string
 			IF connected = TRUE THEN
 				SocketSend clientSocket \Str:=data;
 			ENDIF

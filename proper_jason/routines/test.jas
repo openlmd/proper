@@ -12,5 +12,7 @@
 {"laser_pow": 15000}
 {"gtv_start": 1}
 {"gtv_stop": 1}
-{"gtv_disk": 3}
-{"gtv_massflow": 6}
+{"gtv_disk": 50}
+{"gtv_massflow": 50}
+{"gtv_start": 0}
+{"gtv_stop": 0}
