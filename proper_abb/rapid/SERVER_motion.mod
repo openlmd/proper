@@ -10,6 +10,7 @@ LOCAL VAR bool trajectoryTrigg{MAX_BUFFER};
 LOCAL VAR num trajectory_size := 0;
 LOCAL VAR intnum intr_new_trajectory;
 LOCAL VAR intnum intr_cancel_motion;
+LOCAL VAR robtarget pAct;
 !//Control of the laser
 VAR triggdata laserON_fl015;
 VAR triggdata laserOFF_fl015;
@@ -93,6 +94,18 @@ PROC main()
               moveCompleted := FALSE;
               MoveJ cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, currentZone, currentTool \WObj:=currentWobj ;
               moveCompleted := TRUE;
+
+						CASE 12: !External axis move
+							moveCompleted := FALSE;
+							ActUnit STN1;
+							pAct := CRobT();
+							IF cartesianTarget{n_cartesian_motion}.extax.eax_b = 9e9
+								pAct.extax.eax_c := cartesianTarget{n_cartesian_motion}.extax.eax_c;
+							IF cartesianTarget{n_cartesian_motion}.extax.eax_c = 9e9
+								pAct.extax.eax_b := cartesianTarget{n_cartesian_motion}.extax.eax_b;
+							MOVEJ pAct, cartesian_speed{n_cartesian_motion}, currentZone, currentTool;
+							DeactUnit STN1;
+							moveCompleted := TRUE;
 
             CASE 110: !Trigger linear OFF
               moveCompleted := FALSE;

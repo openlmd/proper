@@ -257,6 +257,17 @@ class Robot:
         msg += format(zone[2], "+08.4f") + " #"
         self.send(msg)
 
+    def move_ext_axis(self, axis, rot_position, rot_speed):
+        '''
+        A function to move a external axis to a specified position
+        in degrees
+        '''
+        msg = '12 ' + str(int(axis)) + ' '
+        msg += str(float(rot_position)) + ' '
+        msg += str(float(rot_speed)) + ' #'
+        #return
+        return self.send(msg)
+
     def buffer_add(self, pose, trigger=False, trigger_set=False):
         '''
         Appends single pose to the remote buffer
