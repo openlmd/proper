@@ -54,9 +54,9 @@ class QtParam(QtGui.QWidget):
         print 'Turntable:', self.sbTurntable.value()
         spd = self.sbSpeed.value()
         pwr = self.sbPower.value()
-        params = [{"laser_prog": 11},
-                  {"laser_pow": int((pwr * 65535) / 1500)},
-                  {"vel": spd}]
+        params = ['{"laser_prog": 11}',
+                  '{"laser_pow": %i}' % int((pwr * 65535) / 1500),
+                  '{"vel": %i}' % spd]
         self.accepted.emit(params)
 
 

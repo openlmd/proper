@@ -370,6 +370,45 @@ PROC main()
                     ok:=SERVER_BAD_MSG;
                 ENDIF
 
+            CASE 93: !Wait for a digital input
+              IF nParams = 2 THEN
+                !TODO:Seleccionar o tipo de entrada
+                !TPWrite "Digital output WaitDI =", \Num:=params{1};
+                TEST params{1}
+                  CASE 0:
+                    !WaitDI Di_FL_EstadBy,params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 930;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
+                  CASE 1:
+                    !WaitDI Di_FL_ErrorLaserApagado,params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 931;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
+                  DEFAULT:
+                    TPWrite "SERVER: Illegal wait code DI =", \Num:=params{1};
+                    ok := SERVER_BAD_MSG;
+                ENDTEST
+              ELSE
+                ok :=SERVER_BAD_MSG;
+              ENDIF
+
+            CASE 94: !Wait time between moves
+              IF nParams = 1 THEN
+              WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+              command_type{n_cartesian_command} := 94;
+              commandWaitTime{n_cartesian_command} := params{1};
+              n_cartesian_command := n_cartesian_command + 1;
+              IF n_cartesian_command > 49
+                n_cartesian_command := 1;
+              ENDIF
+
       			CASE 95: !Value to GO
       				IF nParams = 2 THEN
                       !TODO:Seleccionar o tipo de entrada
@@ -408,11 +447,56 @@ PROC main()
     		    CASE 97: !Set or reset a digital output
               IF nParams = 2 THEN
       					!TODO:Seleccionar o tipo de entrada
+                !TPWrite "Digital output SetDO =", \Num:=params{1};
       					TEST params{1}
       						CASE 0:
-                    SetDO doGTV_StartExtern, params{2};
+                    !SetDO doGTV_StartExtern, params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 970;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
                   CASE 1:
-                    SetDO doGTV_Stop, params{2};
+                    !SetDO doGTV_Stop, params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 971;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
+                  CASE 2:
+                    !SetDO Do_FL_RedENC, params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 972;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
+                  CASE 3:
+                    !SetDO Do_FL_StandByEnc, params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 973;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
+                  CASE 4:
+                    !SetDO DoWeldGas, params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 974;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
+                  CASE 5:
+                    !SetDO DoRootGas, params{2};
+                    WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+                    command_type{n_cartesian_command} := 975;
+                    commandSetDO{n_cartesian_command} := params{2} <> 0;
+                    n_cartesian_command := n_cartesian_command + 1;
+                    IF n_cartesian_command > 49
+                      n_cartesian_command := 1;
       						DEFAULT:
                 		TPWrite "SERVER: Illegal output code DO =", \Num:=params{1};
                 		ok := SERVER_BAD_MSG;
@@ -493,6 +577,9 @@ ERROR (LONG_JMP_ALL_ERR)
             reconnected:= TRUE;
             connected:= TRUE;
             RETRY;
+	CASE ERR_NORUNUNIT:
+            TPWrite "SERVER: No contact with unit.";
+            TRYNEXT;
         DEFAULT:
             TPWrite "SERVER: Unknown error.";
             TPWrite "SERVER: Closing socket and restarting.";
