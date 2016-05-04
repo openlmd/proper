@@ -319,16 +319,15 @@ PROC main()
         				IF nParams = 3 THEN
         					ok := SERVER_OK;
         					WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
-        					command_type{n_cartesian_command} := 12;
         					currentSpeed.v_reax := params{3};
         					cartesian_speed{n_cartesian_command} := currentSpeed;
         					IF params{1} = 1 THEN
-        						cartesianTarget{n_cartesian_command}.extax.eax_b := params{2};
-        						cartesianTarget{n_cartesian_command}.extax.eax_c := 9e9;
+        					  command_type{n_cartesian_command} := 121;
+        					  extAxisMove{n_cartesian_command} := params{2};
         					ENDIF
         					IF params{1} = 2 THEN
-        						cartesianTarget{n_cartesian_command}.extax.eax_c := params{2};
-        						cartesianTarget{n_cartesian_command}.extax.eax_b := 9e9;
+					          command_type{n_cartesian_command} := 122;
+						        extAxisMove{n_cartesian_command} := params{2};
         					ENDIF
         					n_cartesian_command := n_cartesian_command + 1;
                   IF n_cartesian_command > 49
