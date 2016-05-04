@@ -89,7 +89,11 @@ PROC main()
 			data := data + NumToStr(joints.robax.rax_3,2) + " ";
 			data := data + NumToStr(joints.robax.rax_4,2) + " ";
 			data := data + NumToStr(joints.robax.rax_5,2) + " ";
-			data := data + NumToStr(joints.robax.rax_6,2) + " "; !End of string
+			data := data + NumToStr(joints.robax.rax_6,2) + " ";
+			IF IsMechUnitActive(STN1) THEN
+				data := data + NumToStr(joints.extax.eax_b,2) + " ";
+				data := data + NumToStr(joints.extax.eax_c,2) + " ";!End of string
+			ENDIF
 			IF connected = TRUE THEN
 				SocketSend clientSocket \Str:=data;
 			ENDIF
