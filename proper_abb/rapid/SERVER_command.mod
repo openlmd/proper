@@ -183,12 +183,12 @@ PROC main()
             CASE 4: !Get Joint Coordinates
                 IF nParams = 0 THEN
                     jointsPose := CJointT();
-                    addString := NumToStr(jointsPose.robax.rax_1,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_2,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_3,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_4,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_5,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_6,2); !End of string
+                    addString := NumToStr(jointsPose.robax.rax_1,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_2,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_3,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_4,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_5,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_6,5); !End of string
                     ok := SERVER_OK;
                 ELSE
                     ok:=SERVER_BAD_MSG;
