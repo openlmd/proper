@@ -27,13 +27,13 @@ class NdRobotLogger():
 
     def talker(self, j23_coupled=True):
         while not rospy.is_shutdown():
-            self.logger_robot.read_logger()
-            if len(self.logger_robot.joints) > 0:
+            self.logger_robot.read_raw_logger()
+            if len(self.logger_robot.float_joints) > 0:
                 self.msg_joint_state.header.stamp = rospy.Time.now()
-                joints_pose = self.logger_robot.joints.popleft()
-                for i in range(0, len(joints_pose)-3): #len(joints_pose)-3
+                joints_pose = self.logger_robot.float_joints.popleft()
+                for i in range(0, len(joints_pose)): #len(joints_pose)-3
                     self.msg_joint_state.position[i] = (
-                        np.deg2rad(float(joints_pose[i+3])))
+                        np.deg2rad(joints_pose[i]))
                 if j23_coupled:
                     self.msg_joint_state.position[2] += (
                         -1 * self.msg_joint_state.position[1])

@@ -32,7 +32,7 @@ PROC Initialize()
 		TriggIO laserOFF_fl015, 0\DOp:=Do_FL_RayoLaserEnc, 0;
 	n_cartesian_command := 1;
 	n_cartesian_motion := 1;
-	ActUnit STN1;
+	!ActUnit STN1;
 	!Find the current external axis values so they don't move when we start
 	!jointsTarget := CJointT();
 	!externalAxis := jointsTarget.extax;
@@ -178,16 +178,16 @@ PROC main()
 
 						CASE 974: !Set DO
 							IF commandSetDO{n_cartesian_motion} THEN
-							SetDO DoWeldGas, 1;
+								SetDO DoWeldGas, 1;
 							ELSE
-							SetDO DoWeldGas, 0;
+								SetDO DoWeldGas, 0;
 							ENDIF
 
 						CASE 975: !Set DO
 							IF commandSetDO{n_cartesian_motion} THEN
-							SetDO DoRootGas, 1;
+								SetDO DoRootGas, 1;
 							ELSE
-							SetDO DoRootGas, 0;
+								SetDO DoRootGas, 0;
 							ENDIF
 
             DEFAULT:

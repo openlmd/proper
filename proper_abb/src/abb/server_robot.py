@@ -50,7 +50,7 @@ class ServerRobot(Robot):
             print 'Invalid command format'
 
     def speed(self, speed):
-        self.set_speed([speed, 500, 5000, 1000])
+        self.set_speed([speed, 50, 50, 100])
 
     def zone(self, zone):
         if len(zone) == 3:
