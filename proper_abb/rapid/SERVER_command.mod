@@ -183,12 +183,12 @@ PROC main()
             CASE 4: !Get Joint Coordinates
                 IF nParams = 0 THEN
                     jointsPose := CJointT();
-                    addString := NumToStr(jointsPose.robax.rax_1,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_2,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_3,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_4,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_5,2) + " ";
-                    addString := addString + NumToStr(jointsPose.robax.rax_6,2); !End of string
+                    addString := NumToStr(jointsPose.robax.rax_1,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_2,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_3,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_4,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_5,5) + " ";
+                    addString := addString + NumToStr(jointsPose.robax.rax_6,5); !End of string
                     ok := SERVER_OK;
                 ELSE
                     ok:=SERVER_BAD_MSG;
@@ -312,6 +312,27 @@ PROC main()
 										!ENDIF
                     !moveCompleted := TRUE;
                 ELSE
+                    ok := SERVER_BAD_MSG;
+                ENDIF
+
+              CASE 12: !Move external axis
+        				IF nParams = 3 THEN
+        					ok := SERVER_OK;
+        					WaitUntil NOT ((n_cartesian_motion - n_cartesian_command) = 1 OR (n_cartesian_motion - n_cartesian_command) = -48);
+        					currentSpeed.v_reax := params{3};
+        					cartesian_speed{n_cartesian_command} := currentSpeed;
+        					IF params{1} = 1 THEN
+        					  command_type{n_cartesian_command} := 121;
+        					  extAxisMove{n_cartesian_command} := params{2};
+        					ENDIF
+        					IF params{1} = 2 THEN
+					          command_type{n_cartesian_command} := 122;
+						        extAxisMove{n_cartesian_command} := params{2};
+        					ENDIF
+        					n_cartesian_command := n_cartesian_command + 1;
+                  IF n_cartesian_command > 49
+                    n_cartesian_command := 1;
+                  ELSE
                     ok := SERVER_BAD_MSG;
                 ENDIF
 

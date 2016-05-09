@@ -8,8 +8,8 @@ VAR socketdev clientSocket;
 VAR socketdev serverSocket;
 PERS num loggerPort:= 5001;
 
-!Robot configuration
-!VAR tooldata currentTool;
+!Robot configuration	
+!VAR tooldata currentTool;    
 !VAR wobjdata currentWobj;
 !VAR speeddata currentSpeed;
 !VAR zonedata currentZone;
@@ -21,7 +21,7 @@ PERS num loggerWaitTime:= 0.02;  !Recommended for real controller
 
 PROC ServerCreateAndConnect(string ip, num port)
 	VAR string clientIP;
-
+	
 	SocketCreate serverSocket;
 	SocketBind serverSocket, ip, port;
 	SocketListen serverSocket;
@@ -40,10 +40,13 @@ ENDPROC
 
 PROC main()
 	VAR string data;
+	VAR string data2;
 	VAR robtarget position;
 	VAR jointtarget joints;
     VAR string sendString;
 	VAR bool connected;
+	VAR rawbytes raw_data;
+	VAR rawbytes buffer;
 
 	VAR string date;
 	VAR string time;
@@ -52,59 +55,48 @@ PROC main()
 	date:= CDate();
 	time:= CTime();
     ClkStart timer;
-
-
+	
 	connected:=FALSE;
 	WaitTime 1;
-	ServerCreateAndConnect ipController,loggerPort;
+	ServerCreateAndConnect ipController,loggerPort;	
 	connected:=TRUE;
 	WHILE TRUE DO
-		IF joints_notcartesians = FALSE THEN
-			!Cartesian Coordinates
-			position := CRobT(\Tool:=currentTool \WObj:=currentWObj);
-			data := "";
-			data := data + date + " " + time + " ";
-			data := data + NumToStr(ClkRead(timer),2) + " ";
-			data := data + NumToStr(position.trans.x,1) + " ";
-			data := data + NumToStr(position.trans.y,1) + " ";
-			data := data + NumToStr(position.trans.z,1) + " ";
-			data := data + NumToStr(position.rot.q1,3) + " ";
-			data := data + NumToStr(position.rot.q2,3) + " ";
-			data := data + NumToStr(position.rot.q3,3) + " ";
-			data := data + NumToStr(position.rot.q4,3) + " "; !End of string
-			IF connected = TRUE THEN
-				SocketSend clientSocket \Str:=data;
-			ENDIF
-			WaitTime loggerWaitTime;
-		ENDIF
-
-		IF joints_notcartesians = TRUE THEN
 			!Joint Coordinates
 			joints := CJointT();
-			data := "";
-			data := data + date + " " + time + " ";
-			data := data + NumToStr(ClkRead(timer),2) + " ";
-			data := data + NumToStr(joints.robax.rax_1,2) + " ";
-			data := data + NumToStr(joints.robax.rax_2,2) + " ";
-			data := data + NumToStr(joints.robax.rax_3,2) + " ";
-			data := data + NumToStr(joints.robax.rax_4,2) + " ";
-			data := data + NumToStr(joints.robax.rax_5,2) + " ";
-			data := data + NumToStr(joints.robax.rax_6,2) + " ";
+			PackRawBytes joints.robax.rax_1, raw_data, 1, \Float4;
+			PackRawBytes joints.robax.rax_2, raw_data, 5, \Float4;
+			PackRawBytes joints.robax.rax_3, raw_data, 9, \Float4;
+			PackRawBytes joints.robax.rax_4, raw_data, 13, \Float4;
+			PackRawBytes joints.robax.rax_5, raw_data, 17, \Float4;
+			PackRawBytes joints.robax.rax_6, raw_data, 21, \Float4;
+			!data := "";
+			!data := data + date + " " + time + " ";
+			!data := data + NumToStr(ClkRead(timer),2) + " ";
+			!data := data + NumToStr(joints.robax.rax_1,2) + " ";
+			!data := data + NumToStr(joints.robax.rax_2,2) + " ";
+			!data := data + NumToStr(joints.robax.rax_3,2) + " ";
+			!data := data + NumToStr(joints.robax.rax_4,2) + " ";
+			!data := data + NumToStr(joints.robax.rax_5,2) + " ";
+			!data := data + NumToStr(joints.robax.rax_6,2) + " ";
 			IF IsMechUnitActive(STN1) THEN
-				data := data + NumToStr(joints.extax.eax_b,2) + " ";
-				data := data + NumToStr(joints.extax.eax_c,2) + " ";!End of string
+				PackRawBytes joints.extax.eax_b, raw_data, 25, \Float4;
+				PackRawBytes joints.extax.eax_c, raw_data, 29, \Float4;
+				!data := data + NumToStr(joints.extax.eax_b,2) + " ";
+				!data := data + NumToStr(joints.extax.eax_c,2) + " ";!End of string
 			ENDIF
 			IF connected = TRUE THEN
-				SocketSend clientSocket \Str:=data;
+				PackRawBytes RawBytesLen(raw_data), buffer, 1, \IntX := UDINT; ! Packet length (excluding this prefix) 
+				CopyRawBytes raw_data, 1, buffer, 5; ! Message data 
+				SocketSend clientSocket \RawData:=buffer;
 			ENDIF
 			WaitTime loggerWaitTime;
-		ENDIF
 	ENDWHILE
 	ERROR
 	IF ERRNO=ERR_SOCK_CLOSED THEN
 		TPWrite "LOGGER: Client has closed connection.";
 	ELSE
 		TPWrite "LOGGER: Connection lost: Unknown problem.";
+		TPWrite "LOGGER: ERRNO: " + NumtoStr(ERRNO,0);
 	ENDIF
 	connected:=FALSE;
 	!Closing the server

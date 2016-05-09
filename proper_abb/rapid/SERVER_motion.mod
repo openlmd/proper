@@ -10,6 +10,9 @@ LOCAL VAR bool trajectoryTrigg{MAX_BUFFER};
 LOCAL VAR num trajectory_size := 0;
 LOCAL VAR intnum intr_new_trajectory;
 LOCAL VAR intnum intr_cancel_motion;
+LOCAL VAR robtarget pAct;
+LOCAL VAR robtarget pActB;
+LOCAL VAR robtarget pActC;
 !//Control of the laser
 VAR triggdata laserON_fl015;
 VAR triggdata laserOFF_fl015;
@@ -29,6 +32,7 @@ PROC Initialize()
 		TriggIO laserOFF_fl015, 0\DOp:=Do_FL_RayoLaserEnc, 0;
 	n_cartesian_command := 1;
 	n_cartesian_motion := 1;
+	!ActUnit STN1;
 	!Find the current external axis values so they don't move when we start
 	!jointsTarget := CJointT();
 	!externalAxis := jointsTarget.extax;
@@ -59,6 +63,7 @@ PROC main()
 	IPers cancel_motion, intr_cancel_motion;
 
     WHILE true DO
+		pAct := CRobT(\Tool:=currentTool \WObj:=currentWObj);
         ! Check for new Trajectory
         IF (new_trajectory) THEN
             init_trajectory;
@@ -86,21 +91,43 @@ PROC main()
           TEST command_type{n_cartesian_motion}
             CASE 1: !Cartesian linear move
               moveCompleted := FALSE;
+              cartesianTarget{n_cartesian_motion}.extax := pAct.extax;
               MoveL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, currentZone, currentTool \WObj:=currentWobj ;
               moveCompleted := TRUE;
 
             CASE 10: !Cartesian joint move
               moveCompleted := FALSE;
+              cartesianTarget{n_cartesian_motion}.extax := pAct.extax;
               MoveJ cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, currentZone, currentTool \WObj:=currentWobj ;
               moveCompleted := TRUE;
 
+            CASE 121: !External axis move
+              moveCompleted := FALSE;
+              pActB := CRobT(\Tool:=currentTool \WObj:=currentWObj);
+              pActB.extax.eax_b := extAxisMove{n_cartesian_motion};
+              MOVEJ pActB, cartesian_speed{n_cartesian_motion}, currentZone, currentTool \WObj:=currentWobj;
+              !IndAMove STN1, 1\ToAbsNum:=cartesianTarget{n_cartesian_motion}.extax.eax_b, cartesian_speed{n_cartesian_motion}.v_reax;
+              !IndReset STN1, 1;
+							moveCompleted := TRUE;
+
+						CASE 122: !External axis move
+							moveCompleted := FALSE;
+							pActC := CRobT(\Tool:=currentTool \WObj:=currentWObj);
+							pActC.extax.eax_c := extAxisMove{n_cartesian_motion};
+							MOVEJ pActC, cartesian_speed{n_cartesian_motion}, currentZone, currentTool \WObj:=currentWobj;
+							!IndAMove STN1, 2\ToAbsNum:=cartesianTarget{n_cartesian_motion}.extax.eax_b, cartesian_speed{n_cartesian_motion}.v_reax;
+							!IndReset STN1, 2;
+							moveCompleted := TRUE;
+
             CASE 110: !Trigger linear OFF
               moveCompleted := FALSE;
+              cartesianTarget{n_cartesian_motion}.extax := pAct.extax;
               TriggL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, laserOFF_fl015, currentZone, currentTool \WObj:=currentWobj ;
 							moveCompleted := TRUE;
 
             CASE 111: !Trigger linear ON
               moveCompleted := FALSE;
+              cartesianTarget{n_cartesian_motion}.extax := pAct.extax;
               TriggL cartesianTarget{n_cartesian_motion}, cartesian_speed{n_cartesian_motion}, laserON_fl015, currentZone, currentTool \WObj:=currentWobj ;
 							moveCompleted := TRUE;
 
@@ -210,6 +237,11 @@ LOCAL TRAP new_cancel_motion_handler
 	cancel_motion := FALSE;
 	n_cartesian_motion := n_cartesian_command;
 	abort_trajectory;
+	SetDO Do_FL_RayoLaserEnc, 0;
+	SetDO doGTV_StartExtern, 0;
+	SetDO doGTV_Stop, 0;
+	SetDO Do_FL_RedENC, 0;
+	SetDO Do_FL_StandByEnc, 0;
 	!clear_path;
 ENDTRAP
 

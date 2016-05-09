@@ -17,6 +17,7 @@ import inspect
 #from threading import Thread
 from collections import deque
 import logging
+from struct import *
 
 log = logging.getLogger(__name__)
 log.addHandler(logging.NullHandler())
@@ -56,6 +57,7 @@ class Robot:
     def connect_logger(self, remote, maxlen=10):
         self.pose = deque(maxlen=maxlen)
         self.joints = deque(maxlen=maxlen)
+        self.float_joints = deque(maxlen=maxlen)
 
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect(remote)
@@ -64,6 +66,17 @@ class Robot:
     def read_logger(self):
         data = self.s.recv(4096).split()
         self.joints.append(data)
+
+    def read_raw_logger(self):
+        raw_data = self.s.recv(4096)
+        if len(raw_data) > 27:
+            n_joints = unpack('i', raw_data[:4])[0]
+            if n_joints == 32:
+                self.float_joints.append(unpack('ffffffff',
+                                         raw_data[4:n_joints+4]))
+            elif n_joints == 24:
+                self.float_joints.append(unpack('ffffff',
+                                         raw_data[4:n_joints+4]))
 
     def set_units(self, linear, angular):
         units_l = {'millimeters': 1.0,
@@ -256,6 +269,17 @@ class Robot:
         msg += format(zone[1], "+08.4f") + " "
         msg += format(zone[2], "+08.4f") + " #"
         self.send(msg)
+
+    def move_ext_axis(self, axis, rot_position, rot_speed):
+        '''
+        A function to move a external axis to a specified position
+        in degrees
+        '''
+        msg = '12 ' + str(int(axis)) + ' '
+        msg += str(float(rot_position)) + ' '
+        msg += str(float(rot_speed)) + ' #'
+        #return
+        return self.send(msg)
 
     def buffer_add(self, pose, trigger=False, trigger_set=False):
         '''

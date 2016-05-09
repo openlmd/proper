@@ -14,8 +14,9 @@ class NdRobotLogger():
 
         self.msg_joint_state = JointState()
         self.msg_joint_state.name = ['joint_1', 'joint_2', 'joint_3',
-                                     'joint_4', 'joint_5', 'joint_6']
-        self.msg_joint_state.position = [0, 0, 0, 0, 0, 0]
+                                     'joint_4', 'joint_5', 'joint_6',
+                                     'irbp_a250/joint2', 'irbp_a250/joint4']
+        self.msg_joint_state.position = [0, 0, 0, 0, 0, 0, 0, 0]
 
         robot_ip = rospy.get_param('~robot_ip', '192.168.30.4')
         j23_coupled = rospy.get_param('~J23_coupled', True)
@@ -26,16 +27,16 @@ class NdRobotLogger():
 
     def talker(self, j23_coupled=True):
         while not rospy.is_shutdown():
-            self.logger_robot.read_logger()
-            if len(self.logger_robot.joints) > 0:
-                joints_pose = self.logger_robot.joints.popleft()
-                for i in range(0, 6):
+            self.logger_robot.read_raw_logger()
+            if len(self.logger_robot.float_joints) > 0:
+                self.msg_joint_state.header.stamp = rospy.Time.now()
+                joints_pose = self.logger_robot.float_joints.popleft()
+                for i in range(0, len(joints_pose)): #len(joints_pose)-3
                     self.msg_joint_state.position[i] = (
-                        np.deg2rad(float(joints_pose[i+3])))
+                        np.deg2rad(joints_pose[i]))
                 if j23_coupled:
                     self.msg_joint_state.position[2] += (
                         -1 * self.msg_joint_state.position[1])
-                self.msg_joint_state.header.stamp = rospy.Time.now()
                 #rospy.loginfo(len(logger_robot.joints))
                 self.pub.publish(self.msg_joint_state)
             rospy.sleep(0.01)
