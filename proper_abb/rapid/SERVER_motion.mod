@@ -237,6 +237,11 @@ LOCAL TRAP new_cancel_motion_handler
 	cancel_motion := FALSE;
 	n_cartesian_motion := n_cartesian_command;
 	abort_trajectory;
+	SetDO Do_FL_RayoLaserEnc, 0;
+	SetDO doGTV_StartExtern, 0;
+	SetDO doGTV_Stop, 0;
+	SetDO Do_FL_RedENC, 0;
+	SetDO Do_FL_StandByEnc, 0;
 	!clear_path;
 ENDTRAP
 
