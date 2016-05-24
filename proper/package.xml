@@ -1,7 +1,8 @@
 <package>
   <name>proper</name>
-  <version>0.1.0</version>
+  <version>0.3.0</version>
   <description>This package provides proper packages.</description>
+  <author email="jorge.rodriguez@aimen.es">Jorge Rodríguez-Araújo</author>
   <maintainer email="jorge.rodriguez@aimen.es">Jorge Rodríguez-Araújo</maintainer>
   <license>BSD</license>
 

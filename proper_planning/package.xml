@@ -2,7 +2,8 @@
 <package>
   <name>proper_planning</name>
   <version>0.1.0</version>
-  <description>The proper_planning package</description>
+  <description>The proper_planning package.</description>
+  <author email="jorge.rodriguez@aimen.es">Jorge Rodríguez-Araújo</author>
   <maintainer email="jorge.rodriguez@aimen.es">Jorge Rodríguez-Araújo</maintainer>
   <license>BSD</license>
 
@@ -15,5 +16,4 @@
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>std_msgs</run_depend>
-
 </package>

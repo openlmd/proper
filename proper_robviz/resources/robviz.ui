@@ -83,7 +83,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>../../../mashes/mashes_robviz/resources/mashes.png</pixmap>
+       <pixmap>proper.png</pixmap>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
