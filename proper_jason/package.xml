@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <package>
   <name>proper_jason</name>
-  <version>0.1.0</version>
+  <version>0.3.0</version>
   <description>The proper_jason package</description>
+  <author email="baltassar.lodeiro@aimen.es">Baltasar Lodeiro Señaris</author>
   <maintainer email="baltassar.lodeiro@aimen.es">Baltasar Lodeiro Señaris</maintainer>
   <license>BSD</license>
 
@@ -15,5 +16,4 @@
   <run_depend>roscpp</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>std_msgs</run_depend>
-
 </package>

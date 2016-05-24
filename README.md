@@ -62,7 +62,7 @@ Informatics (INDIN), vol., no., pp. 308-313, 22-24 July 2015.
 
 ## Description
 
-The 3D monitoring system uses the [Etna Project](https://github.com/jraraujo-aimen/etna)
+The 3D monitoring system uses the [Etna Project](https://github.com/openlmd/etna)
 implementation to provide an on-line scanning solution based on the
 triangulation principle integrated with the laser head.
 
@@ -97,6 +97,7 @@ cell in its real dimensions.
 
 This meta-package contains two packages:
 - proper_workcell: contains the working cell description files.
+- proper_robviz: contains the customized graphical user interface.
 - proper_cloud: contains some useful tools used for 3D filtering (under
   development).
 
@@ -106,24 +107,28 @@ This meta-package contains two packages:
 
 To record a bag file with the scanning information:
 
-```
-roslaunch proper_workcell proper_workcell.launch
-roslaunch proper_workcell proper_bagrecord.launch filename:=scan.bag
+```shell
+roslaunch proper_workcell workcell.launch
+rosrun rosbag record -O scan.bag /camera/cloud /joint_statates
 ```
 
 To play a bag file with the scanning information:
 
-```
-roslaunch proper_workcell proper_bagplay.launch filename:=scan.bag
+```shell
+roscore
+rosrun rosbag play scan.bag --clock
+roslaunch proper_robviz robviz.launch sim:=true
 ```
 
-To convert a bag file with the scanning information to a point cloud in xyz
-format:
+To convert a bag file with the scanning information to a point cloud in *xyz*
+format you can use the button *Record Cloud* in the interface, or to run the
+commands to bellow:
 
 ```shell
 roscore
+roslaunch proper_workcell workcell.launch sim:=true
 rosrun proper_cloud sub_cloud.py
-roslaunch proper_workcell proper_bagplay.launch filename:=scan.bag
+rosrun rosbag play scan.bag --clock
 ```
 
 ## Acknowledgement

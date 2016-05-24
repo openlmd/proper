@@ -1,8 +1,9 @@
 <?xml version="1.0"?>
 <package>
   <name>proper_robviz</name>
-  <version>0.1.0</version>
+  <version>0.3.0</version>
   <description>The proper_robviz package</description>
+  <author email="jorge.rodriguez@aimen.es">Jorge Rodríguez-Araújo</author>
   <maintainer email="jorge.rodriguez@aimen.es">Jorge Rodríguez-Araújo</maintainer>
   <license>BSD</license>
 
