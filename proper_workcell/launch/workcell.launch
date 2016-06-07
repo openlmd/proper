@@ -16,7 +16,7 @@
 
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find proper_workcell)/config/workcell.rviz" required="true" if="$(arg gui)" />
 
-  <include file="$(find etna_scanning)/launch/ueye_profile.launch">
+  <include file="$(find etna_scanning)/launch/profile.launch" unless="$(arg sim)">
     <arg name="gui" value="$(arg gui)" />
     <arg name="sim" value="$(arg sim)" />
   </include>
