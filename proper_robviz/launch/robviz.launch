@@ -6,7 +6,7 @@
       <arg name="sim" value="$(arg sim)" />
     </include>
 
-    <node name="velocity" pkg="mashes_measures" type="nd_velocity.py" />
+    <node name="velocity" pkg="mashes_measures" type="nd_velocity.py" respawn="true" />
 
     <node name="robviz" pkg="proper_robviz" type="robviz.py"/>
 </launch>

@@ -29,7 +29,8 @@ class QtScan(QtGui.QWidget):
 
         self.recording = False
         cloud_topic = rospy.get_param('~cloud', '/ueye/cloud')
-        rospy.Subscriber(cloud_topic, PointCloud2, self.callback_point_cloud, queue_size=1)
+        rospy.Subscriber(
+            cloud_topic, PointCloud2, self.cbPointCloud, queue_size=1)
 
         self.listener = tf.TransformListener()
         self.filename = '/home/jraraujo/test.xyz'
@@ -47,7 +48,7 @@ class QtScan(QtGui.QWidget):
             points[k] = np.dot(matrix, point)[:3]
         return points
 
-    def callback_point_cloud(self, data):
+    def cbPointCloud(self, data):
         if self.recording:
             cloud_msg = data
             stamp = data.header.stamp
