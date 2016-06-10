@@ -1,12 +1,5 @@
 <?xml version="1.0" ?>
 <robot name="wt03_head" xmlns:xacro="http://ros.org/wiki/xacro">
-  <property name="pi" value="3.141592654" />
-
-  <xacro:property name="tcp_frame">
-    <origin xyz="0.2462 -0.0203 0.4320" rpy="${pi} -1.047197555 ${pi}" />
-  </xacro:property>
-
-  <!-- Head -->
   <link name="head0">
     <visual>
       <geometry>
@@ -25,13 +18,4 @@
       </material>
     </collision>
   </link>
-
-  <!-- TCP -->
-  <link name="tcp0"/>
-  <joint name="tool0-tcp0" type="fixed">
-    <parent link="tool0"/>
-    <child link="tcp0"/>
-    <xacro:insert_block name="tcp_frame" />
-    <axis xyz="0 0 1"/>
-  </joint>
 </robot>

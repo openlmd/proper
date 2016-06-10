@@ -86,6 +86,15 @@ class QtPath(QtGui.QWidget):
         self.tmrRunPath = QtCore.QTimer(self)
         self.tmrRunPath.timeout.connect(self.timeRunPathEvent)
 
+        # Parse robot description file
+        from urdf_parser_py.urdf import URDF
+        robot = URDF.from_parameter_server()
+        workobject = robot.joint_map['workobject']
+        tcp = robot.joint_map['tcp0']
+        print 'Workobject:', workobject.origin.position, workobject.origin.rotation
+        print 'TCP:', tcp.origin.position, tcp.origin.rotation
+
+
     def insertPose(self, pose):
         (x, y, z), (qx, qy, qz, qw) = pose
         str_pose = '((%.3f, %.3f, %.3f), (%.4f, %.4f, %.4f, %.4f))' %(x, y, z, qx, qy, qz, qw)
