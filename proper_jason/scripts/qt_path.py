@@ -93,6 +93,8 @@ class QtPath(QtGui.QWidget):
         tcp = robot.joint_map['tcp0']
         print 'Workobject:', workobject.origin.position, workobject.origin.rotation
         print 'TCP:', tcp.origin.position, tcp.origin.rotation
+        import tf
+        print tf.transformations.quaternion_from_euler(0, 0, 0)
 
 
     def insertPose(self, pose):
