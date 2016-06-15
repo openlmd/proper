@@ -60,6 +60,7 @@ class QtPath(QtGui.QWidget):
         self.listWidgetPoses.itemDoubleClicked.connect(self.qlistDoubleClicked)
 
         self.ok_command = "OK"
+        self.initMarkerArray()
 
         # Parse robot description file
         robot = URDF.from_parameter_server()
@@ -67,10 +68,10 @@ class QtPath(QtGui.QWidget):
         workobject = robot.joint_map['workobject']
 
         tool = [tcp.origin.position,
-                tf.quaternion_from_euler(*tcp.origin.rotation)]
+                list(tf.quaternion_from_euler(*tcp.origin.rotation))]
         print 'Tool:', tool
         workobject = [workobject.origin.position,
-                      tf.quaternion_from_euler(*workobject.origin.rotation)]
+                      list(tf.quaternion_from_euler(*workobject.origin.rotation))]
         print 'Workobject:', workobject
         powder = rospy.get_param('/powder')
         print 'Powder:', powder
@@ -104,7 +105,7 @@ class QtPath(QtGui.QWidget):
         self.marker_array.markers.append(self.lines.marker)
 
         self.arrow = ArrowMarker(0.1)
-        self.arrow.set_color((0, 0, 1, 1))
+        self.arrow.set_color((0, 0, 0, 0))
         self.arrow.set_frame('/workobject')
         # self.arrow.set_position((0.2, 0.2, 0.2))
         # self.arrow.set_orientation((0, 0, 0, 1))
@@ -135,16 +136,19 @@ class QtPath(QtGui.QWidget):
         else:
             return None
 
+    def loadCommands(self, commands):
+        [self.insertCommand(cmd) for cmd in commands]
+        self.arr = []
+        self.getMoveCommands()
+
     def btnLoadPathClicked(self):
         self.listWidgetPoses.clear()
         filename = QtGui.QFileDialog.getOpenFileName(
             self, 'Load Path Routine', os.path.join(path, 'routines'),
             'Jason Routine Files (*.jas)')[0]
         print 'Load routine:', filename
-        cmds = self.jason.load_commands(filename)
-        [self.insertCommand(cmd) for cmd in cmds]
-        self.arr = []
-        self.getMoveCommands()
+        commands = self.jason.load_commands(filename)
+        self.loadCommands(commands)
 
     def btnSavePathClicked(self):
         filename = QtGui.QFileDialog.getSaveFileName(

@@ -6,7 +6,6 @@ import rospkg
 import numpy as np
 #from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
-# from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 
 from markers import MeshMarker
 from markers import LinesMarker

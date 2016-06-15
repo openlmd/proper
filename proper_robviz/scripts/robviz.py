@@ -10,13 +10,11 @@ from python_qt_binding import QtCore
 
 import rviz
 
-import numpy as np
-from std_msgs.msg import String
 from mashes_measures.msg import MsgVelocity
 
+from qt_scan import QtScan
 from qt_param import QtParam
 from qt_part import QtPart
-from qt_scan import QtScan
 from qt_path import QtPath
 
 
@@ -125,8 +123,8 @@ class RobPathUI(QtGui.QMainWindow):
         self.tabWidget.setCurrentWidget(self.qtPart)
 
     def qtPartAccepted(self, path):
-        cmds = self.qtPath.jason.path2cmds(path)
-        [self.qtPath.insertCommand(cmd) for cmd in cmds]
+        commands = self.qtPath.jason.path2cmds(path)
+        self.qtPath.loadCommands(commands)
         self.tabWidget.setCurrentWidget(self.qtPath)
 
     def btnQuitClicked(self):
