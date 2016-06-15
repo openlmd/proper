@@ -1,18 +1,13 @@
-{"vel":30}
+{"speed":30}
 {"path_clear":1}
-{"move":[[100, 0, 150], [1, 0, 0, 0]], "vel":50}
+{"move":[[100, 0, 150], [1, 0, 0, 0]], "speed":50}
 {"pose":[[80, 0, 120], [1, 0, 0, 0], true]}
 {"path_move":1}
 {"path_clear":1}
 {"tool":[[215.7, -22.4, 473.8], [0.5, 0.0, -0.8660254, 0.0]]}
 {"workobject":[[1655, -87, 932], [1, 0, 0, 0]]}
-{"set_dio": [0, 1]}
-{"set_ao": [5, 0]}
-{"laser_prog": 11}
-{"laser_pow": 15000}
-{"gtv_start": 1}
-{"gtv_stop": 1}
-{"gtv_disk": 50}
-{"gtv_massflow": 50}
-{"gtv_start": 0}
-{"gtv_stop": 0}
+{"power": 1000}
+{"powder_tart": 1}
+{"stirrer": 50}
+{"turntable": 5}
+{"powder_start": 0}

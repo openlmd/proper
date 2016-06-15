@@ -4,30 +4,25 @@ import json
 
 class Jason():
     def __init__(self):
+        self.tool = [[0, 0, 0], [1, 0, 0, 0]]
+        self.workobject = [[0, 0, 0], [1, 0, 0, 0]]
 
-        # Powder conditions
-        self.carrier_gas = 3
-        self.stirrer = 20
-        self.turntable = 20
+        self.carrier = 0
+        self.stirrer = 0
+        self.turntable = 0
 
-        self.power = 1200  # define by layer
+        self.speed = 0
+        self.power = 0
+
         self.track_speed = 100
-
-        self.speed = 'vl'  # use speeddata v6
-        self.zone = 'z0'
-
         self.travel_speed = 'v50'
         self.travel_zone = 'z0'
-
-        # Tool pose
-        self.tool = [[215.7, -22.4, 473.8], [0.50, 0.0, -0.8660254, 0.0]]
-        # Work Object pose
-        self.workobject = [[1655, -87, 932], [1, 0, 0, 0]]
 
     def path2cmds(self, path):
         cmds = [json.dumps({'tool': self.tool}),
                 json.dumps({'workobject': self.workobject}),
-                json.dumps({'vel': self.track_speed})]
+                json.dumps({'speed': self.speed}),
+                json.dumps({'power': self.power})]
         for k, pose in enumerate(path):
             position, orientation, laser = pose
             x, y, z = position.round(1)
@@ -52,6 +47,21 @@ class Jason():
         except IOError:
             pass
 
+    def set_tool(self, tool):
+        self.tool = tool
+
+    def set_workobject(self, workobject):
+        self.workobject = workobject
+
+    def set_powder(self, carrier, stirrer, turntable):
+        self.carrier = carrier
+        self.stirrer = stirrer
+        self.turntable = turntable
+
+    def set_process(self, speed, power):
+        self.speed = speed
+        self.power = power
+
 
 if __name__ == '__main__':
     routine = Jason()
@@ -59,6 +69,10 @@ if __name__ == '__main__':
             [[1000, 0, 800], [0, 0, 1, 0]],
             [[1000, 0, 1000], [0, 0, 1, 0]]]
     filename = '../../routines/proper.jas'
+    routine.set_tool([[215.7, -22.4, 473.8], [0.5, 0.0, -0.8660254, 0.0]])
+    routine.set_workobject([[1655, -87, 932], [1, 0, 0, 0]])
+    routine.set_powder(3, 20, 20)
+    routine.set_process(8, 1000)
     cmds = routine.path2cmds(path)
     routine.save_commands(filename, cmds)
     print cmds

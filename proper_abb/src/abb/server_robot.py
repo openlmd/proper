@@ -1,4 +1,3 @@
-import json
 from abb import Robot
 
 
@@ -103,75 +102,6 @@ class ServerRobot(Robot):
         else:
             print 'Invalid command format'
 
-    def proc_command(self, comando):
-        '''
-        Procesa comandos en formato JSON
-        '''
-        try:
-            comando_json = json.loads(comando.lower())
-        except ValueError, e:
-            print "Command is not json"
-            print e
-        else:
-            for dato in sorted(comando_json, reverse=True):
-                if dato == 'vel':
-                    self.speed(comando_json[dato])
-                elif dato == 'pose':
-                    self.buffer_pose(comando_json[dato])
-                elif dato == 'workobject':
-                    self.workobject(comando_json[dato])
-                elif dato == 'tool':
-                    self.set_tool(comando_json[dato])
-                elif dato == 'move':
-                    self.move(comando_json[dato])
-                elif dato == 'movej':
-                    self.move(comando_json[dato], movel=False)
-                elif dato == 'move_ext':
-                    self.move_ext(comando_json[dato])
-                elif dato == 'path_move':
-                    if self.buffer_len() > 0:
-                        self.buffer_execute()
-                elif dato == 'path_clear':
-                    self.clear_buffer()
-                elif dato == 'set_dio':
-                    self.set_digital(comando_json[dato])
-                elif dato == 'set_ao':
-                    self.set_analog(comando_json[dato])
-                elif dato == 'laser_prog':
-                    self.set_group((comando_json[dato], 0))
-                elif dato == 'laser_pow':
-                    self.set_group((comando_json[dato], 1))
-                elif dato == 'gtv_start':
-                    self.set_digital((comando_json[dato], 0))
-                elif dato == 'gtv_stop':
-                    self.set_digital((comando_json[dato], 1))
-                elif dato == 'gtv_disk':
-                    self.set_analog((comando_json[dato], 0))
-                elif dato == 'gtv_massflow':
-                    self.set_analog((comando_json[dato], 1))
-                elif dato == 'get_pose':
-                    return self.get_cartesian()
-                elif dato == 'wait_time':
-                    self.wait_time(comando_json[dato])
-                elif dato == 'wait_standby':
-                    self.wait_input(comando_json[dato], 0)
-                elif dato == 'wait_generalfault':
-                    self.wait_input(comando_json[dato], 1)
-                elif dato == 'laser_main':
-                    self.set_digital((comando_json[dato], 2))
-                elif dato == 'laser_standby':
-                    self.set_digital((comando_json[dato], 3))
-                elif dato == 'weldgas':
-                    self.set_digital((comando_json[dato], 4))
-                elif dato == 'rootgas':
-                    self.set_digital((comando_json[dato], 5))
-                elif dato == 'cancel':
-                    self.cancel_motion()
-                else:
-                    print 'Dato deconocido: ' + dato
-        #if 'pos' in comando_json:
-        #    self.buffer_add(comando_json['pos'])
-
 
 if __name__ == '__main__':
     server_robot = ServerRobot()
@@ -183,4 +113,6 @@ if __name__ == '__main__':
     # server_robot.speed(100)
     # server_robot.move([[900, 0, 900], [0, 0, 1, 0]])
     # server_robot.load_file('puntos.txt')
+    server_robot.set_digital(1)
+    server_robot.set_analog(50)
     server_robot.disconnect()

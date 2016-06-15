@@ -27,14 +27,10 @@ class MyViz(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
 
-        ## rviz.VisualizationFrame is the main container widget of the
-        ## regular RViz application. In this example, we disable everything
-        ## so that the only thing visible is the 3D render window.
         self.frame = rviz.VisualizationFrame()
         self.frame.setSplashPath("")
         self.frame.initialize()
 
-        # Read the configuration from the config file for visualization.
         reader = rviz.YamlConfigReader()
         config = rviz.Config()
 
@@ -74,8 +70,6 @@ class MyViz(QtGui.QWidget):
 
         layout.addWidget(self.frame)
 
-    ## switchToView() works by looping over the views saved in the
-    ## ViewManager and looking for one with a matching name.
     def switchToView(self, view_name):
         view_man = self.manager.getViewManager()
         for i in range(view_man.getNumViews()):
@@ -104,14 +98,14 @@ class RobPathUI(QtGui.QMainWindow):
 
         self.boxPlot.addWidget(MyViz())
 
+        self.qtScan = QtScan()
         self.qtParam = QtParam()
         self.qtPart = QtPart()
-        self.qtScan = QtScan()
         self.qtPath = QtPath()
 
-        self.tabWidget.addTab(self.qtParam, 'Parameters')
-        self.tabWidget.addTab(self.qtPart, 'Part')
         self.tabWidget.addTab(self.qtScan, 'Scan')
+        self.tabWidget.addTab(self.qtParam, 'Params')
+        self.tabWidget.addTab(self.qtPart, 'Part')
         self.tabWidget.addTab(self.qtPath, 'Path')
 
         self.qtParam.accepted.connect(self.qtParamAccepted)
@@ -122,13 +116,13 @@ class RobPathUI(QtGui.QMainWindow):
         self.btnQuit.setIcon(icon)
 
         rospy.Subscriber(
-            '/velocity', MsgVelocity, self.cb_velocity, queue_size=1)
+            '/velocity', MsgVelocity, self.cbVelocity, queue_size=1)
 
-    def cb_velocity(self, msg_velocity):
+    def cbVelocity(self, msg_velocity):
         self.lblInfo.setText("Speed: %.1f mm/s" % (1000 * msg_velocity.speed))
 
-    def qtParamAccepted(self, params):
-        [self.qtPath.insertCommand(cmd) for cmd in params]
+    def qtParamAccepted(self):
+        self.tabWidget.setCurrentWidget(self.qtPart)
 
     def qtPartAccepted(self, path):
         cmds = self.qtPath.jason.path2cmds(path)

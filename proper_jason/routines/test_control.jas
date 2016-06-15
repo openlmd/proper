@@ -1,28 +1,26 @@
 {"tool": [[215.7, -22.4, 473.8], [0.5, 0.0, -0.8660254, 0.0]]}
 {"workobject": [[1655, -87, 932], [1, 0, 0, 0]]}
-{"vel": 50}
+{"speed": 50}
 {"laser_main": 1}
 {"laser_standby": 1}
 {"laser_prog": 13}
 {"wait_standby": 1}
 {"wait_generalfault": 0}
 {"weldgas": 1}
-{"gtv_disk": 40}
-{"gtv_massflow":33}
-{"gtv_stop": 0}
-{"gtv_start": 1}
+{"stirrer": 40}
+{"turntable":3}
+{"powder_start": 1}
 {"wait_time": 5}
 {"move":[[-25, -25, 125], [1.0, 0.0, 0.0, 0.0]]}
 {"move": [[60, -75, 125], [1, 0, 0, 0]]}
-{"vel":25}
+{"speed":25}
 {"move":[[90, -90, 25.5], [1, 0, 0, 0]]}
-{"vel": 8}
+{"speed": 8}
 {"move": [[115, 5, 25.5], [1, 0, 0, 0], true]}
 {"move": [[115, 45, 25.5], [1, 0, 0, 0], false]}
-{"vel": 50}
+{"speed": 50}
 {"move":[[60, 60, 125], [1, 0, 0, 0]]}
 {"move": [[-25, -25, 125], [1, 0, 0, 0]]}
-{"gtv_stop":1}
-{"gtv_start":0}
+{"powder_start":0}
 {"weldgas": 0}
 {"laser_standby": 0}

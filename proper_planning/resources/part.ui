@@ -158,32 +158,6 @@
      </layout>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QPushButton" name="btnAcceptPath">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>16777215</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <weight>50</weight>
-       <italic>false</italic>
-       <bold>false</bold>
-      </font>
-     </property>
-     <property name="text">
-      <string>Accept Path</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0">
     <widget class="QPushButton" name="btnProcessMesh">
      <property name="minimumSize">
@@ -496,19 +470,6 @@ border: 1px solid gray;</string>
      </layout>
     </widget>
    </item>
-   <item row="4" column="0">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
    <item row="7" column="0">
     <widget class="Line" name="line_4">
      <property name="orientation">
@@ -555,6 +516,52 @@ border: 1px solid gray;</string>
       <string>Process Layer</string>
      </property>
     </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QPushButton" name="btnAcceptPath">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <italic>false</italic>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>Accept Path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>

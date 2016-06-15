@@ -5,6 +5,8 @@ import json
 import rospy
 import rospkg
 import numpy as np
+import tf.transformations as tf
+
 #from proper_abb.msg import MsgRobotCommand
 from proper_abb.srv import SrvRobotCommand
 # from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
@@ -12,6 +14,8 @@ from visualization_msgs.msg import MarkerArray
 
 from markers import LinesMarker
 from markers import ArrowMarker
+
+from urdf_parser_py.urdf import URDF
 
 from python_qt_binding import loadUi
 from python_qt_binding import QtGui
@@ -35,7 +39,7 @@ class QtPath(QtGui.QWidget):
         except:
             rospy.loginfo('ERROR connecting to service robot_send_command.')
         #self.pub = rospy.Publisher(
-        #    'robot_command_json', MsgRobotCommand, queue_size=10)
+        #    import tf'robot_command_json', MsgRobotCommand, queue_size=10)
 
         self.btnLoadPath.clicked.connect(self.btnLoadPathClicked)
         icon = QtGui.QIcon.fromTheme('document-open')
@@ -55,9 +59,35 @@ class QtPath(QtGui.QWidget):
         self.listWidgetPoses.itemSelectionChanged.connect(self.lstPosesClicked)
         self.listWidgetPoses.itemDoubleClicked.connect(self.qlistDoubleClicked)
 
-        self.jason = Jason()
         self.ok_command = "OK"
 
+        # Parse robot description file
+        robot = URDF.from_parameter_server()
+        tcp = robot.joint_map['tcp0']
+        workobject = robot.joint_map['workobject']
+
+        tool = [tcp.origin.position,
+                tf.quaternion_from_euler(*tcp.origin.rotation)]
+        print 'Tool:', tool
+        workobject = [workobject.origin.position,
+                      tf.quaternion_from_euler(*workobject.origin.rotation)]
+        print 'Workobject:', workobject
+        powder = rospy.get_param('/powder')
+        print 'Powder:', powder
+        process = rospy.get_param('/process')
+        print 'Process:', process
+
+        self.jason = Jason()
+        self.jason.set_tool(tool)
+        self.jason.set_workobject(workobject)
+        self.jason.set_powder(
+            powder['carrier'], powder['stirrer'], powder['turntable'])
+        self.jason.set_process(process['speed'], process['power'])
+
+        self.tmrRunPath = QtCore.QTimer(self)
+        self.tmrRunPath.timeout.connect(self.timeRunPathEvent)
+
+    def initMarkerArray(self):
         self.offset_position = 100
         self.quat = [0, np.sin(np.deg2rad(45)), 0, np.cos(np.deg2rad(45))]
         self.quat_inv = [0, -np.sin(np.deg2rad(45)), 0, np.cos(np.deg2rad(45))]
@@ -82,20 +112,6 @@ class QtPath(QtGui.QWidget):
 
         for id, m in enumerate(self.marker_array.markers):
             m.id = id
-
-        self.tmrRunPath = QtCore.QTimer(self)
-        self.tmrRunPath.timeout.connect(self.timeRunPathEvent)
-
-        # Parse robot description file
-        from urdf_parser_py.urdf import URDF
-        robot = URDF.from_parameter_server()
-        workobject = robot.joint_map['workobject']
-        tcp = robot.joint_map['tcp0']
-        print 'Workobject:', workobject.origin.position, workobject.origin.rotation
-        print 'TCP:', tcp.origin.position, tcp.origin.rotation
-        import tf
-        print tf.transformations.quaternion_from_euler(0, 0, 0)
-
 
     def insertPose(self, pose):
         (x, y, z), (qx, qy, qz, qw) = pose
@@ -250,6 +266,7 @@ class QtPath(QtGui.QWidget):
 
 if __name__ == "__main__":
     rospy.init_node('path_panel')
+
     app = QtGui.QApplication(sys.argv)
     qt_path = QtPath()
     qt_path.show()
