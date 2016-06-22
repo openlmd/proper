@@ -25,7 +25,7 @@ class NdRobotServer():
         rospy.loginfo(rospy.get_caller_id() + " I heard %s", data.command)
         try:
             command = json.loads(data.command.lower())
-            if command == 'get_pose':
+            if 'get_pose' in command:
                 pose_rob = self.process_command(command)
                 return SrvRobotCommandResponse(str(pose_rob))
             self.process_command(command)
@@ -42,9 +42,9 @@ class NdRobotServer():
                 self.server_robot.workobject(command[cmd])
             elif cmd == 'speed':
                 self.server_robot.speed(command[cmd])
-            elif cmd = 'power':
+            elif cmd == 'power':
                 self.server_robot.set_group((11, 0))  # laser program 11
-                pwr == int((command[cmd] * 65535) / 1500)  # digital value
+                pwr = int((command[cmd] * 65535) / 1500)  # digital value
                 self.server_robot.set_group((pwr, 1))  # laser power
             elif cmd == 'pose':
                 self.server_robot.buffer_pose(command[cmd])
