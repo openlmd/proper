@@ -1,6 +1,8 @@
 <launch>
     <arg name="sim" default="false" />
 
+    <rosparam command="load" file="$(find proper_robviz)/config/params.yaml" />
+
     <include file="$(find proper_workcell)/launch/workcell.launch">
       <arg name="gui" value="false" />
       <arg name="sim" value="$(arg sim)" />
