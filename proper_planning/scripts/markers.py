@@ -187,7 +187,7 @@ class PartMarkers():
         self.marker_array.markers.append(self.path.marker)
         self.laser = SegmentsMarker()
         self.laser.set_frame('/workobject')
-        self.laser.set_color((1.0, 0.0, 0.0, 1.0))
+        self.laser.set_color((0.75, 0.0, 0.0, 1.0))
         self.marker_array.markers.append(self.laser.marker)
         for id, m in enumerate(self.marker_array.markers):
             m.id = id
@@ -204,6 +204,13 @@ class PartMarkers():
     def set_path(self, path):
         points = np.array([pose[0] for pose in path])
         self.path.set_points(0.001 * points)
+        points = []
+        for k in range(len(path) - 1):
+            if len(path[k]) == 3:
+                if path[k][2]:
+                    points.append(path[k][0])
+                    points.append(path[k+1][0])
+        points = np.array(points)
         self.laser.set_points(0.001 * points)
 
 
@@ -215,13 +222,15 @@ class PathMarkers():
         self.quat = [0, np.sin(np.deg2rad(45)), 0, np.cos(np.deg2rad(45))]
         self.quat_inv = [0, -np.sin(np.deg2rad(45)), 0, np.cos(np.deg2rad(45))]
 
-        self.lines = LinesMarker()
-        self.lines.set_size(0.005)
-        self.lines.set_color((0.75, 0.25, 0.0, 1))
-        self.lines.set_frame('/workobject')
-        self.marker_array.markers.append(self.lines.marker)
-
-        self.arrow = ArrowMarker(0.1)
+        self.path = LinesMarker()
+        self.path.set_frame('/workobject')
+        self.path.set_color((0.75, 0.75, 0.75, 1.0))
+        self.marker_array.markers.append(self.path.marker)
+        self.laser = SegmentsMarker()
+        self.laser.set_frame('/workobject')
+        self.laser.set_color((0.75, 0.25, 0.0, 1.0))
+        self.marker_array.markers.append(self.laser.marker)
+        self.arrow = ArrowMarker(0.075)
         self.arrow.set_color((0, 0, 0, 0))
         self.arrow.set_frame('/workobject')
         # self.arrow.set_position((0.2, 0.2, 0.2))
@@ -232,15 +241,23 @@ class PathMarkers():
             m.id = id
 
     def set_path(self, path):
-        points = np.array(path) * 0.001
-        self.lines.set_points(points)
+        points = np.array([pose[0] for pose in path])
+        self.path.set_points(0.001 * points)
+        points = []
+        for k in range(len(path) - 1):
+            if len(path[k]) == 3:
+                if path[k][2]:
+                    points.append(path[k][0])
+                    points.append(path[k+1][0])
+        points = np.array(points) * 0.001
+        self.laser.set_points(points)
 
     def set_pose(self, pose):
         if pose is not None:
             position, orientation = pose
             self.arrow.set_new_position(position)
             self.arrow.set_new_orientation(orientation)
-            self.arrow.set_color((0, 0, 1, 1))
+            self.arrow.set_color((0.0, 0.0, 0.75, 1))
         else:
             self.arrow.set_color((0, 0, 0, 0))
 
@@ -261,11 +278,6 @@ if __name__ == '__main__':
     cube.set_color((1, 1, 1, 0.7))
     cube.set_frame('/workobject')
     marker_array.markers.append(cube.marker)
-    lines = LinesMarker()
-    lines.set_points(points)
-    lines.set_color((1, 0, 0, 1))
-    lines.set_frame('/workobject')
-    marker_array.markers.append(lines.marker)
     arrow = ArrowMarker(0.1)
     arrow.set_color((0, 0, 1, 1))
     arrow.set_frame('/workobject')

@@ -203,14 +203,13 @@ class QtPath(QtGui.QWidget):
     def getMoveCommands(self):
         n_row = self.listWidgetPoses.count()
         # row = self.listWidgetPoses.currentRow()
-        points = []
+        path = []
         for row in range(n_row):
             item_text = self.listWidgetPoses.item(row)
             command = json.loads(item_text.text())
             if 'move' in command:
-                point = command["move"][0]
-                points.append(point)
-        self.path_markers.set_path(points)
+                path.append(command['move'])
+        self.path_markers.set_path(path)
         self.pub_marker_array.publish(self.path_markers.marker_array)
 
     def sendCommand(self, command):
