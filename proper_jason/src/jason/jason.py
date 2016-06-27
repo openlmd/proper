@@ -44,8 +44,6 @@ class Jason():
         commands.append('{"powder_start": 1}')
         commands.append('{"wait_time": 5}')
         commands.append('{"move":[[-25, -25, 125], [1.0, 0.0, 0.0, 0.0]]}')
-        commands.append('{"move":[[60, 60, 125], [1, 0, 0, 0]]}')
-        commands.append('{"move":[[90, 90, 25.5], [1, 0, 0, 0]]}')
         commands.append(self.speed)
         for k, pose in enumerate(path):
             cmd = self.get_command_pose(pose)
@@ -55,8 +53,6 @@ class Jason():
         commands.append('{"wait_time": 0.5}')
         commands.append('{"weldgas": 0}')
         commands.append('{"speed": 50}')
-        commands.append('{"move":[[90, -90, 25.5], [1, 0, 0, 0]]}')
-        commands.append('{"move": [[60, -75, 125], [1, 0, 0, 0]]}')
         commands.append('{"move": [[-25, -25, 125], [1, 0, 0, 0]]}')
         commands.append('{"laser_standby": 0}')
         return commands

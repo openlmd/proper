@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 import rospy
+import numpy as np
 
 from geometry_msgs.msg import Point
 from visualization_msgs.msg import Marker
 from visualization_msgs.msg import MarkerArray
+
+import robpath.transformations as tf
 
 
 class ShapeMarker():
@@ -49,9 +52,28 @@ class ArrowMarker(ShapeMarker):
         ShapeMarker.__init__(self)
         self.marker.type = self.marker.ARROW
         self.set_length(length)
+        self.matrix = np.eye(4)
+        arrow_pos0 = [0, 0, length]
+        mat_inicio = tf.translation_matrix(arrow_pos0)
+        quat = [0, np.sin(np.deg2rad(45)),
+                0, np.cos(np.deg2rad(45))]
+        matrix_pos_0 = tf.quaternion_matrix(quat)
+        self.mat_trans = np.dot(mat_inicio, matrix_pos_0)
 
     def set_length(self, length):
         self.set_scale((length, 0.1 * length, 0.1 * length))
+
+    def set_new_position(self, position):
+        self.position = position
+
+    def set_new_orientation(self, orientation):
+        self.matrix = tf.quaternion_matrix(orientation)
+        self.matrix[:3, 3] = self.position
+        self.matrix = np.dot(self.matrix, self.mat_trans)
+        orientation = tf.quaternion_from_matrix(self.matrix)
+        position = self.matrix[:3, 3]
+        self.set_orientation(orientation)
+        self.set_position(position)
 
 
 class CubeMarker(ShapeMarker):
@@ -75,7 +97,21 @@ class CylinderMarker(ShapeMarker):
 class LinesMarker(ShapeMarker):
     def __init__(self):
         ShapeMarker.__init__(self)
-        self.marker.type = self.marker.LINE_STRIP  #self.marker.LINE_LIST
+        self.marker.type = self.marker.LINE_STRIP
+        self.marker.points = [Point(0, 0, 0)]
+        self.set_size()
+
+    def set_size(self, size=0.001):
+        self.set_scale(scale=(size, size, 1.0))
+
+    def set_points(self, points):
+        self.marker.points = [Point(x, y, z) for x, y, z in points]
+
+
+class SegmentsMarker(ShapeMarker):
+    def __init__(self):
+        ShapeMarker.__init__(self)
+        self.marker.type = self.marker.LINE_LIST
         self.marker.points = [Point(0, 0, 0)]
         self.set_size()
 
@@ -138,22 +174,79 @@ class TriangleListMarker(ShapeMarker):
 
 class PartMarkers():
     def __init__(self):
-        marker_array = MarkerArray()
+        self.marker_array = MarkerArray()
+
+        #self.marker = MeshMarker(mesh_resource="file://"+filename, frame_id="/workobject")
+        self.mesh = TriangleListMarker()
+        self.mesh.set_frame('/workobject')
+        self.mesh.set_color((0.0, 0.5, 1.0, 0.75))
+        self.marker_array.markers.append(self.mesh.marker)
+        self.path = LinesMarker()
+        self.path.set_frame('/workobject')
+        self.path.set_color((0.75, 0.75, 0.75, 1.0))
+        self.marker_array.markers.append(self.path.marker)
+        self.laser = SegmentsMarker()
+        self.laser.set_frame('/workobject')
+        self.laser.set_color((1.0, 0.0, 0.0, 1.0))
+        self.marker_array.markers.append(self.laser.marker)
+        for id, m in enumerate(self.marker_array.markers):
+            m.id = id
 
         # marker_array.markers.append(mesh_marker.marker)
         # marker_array.markers.append(ArrowMarker(1).marker)
         # marker_array.markers.append(CubeMarker().marker)
         # marker_array.markers.append(CylinderMarker().marker)
-        # marker_array.markers.append(SphereMarker().marker)
-        # marker_array.markers.append(LinesMarker().marker)
         # marker_array.markers.append(PointsMarker().marker)
 
+    def set_mesh(self, mesh):
+        self.mesh.set_points(0.001 * np.vstack(mesh.triangles))
+
+    def set_path(self, path):
+        points = np.array([pose[0] for pose in path])
+        self.path.set_points(0.001 * points)
+        self.laser.set_points(0.001 * points)
+
+
+class PathMarkers():
+    def __init__(self):
+        self.marker_array = MarkerArray()
+
+        self.offset_position = 100
+        self.quat = [0, np.sin(np.deg2rad(45)), 0, np.cos(np.deg2rad(45))]
+        self.quat_inv = [0, -np.sin(np.deg2rad(45)), 0, np.cos(np.deg2rad(45))]
+
+        self.lines = LinesMarker()
+        self.lines.set_size(0.005)
+        self.lines.set_color((0.75, 0.25, 0.0, 1))
+        self.lines.set_frame('/workobject')
+        self.marker_array.markers.append(self.lines.marker)
+
+        self.arrow = ArrowMarker(0.1)
+        self.arrow.set_color((0, 0, 0, 0))
+        self.arrow.set_frame('/workobject')
+        # self.arrow.set_position((0.2, 0.2, 0.2))
+        # self.arrow.set_orientation((0, 0, 0, 1))
+        self.marker_array.markers.append(self.arrow.marker)
+
+        for id, m in enumerate(self.marker_array.markers):
+            m.id = id
+
+    def set_path(self, path):
+        points = np.array(path) * 0.001
+        self.lines.set_points(points)
+
+    def set_pose(self, pose):
+        if pose is not None:
+            position, orientation = pose
+            self.arrow.set_new_position(position)
+            self.arrow.set_new_orientation(orientation)
+            self.arrow.set_color((0, 0, 1, 1))
+        else:
+            self.arrow.set_color((0, 0, 0, 0))
 
 
 if __name__ == '__main__':
-    import numpy as np
-
-    rospy.init_node("markers")
+    rospy.init_node('markers')
 
     pub_marker = rospy.Publisher('visualization_marker', Marker, queue_size=10)
     pub_marker_array = rospy.Publisher(
@@ -161,17 +254,7 @@ if __name__ == '__main__':
 
     marker_array = MarkerArray()
 
-    #mesh_marker = MeshMarker(mesh_resource="package://etna_triangulation/meshes/test.dae")
-    mesh_marker = TriangleListMarker()
-    mesh_marker.set_color(color=(1.0, 0.5, 0.0, 0.75))
-
-    points = np.array([[0.0, 0.0, 0.0],
-                       [0.1, 0.0, 0.0],
-                       [0.1, 0.1, 0.0],
-                       [0.1, 0.1, 0.1],
-                       [0.0, 0.1, 0.1],
-                       [0.0, 0.0, 0.1],
-                       [0.0, 0.0, 0.0]])
+    mesh_marker = MeshMarker(mesh_resource="package://etna_triangulation/meshes/test.dae")
 
     cube = CubeMarker()
     cube.set_scale((0.1, 0.1, 0.1))

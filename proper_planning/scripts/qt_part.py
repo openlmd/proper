@@ -4,12 +4,9 @@ import sys
 import rospy
 import rospkg
 import numpy as np
-#from visualization_msgs.msg import Marker
-from visualization_msgs.msg import MarkerArray
 
-from markers import MeshMarker
-from markers import LinesMarker
-from markers import TriangleListMarker
+from visualization_msgs.msg import MarkerArray
+from markers import PartMarkers
 
 from python_qt_binding import loadUi
 from python_qt_binding import QtGui
@@ -29,12 +26,15 @@ class QtPart(QtGui.QWidget):
         loadUi(os.path.join(path, 'resources', 'part.ui'), self)
 
         self.pub_marker_array = rospy.Publisher(
-            'visualization_marker_array', MarkerArray, queue_size=1)
+            'visualization_marker_array', MarkerArray, queue_size=10)
 
         self.btnLoad.clicked.connect(self.btnLoadClicked)
         self.btnProcessMesh.clicked.connect(self.btnProcessMeshClicked)
-        self.btnProcessLayer.clicked.connect(self.btnProcessLayerClicked)
+        self.btnLayers.clicked.connect(self.btnLayersClicked)
         self.btnAcceptPath.clicked.connect(self.btnAcceptPathClicked)
+
+        self.sbStart.valueChanged.connect(self.changeLayers)
+        self.sbStop.valueChanged.connect(self.changeLayers)
 
         self.sbPositionX.valueChanged.connect(self.changePosition)
         self.sbPositionY.valueChanged.connect(self.changePosition)
@@ -49,9 +49,11 @@ class QtPart(QtGui.QWidget):
         self.timer.timeout.connect(self.updateProcess)
 
         self.robpath = RobPath()
+        self.updateParameters()
 
     def btnLoadClicked(self):
         self.blockSignals(True)
+        self.processing = False
 
         filename = QtGui.QFileDialog.getOpenFileName(
             self, 'Open file', os.path.join(path, 'data'), 'Mesh Files (*.stl)')[0]
@@ -63,22 +65,11 @@ class QtPart(QtGui.QWidget):
         self.updatePosition(self.robpath.mesh.bpoint1)  # Rename to position
         self.updateSize(self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1)
 
-        self.marker_array = MarkerArray()
-        #self.marker = MeshMarker(mesh_resource="file://"+filename, frame_id="/workobject")
-        self.mesh = TriangleListMarker()
-        self.mesh.set_frame('/workobject')
-        self.mesh.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
-        self.mesh.set_color((0.66, 0.66, 0.99, 0.66))
-        self.marker_array.markers.append(self.mesh.marker)
-        self.path = LinesMarker()
-        self.path.set_frame('/workobject')
-        self.path.set_color((1.0, 0.0, 0.0, 1.0))
-        self.marker_array.markers.append(self.path.marker)
-        for id, m in enumerate(self.marker_array.markers):
-            m.id = id
-        self.npoints = 0
-#        #rospy.loginfo()
-        self.pub_marker_array.publish(self.marker_array)
+        self.part_markers = PartMarkers()
+        self.part_markers.set_mesh(self.robpath.mesh)
+        self.pub_marker_array.publish(self.part_markers.marker_array)
+
+        self.updateLayers()
 
         #TODO: Change bpoints.
         #self.lblInfo.setText('Info:\n')
@@ -94,16 +85,22 @@ class QtPart(QtGui.QWidget):
         print height, width, overlap
         self.robpath.set_track(height, width, overlap)
 
+    def updateLayers(self):
+        self.npoints = 0
+        levels = self.robpath.init_process()
+        self.sbStart.setValue(self.robpath.k)
+        self.sbStop.setValue(len(levels))
+
     def updateProcess(self):
         if self.robpath.k < len(self.robpath.levels):
-            self.robpath.update_process()
-            #self.plot.drawSlice(self.robpath.slices, self.robpath.path)
-            points = np.array([pose[0] for pose in self.robpath.path[self.npoints:-1]])
-            self.npoints = self.npoints + len(points)
-            self.path.set_points(0.001 * points)
-            print len(points)
-            self.pub_marker_array.publish(self.marker_array)
-            #self.plot.progress.setValue(100.0 * self.robpath.k / len(self.robpath.levels))
+            path = self.robpath.update_process(filled=self.chbFill.isChecked(),
+                                               contour=self.chbContour.isChecked())
+            self.sbStart.setValue(self.robpath.k)
+            print 'Path:', path
+            path = self.robpath.path[self.npoints:-1]
+            self.npoints = self.npoints + len(path)
+            self.part_markers.set_path(path)
+            self.pub_marker_array.publish(self.part_markers.marker_array)
         else:
             self.processing = False
             self.timer.stop()
@@ -114,21 +111,26 @@ class QtPart(QtGui.QWidget):
             self.timer.stop()
         else:
             self.updateParameters()
-            self.robpath.init_process()
+            self.updateLayers()
             self.processing = True
             self.timer.start(100)
 
-    def btnProcessLayerClicked(self):
+    def btnLayersClicked(self):
         if self.processing:
             self.updateParameters()
             self.updateProcess()
         else:
             self.updateParameters()
-            self.robpath.init_process()
+            self.updateLayers()
             self.processing = True
 
     def btnAcceptPathClicked(self):
         self.accepted.emit(self.robpath.path)
+
+    def changeLayers(self):
+        start = self.sbStart.value()
+        stop = self.sbStop.value()
+        self.robpath.k = int(start)
 
     def updatePosition(self, position):
         x, y, z = position
@@ -140,10 +142,7 @@ class QtPart(QtGui.QWidget):
         x = self.sbPositionX.value()
         y = self.sbPositionY.value()
         z = self.sbPositionZ.value()
-        self.robpath.translate_mesh(np.float32([x, y, z]))
-        #self.marker.set_position((x, y, z))
-        self.mesh.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
-        self.pub_marker_array.publish(self.marker_array)
+        self.updatePart(position=(x, y, z))
 
     def updateSize(self, size):
         sx, sy, sz = size
@@ -155,10 +154,16 @@ class QtPart(QtGui.QWidget):
         sx = self.sbSizeX.value()
         sy = self.sbSizeY.value()
         sz = self.sbSizeZ.value()
-        self.robpath.resize_mesh(np.float32([sx, sy, sz]))
-        #scale = np.float32([sx, sy, sz]) / self.mesh_size
-        self.mesh.set_points(0.001 * np.vstack(self.robpath.mesh.triangles))
-        self.pub_marker_array.publish(self.marker_array)
+        self.updatePart(size=(sx, sy, sz))
+
+    def updatePart(self, position=None, size=None):
+        if position is not None:
+            self.robpath.translate_mesh(np.float32(position))
+            self.part_markers.set_mesh(self.robpath.mesh)
+        if size is not None:
+            self.robpath.resize_mesh(np.float32(size))
+            self.part_markers.set_mesh(self.robpath.mesh)
+        self.pub_marker_array.publish(self.part_markers.marker_array)
 
     def blockSignals(self, value):
         self.sbPositionX.blockSignals(value)
