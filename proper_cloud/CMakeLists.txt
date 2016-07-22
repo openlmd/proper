@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(proper_cloud)
 
-## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
   tf
   roscpp
@@ -10,9 +9,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(octomap REQUIRED)
-
-## System dependencies are found with CMake's conventions
-# find_package(Boost REQUIRED COMPONENTS system)
 
 catkin_package(
 #  INCLUDE_DIRS include
@@ -34,7 +30,6 @@ link_libraries(${OCTOMAP_LIBRARIES})
 #   src/${PROJECT_NAME}/etna_cloud.cpp
 # )
 
-## Declare a cpp executable
 add_executable(talker src/talker.cpp)
 target_link_libraries(talker ${catkin_LIBRARIES})
 
@@ -46,4 +41,3 @@ target_link_libraries(cloud ${catkin_LIBRARIES})
 
 add_executable(find_plane src/find_plane.cpp)
 target_link_libraries(find_plane ${catkin_LIBRARIES})
-

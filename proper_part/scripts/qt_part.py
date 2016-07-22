@@ -56,13 +56,13 @@ class QtPart(QtGui.QWidget):
         self.processing = False
 
         filename = QtGui.QFileDialog.getOpenFileName(
-            self, 'Open file', os.path.join(path, 'data'), 'Mesh Files (*.stl)')[0]
+            self, 'Open file', os.path.join(path, 'data'),
+            'Mesh Files (*.stl)')[0]
         print 'Filename:', filename
         self.setWindowTitle(filename)
         self.robpath.load_mesh(filename)
 
         #TODO: Change bpoints.
-        #self.lblInfo.setText('Info:\n')
         #TODO: Add info from velocity estimation module.
         self.mesh_size = self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1
         self.updatePosition(self.robpath.mesh.bpoint1)  # Rename to position

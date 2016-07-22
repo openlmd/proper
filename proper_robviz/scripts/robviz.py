@@ -109,6 +109,7 @@ class Robviz(QtGui.QMainWindow):
         self.tabWidget.addTab(self.qtPart, 'Part')
         self.tabWidget.addTab(self.qtPath, 'Path')
 
+        self.qtScan.accepted.connect(self.qtScanAccepted)
         self.qtParam.accepted.connect(self.qtParamAccepted)
         self.qtPart.accepted.connect(self.qtPartAccepted)
 
@@ -121,6 +122,13 @@ class Robviz(QtGui.QMainWindow):
 
     def cbVelocity(self, msg_velocity):
         self.lblInfo.setText("Speed: %.1f mm/s" % (1000 * msg_velocity.speed))
+
+    def qtScanAccepted(self, path):
+        print 'Path:', path
+        commands = self.qtPath.jason.path2cmds(path)
+        print 'Commands:', commands
+        self.qtPath.loadCommands(commands)
+        self.tabWidget.setCurrentWidget(self.qtPath)
 
     def qtParamAccepted(self):
         self.tabWidget.setCurrentWidget(self.qtPart)

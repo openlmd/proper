@@ -53,8 +53,7 @@ class ArrowMarker(ShapeMarker):
         self.marker.type = self.marker.ARROW
         self.set_length(length)
         self.matrix = np.eye(4)
-        arrow_pos0 = [0, 0, length]
-        mat_inicio = tf.translation_matrix(arrow_pos0)
+        mat_inicio = tf.translation_matrix([0, 0, length])
         quat = [0, np.sin(np.deg2rad(45)),
                 0, np.cos(np.deg2rad(45))]
         matrix_pos_0 = tf.quaternion_matrix(quat)
@@ -63,12 +62,9 @@ class ArrowMarker(ShapeMarker):
     def set_length(self, length):
         self.set_scale((length, 0.1 * length, 0.1 * length))
 
-    def set_new_position(self, position):
-        self.position = position
-
-    def set_new_orientation(self, orientation):
+    def set_pose(self, position, orientation):
         self.matrix = tf.quaternion_matrix(orientation)
-        self.matrix[:3, 3] = self.position
+        self.matrix[:3, 3] = position
         self.matrix = np.dot(self.matrix, self.mat_trans)
         orientation = tf.quaternion_from_matrix(self.matrix)
         position = self.matrix[:3, 3]
@@ -153,7 +149,7 @@ class TextMarker(ShapeMarker):
 
 
 class MeshMarker(ShapeMarker):
-    def __init__(self, mesh_resource="package://etna_triangulation/meshes/robot.dae", frame_id='/world'):
+    def __init__(self, mesh_resource="package://proper_part/meshes/robot.dae", frame_id='/world'):
         ShapeMarker.__init__(self)
         self.marker.type = self.marker.MESH_RESOURCE
         self.marker.mesh_resource = mesh_resource
@@ -172,6 +168,50 @@ class TriangleListMarker(ShapeMarker):
         self.marker.points = [Point(x, y, z) for x, y, z in points]
 
 
+class ScanMarkers():
+    def __init__(self):
+        self.marker_array = MarkerArray()
+
+        self.plane = CubeMarker()
+        self.plane.set_frame('/workobject')
+        self.plane.set_color((1.0, 0.0, 1.0, 0.7))
+        self.marker_array.markers.append(self.plane.marker)
+        self.path = LinesMarker()
+        self.path.set_frame('/workobject')
+        self.path.set_color((0.5, 0.5, 0.0, 1.0))
+        self.marker_array.markers.append(self.path.marker)
+        self.laser = SegmentsMarker()
+        self.laser.set_frame('/workobject')
+        self.laser.set_color((0.7, 0.0, 0.0, 1.0))
+        self.marker_array.markers.append(self.laser.marker)
+        for id, m in enumerate(self.marker_array.markers):
+            m.id = id
+        # marker_array.markers.append(CylinderMarker().marker)
+        # marker_array.markers.append(PointsMarker().marker)
+        self.offset = np.array((0, 0, 0))
+
+    def set_plane_size(self, size):
+        size = np.array(size) * 0.001
+        self.offset = size / 2
+        self.plane.set_scale(scale=size)
+
+    def set_plane_position(self, position):
+        position = np.array(position) * 0.001 + self.offset
+        self.plane.set_position(position=position)
+
+    def set_path(self, path):
+        points = np.array([pose[0] for pose in path])
+        self.path.set_points(0.001 * points)
+        points = []
+        for k in range(len(path) - 1):
+            if len(path[k]) == 3:
+                if path[k][2]:
+                    points.append(path[k][0])
+                    points.append(path[k+1][0])
+        points = np.array(points)
+        self.laser.set_points(0.001 * points)
+
+
 class PartMarkers():
     def __init__(self):
         self.marker_array = MarkerArray()
@@ -179,24 +219,18 @@ class PartMarkers():
         #self.marker = MeshMarker(mesh_resource="file://"+filename, frame_id="/workobject")
         self.mesh = TriangleListMarker()
         self.mesh.set_frame('/workobject')
-        self.mesh.set_color((0.0, 0.5, 1.0, 0.75))
+        self.mesh.set_color((0.0, 0.5, 1.0, 0.7))
         self.marker_array.markers.append(self.mesh.marker)
         self.path = LinesMarker()
         self.path.set_frame('/workobject')
-        self.path.set_color((0.75, 0.75, 0.75, 1.0))
+        self.path.set_color((0.7, 0.7, 0.7, 1.0))
         self.marker_array.markers.append(self.path.marker)
         self.laser = SegmentsMarker()
         self.laser.set_frame('/workobject')
-        self.laser.set_color((0.75, 0.0, 0.0, 1.0))
+        self.laser.set_color((0.7, 0.0, 0.0, 1.0))
         self.marker_array.markers.append(self.laser.marker)
         for id, m in enumerate(self.marker_array.markers):
             m.id = id
-
-        # marker_array.markers.append(mesh_marker.marker)
-        # marker_array.markers.append(ArrowMarker(1).marker)
-        # marker_array.markers.append(CubeMarker().marker)
-        # marker_array.markers.append(CylinderMarker().marker)
-        # marker_array.markers.append(PointsMarker().marker)
 
     def set_mesh(self, mesh):
         self.mesh.set_points(0.001 * np.vstack(mesh.triangles))
@@ -224,11 +258,11 @@ class PathMarkers():
 
         self.path = LinesMarker()
         self.path.set_frame('/workobject')
-        self.path.set_color((0.75, 0.75, 0.75, 1.0))
+        self.path.set_color((0.7, 0.7, 0.7, 1.0))
         self.marker_array.markers.append(self.path.marker)
         self.laser = SegmentsMarker()
         self.laser.set_frame('/workobject')
-        self.laser.set_color((0.75, 0.25, 0.0, 1.0))
+        self.laser.set_color((0.7, 0.3, 0.0, 1.0))
         self.marker_array.markers.append(self.laser.marker)
         self.arrow = ArrowMarker(0.075)
         self.arrow.set_color((0, 0, 0, 0))
@@ -255,11 +289,10 @@ class PathMarkers():
     def set_pose(self, pose):
         if pose is not None:
             position, orientation = pose
-            self.arrow.set_new_position(position)
-            self.arrow.set_new_orientation(orientation)
-            self.arrow.set_color((0.0, 0.0, 0.75, 1))
+            self.arrow.set_pose(position, orientation)
+            self.arrow.set_color((0.0, 0.0, 0.7, 1.0))
         else:
-            self.arrow.set_color((0, 0, 0, 0))
+            self.arrow.set_color((0.0, 0.0, 0.0, 0.0))
 
 
 if __name__ == '__main__':
@@ -271,7 +304,7 @@ if __name__ == '__main__':
 
     marker_array = MarkerArray()
 
-    mesh_marker = MeshMarker(mesh_resource="package://etna_triangulation/meshes/test.dae")
+    mesh_marker = MeshMarker(mesh_resource="package://proper_part/meshes/test.dae")
 
     cube = CubeMarker()
     cube.set_scale((0.1, 0.1, 0.1))
@@ -296,35 +329,3 @@ if __name__ == '__main__':
         k = k + 0.01
         cube.set_position((k, 0, 0))
         rospy.sleep(1.0)
-
-
-    # count = 0
-    # MARKERS_MAX = 100
-    #
-    # while not rospy.is_shutdown():
-    #    marker = Marker()
-    #    marker.header.frame_id = "/world"
-    #    marker.type = marker.SPHERE
-    #    marker.action = marker.ADD
-    #    marker.scale.x = 0.2
-    #    marker.scale.y = 0.2
-    #    marker.scale.z = 0.2
-    #    marker.color.a = 1.0
-    #    marker.color.r = 1.0
-    #    marker.color.g = 1.0
-    #    marker.color.b = 0.0
-    #    marker.pose.orientation.w = 1.0
-    #    marker.pose.position.x = math.cos(count / 50.0)
-    #    marker.pose.position.y = math.cos(count / 40.0)
-    #    marker.pose.position.z = math.cos(count / 30.0)
-    #
-    #    # We add the new marker to the MarkerArray, removing the oldest
-    #    # marker from it when necessary
-    #    if(count > MARKERS_MAX):
-    #        markerArray.markers.pop(0)
-    #
-    #    markerArray.markers.append(marker)
-    #
-    #    # Renumber the marker IDs
-    #   for id, m in enumerate(marker_array.markers):
-    #       m.id = id
