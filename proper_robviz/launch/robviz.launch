@@ -9,6 +9,7 @@
     </include>
 
     <node name="velocity" pkg="mashes_measures" type="nd_velocity.py" respawn="true" />
+    <node name="supervisor" pkg="mashes_measures" type="nd_supervisor.py" respawn="true" />
 
     <node name="robviz" pkg="proper_robviz" type="robviz.py"/>
 </launch>

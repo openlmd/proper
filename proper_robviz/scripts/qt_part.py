@@ -1,1 +1,1 @@
-../../proper_planning/scripts/qt_part.py
+../../proper_part/scripts/qt_part.py

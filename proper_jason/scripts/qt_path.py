@@ -7,8 +7,7 @@ import rospkg
 import numpy as np
 import tf.transformations as tf
 
-#from proper_abb.msg import MsgRobotCommand
-from proper_abb.srv import SrvRobotCommand
+from aimen_driver.srv import SrvRobotCommand
 
 from visualization_msgs.msg import MarkerArray
 from markers import PathMarkers

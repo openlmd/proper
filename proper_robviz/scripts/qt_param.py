@@ -1,1 +1,1 @@
-../../../cyplam/cyplam_robviz/scripts/qt_param.py
+../../../cyplam/cyplam_param/scripts/qt_param.py

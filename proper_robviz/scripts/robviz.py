@@ -12,6 +12,7 @@ import rviz
 
 from mashes_measures.msg import MsgVelocity
 
+from qt_data import QtData
 from qt_scan import QtScan
 from qt_param import QtParam
 from qt_part import QtPart
@@ -89,18 +90,20 @@ class MyViz(QtGui.QWidget):
         self.switchToView("Top View")
 
 
-class RobPathUI(QtGui.QMainWindow):
+class Robviz(QtGui.QMainWindow):
     def __init__(self):
-        super(RobPathUI, self).__init__()
+        super(Robviz, self).__init__()
         loadUi(os.path.join(path, 'resources', 'robviz.ui'), self)
 
         self.boxPlot.addWidget(MyViz())
 
+        self.qtData = QtData()
         self.qtScan = QtScan()
         self.qtParam = QtParam()
         self.qtPart = QtPart()
         self.qtPath = QtPath()
 
+        self.tabWidget.addTab(self.qtData, 'Data')
         self.tabWidget.addTab(self.qtScan, 'Scan')
         self.tabWidget.addTab(self.qtParam, 'Params')
         self.tabWidget.addTab(self.qtPart, 'Part')
@@ -135,6 +138,6 @@ if __name__ == '__main__':
     rospy.init_node('robviz')
 
     app = QtGui.QApplication(sys.argv)
-    robpath = RobPathUI()
-    robpath.show()
+    robviz = Robviz()
+    robviz.show()
     app.exec_()

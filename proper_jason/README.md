@@ -26,16 +26,24 @@ List of available jason commands that can be published on topic "robot_command_j
 {"power":1000}
 ```
 
-- *stirrer*: sets the stirrer value in %.
+- *carrier*: sets the carrier gas value in l/min.
+
 
 ```json
-{"stirrer":40}
+{"carrier":5}
 ```
 
 - *turntable*: sets the turntable value in rpm.
 
+
 ```json
-{"turntable":3}
+{"turntable":4}
+```
+
+- *stirrer*: sets the stirrer value in %.
+
+```json
+{"stirrer":20}
 ```
 
 - *powder_start*: starts and stops the powder flow from the feeder.
