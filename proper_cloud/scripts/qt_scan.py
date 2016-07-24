@@ -16,6 +16,8 @@ from python_qt_binding import loadUi
 from python_qt_binding import QtGui
 from python_qt_binding import QtCore
 
+from mashes_measures.msg import MsgStatus
+
 from planning.planning import Planning
 
 
@@ -28,6 +30,11 @@ class QtScan(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
         loadUi(os.path.join(path, 'resources', 'scan.ui'), self)
+
+        rospy.Subscriber(
+            '/ueye/cloud', PointCloud2, self.cbPointCloud, queue_size=1)
+        rospy.Subscriber(
+            '/supervisor/status', MsgStatus, self.cbStatus, queue_size=1)
 
         self.pub_marker_array = rospy.Publisher(
             'visualization_marker_array', MarkerArray, queue_size=10)
@@ -45,17 +52,28 @@ class QtScan(QtGui.QWidget):
         self.sbSizeZ.valueChanged.connect(self.changeSize)
 
         self.filename = ''
+        self.status = False
+        self.running = False
         self.recording = False
-        cloud_topic = rospy.get_param('~cloud', '/ueye/cloud')
-        rospy.Subscriber(
-            cloud_topic, PointCloud2, self.cbPointCloud, queue_size=1)
-
         self.listener = tf.TransformListener()
+
+        self.path = []
         self.scan_markers = None
         self.planning = Planning()
         self.position = np.array([0, 0, 10])
         self.size = np.array([100, 200, 0])
-        self.path = []
+
+    def point_cloud_to_workobject(self, stamp, points3d):
+        self.listener.waitForTransform(
+            '/world', '/workobject', stamp, rospy.Duration(1.0))
+        (position, quaternion) = self.listener.lookupTransform(
+            '/world', '/workobject', stamp)
+        matrix = tf.transformations.quaternion_matrix(quaternion)
+        matrix[:3, 3] = position
+        matrix = np.linalg.inv(matrix)
+        points = np.hstack((points3d, np.ones((len(points3d), 1))))
+        points = np.float32([np.dot(matrix, point)[:3] for point in points])
+        return points
 
     def point_cloud_to_world(self, stamp, points3d):
         """Transforms the point cloud to world from camera coordiantes."""
@@ -65,26 +83,31 @@ class QtScan(QtGui.QWidget):
             '/world', '/camera0', stamp)
         matrix = tf.transformations.quaternion_matrix(quaternion)
         matrix[:3, 3] = position
-        points = np.zeros((len(points3d), 3), dtype=np.float32)
-        for k, point3d in enumerate(points3d):
-            point = np.ones(4)
-            point[:3] = point3d
-            points[k] = np.dot(matrix, point)[:3]
+        points = np.hstack((points3d, np.ones((len(points3d), 1))))
+        points = np.float32([np.dot(matrix, point)[:3] for point in points])
         return points
 
-    def cbPointCloud(self, data):
+    def cbPointCloud(self, msg_cloud):
         if self.recording:
-            cloud_msg = data
-            stamp = data.header.stamp
-            points = pc2.read_points(cloud_msg, skip_nans=False)
-            points3d = []
-            for point in points:
-                points3d.append(point)
-            points3d = np.float32(points3d)
-            #TODO: Record only when the camera is moving.
+            stamp = msg_cloud.header.stamp
+            points = pc2.read_points(msg_cloud, skip_nans=False)
+            points3d = np.float32([point for point in points])
             points3d = self.point_cloud_to_world(stamp, points3d)
+            points3d = self.point_cloud_to_workobject(stamp, points3d)
             with open(self.filename, 'a') as f:
                 np.savetxt(f, points3d, fmt='%.6f')
+
+    def cbStatus(self, msg_status):
+        status = msg_status.running
+        if not self.status and status:
+            if self.running:
+                self.recording = True
+                self.btnRecord.setText('Recording...')
+        elif self.status and not status:
+            self.running = False
+            self.recording = False
+            self.btnRecord.setText('Record Cloud')
+        self.status = status
 
     def updatePlane(self):
         (x, y, z), (w, h, t) = self.position, self.size
@@ -115,9 +138,9 @@ class QtScan(QtGui.QWidget):
         self.updatePlane()
 
     def btnRecordClicked(self):
-        if self.recording:
-            self.recording = False
-            self.btnRecord.setText('Record cloud')
+        if self.running:
+            self.running = False
+            self.btnRecord.setText('Record Cloud')
         else:
             try:
                 filename = QtGui.QFileDialog.getSaveFileName(
@@ -127,7 +150,7 @@ class QtScan(QtGui.QWidget):
                 print 'Recording %s ...' % filename
                 with open(self.filename, 'w') as f:
                     pass
-                self.recording = True
+                self.running = True
                 self.btnRecord.setText('Stop recording...')
             except:
                 pass

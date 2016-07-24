@@ -1,4 +1,3 @@
-import pylab
 import numpy as np
 
 
@@ -90,13 +89,6 @@ def normalize(vector):
 def get_plane_pose(plane):
     """Gets the pose of the plane."""
     [a, b, c, d] = plane
-#    pnt0 = np.float32([d / -a, 0, 0])
-#    pnt1 = np.float32([(c * 10 + d) / -a, 0, 10])
-#    pnt2 = np.float32([(b * 10 + d) / -a, 10, 0])
-#    vecx = normalize(pnt1 - pnt0)
-#    vecy = normalize(pnt2 - pnt0)
-#    vecz = normalize(cross(vecx, vecy))
-#    vecy = normalize(cross(vecz, vecx))
     # [(b * y + c * z + d) / -a, (a * x + c * z + d) / -b, ((a * x + b * y + d) / -c)]
     points2d = np.float32([[0, 0], [1, 0], [0, 1]])
     points3d = np.float32([[x, y, (a * x + b * y + d) / -c] for x, y in points2d])
@@ -105,7 +97,6 @@ def get_plane_pose(plane):
     vecz = normalize(cross(vecx, vecy))
     vecy = normalize(cross(vecz, vecx))
     return np.float32([vecx, vecy, vecz]).T, points3d[0]
-#    return np.float32([vecx, vecy, vecz]).T, pnt0
 
 
 class Fit():
@@ -163,7 +154,7 @@ class LineFit(Fit):
 
     def residuals(self, model, data):
         m, b = model
-        d = (m * data[:,0] + b - data[:,1]) / (m + 0.00001)
+        d = (m * data[:, 0] + b - data[:, 1]) / (m + 0.00001)
         return np.abs(d)
 
 
@@ -179,10 +170,8 @@ class PlaneFit(Fit):
 
     def residuals(self, model, data):
         a, b, c, d = model
-        D = (a * data[:,0] + b * data[:,1] + c * data[:,2] + d) / np.sqrt(a**2 + b**2 + c**2)
+        D = (a * data[:, 0] + b * data[:, 1] + c * data[:, 2] + d) / np.sqrt(a**2 + b**2 + c**2)
         return np.abs(D)
-
-
 
 
 def generate_test_line_data(point0, point1, samples=200):
@@ -236,23 +225,22 @@ def test_fit_plane(filename='../data/downsampled.xyz'):
     #mplot3d.draw_plane(normal, points3d)
     #mplot3d.draw_plane(modelr, points3d[inliers], color=(0,1,0))
     mplot3d.draw_points(points3d)
-    mplot3d.draw_points(points3d[inliers], color=(0,1,0))
+    mplot3d.draw_points(points3d[inliers], color=(0, 1, 0))
     mplot3d.draw_frame(plane_pose)
     mplot3d.show()
 
 
-
-if __name__=="__main__":
+if __name__ == "__main__":
     #test_fit_line()
     #test_fit_plane()
 
-    from mlabplot import MPlot3D
+    import planning.calculate as calc
+    from planning.mlabplot import MPlot3D
 
-    WHITE = (1,1,1)
-    RED = (1,0,0)
-    BLUE = (0,0,1)
+    WHITE = (1, 1, 1)
+    RED = (1, 0, 0)
+    BLUE = (0, 0, 1)
 
-    import calculate as calc
 
     filename = '../../data/downsampled.xyz'
     cloud = np.loadtxt(filename)
@@ -282,26 +270,8 @@ if __name__=="__main__":
     mplot3d.draw_points(tcloud[outliers], color=BLUE)
     mplot3d.show()
 
-    print np.std(tcloud[inliers][:,2])
+    print np.std(tcloud[inliers][:, 2])
     #test()
 
     points3d = tcloud[outliers]
-    point_min = np.min(points3d, axis=0)
-    points_0 = (np.round(points3d - point_min, 3) / 0.0001).astype(np.int32)
-    points_0[:,0] = points_0[:,0] / 10
-    points_0[:,1] = points_0[:,1] / 10
-    #points_1 = (np.round(points3d_1 - point_min, 3) * 1000).astype(np.int32)
-    x_max = np.max(points_0[:,0])
-    y_max = np.max(points_0[:,1])
-    print 'Points', x_max, y_max
-
-    zmap = np.zeros((int(x_max+1), int(y_max+1)))
-    zmap[points_0[:,0],points_0[:,1]] = points_0[:,2]
-
-
-    from pylab import *
-
-    figure()
-    imshow(zmap, cmap='jet')
-    colorbar()
-    show()
+    print points3d
