@@ -5,17 +5,13 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   roscpp
   pcl_ros
+  pcl_conversions
   sensor_msgs
 )
 
 find_package(octomap REQUIRED)
 
-catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES etna_cloud
-#  CATKIN_DEPENDS pcl_ros roscpp sensor_msgs
-#  DEPENDS system_lib
-)
+catkin_package()
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
@@ -25,19 +21,19 @@ include_directories(${OCTOMAP_INCLUDE_DIRS})
 
 link_libraries(${OCTOMAP_LIBRARIES})
 
+catkin_python_setup()
+
 ## Declare a cpp library
-# add_library(etna_cloud
-#   src/${PROJECT_NAME}/etna_cloud.cpp
-# )
+# add_library(cloud src/cloud.cpp)
 
-add_executable(talker src/talker.cpp)
-target_link_libraries(talker ${catkin_LIBRARIES})
+add_executable(nd_talker src/nd_talker.cpp)
+target_link_libraries(nd_talker ${catkin_LIBRARIES})
 
-add_executable(listener src/listener.cpp)
-target_link_libraries(listener ${catkin_LIBRARIES})
+add_executable(nd_listener src/nd_listener.cpp)
+target_link_libraries(nd_listener ${catkin_LIBRARIES})
 
-add_executable(cloud src/cloud.cpp)
-target_link_libraries(cloud ${catkin_LIBRARIES})
+add_executable(nd_cloud src/nd_cloud.cpp)
+target_link_libraries(nd_cloud ${catkin_LIBRARIES})
 
 add_executable(find_plane src/find_plane.cpp)
 target_link_libraries(find_plane ${catkin_LIBRARIES})

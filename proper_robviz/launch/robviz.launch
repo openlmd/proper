@@ -8,6 +8,8 @@
       <arg name="sim" value="$(arg sim)" />
     </include>
 
+    <node name="cloud" pkg="proper_cloud" type="nd_cloud" respawn="true" />
+
     <node name="velocity" pkg="mashes_measures" type="nd_velocity.py" respawn="true" />
     <node name="supervisor" pkg="mashes_measures" type="nd_supervisor.py" respawn="true" />
 

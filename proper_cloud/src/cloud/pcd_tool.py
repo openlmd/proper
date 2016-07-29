@@ -1,6 +1,7 @@
 import os
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def pcd_to_xyz(filename):
@@ -62,9 +63,15 @@ def save_zmap(filename, zmap):
     cv2.imwrite(filename, zmap)
 
 
+def show_zmap(zmap):
+    plt.figure()
+    plt.imshow(zmap, cmap='jet')
+    plt.colorbar()
+    plt.show()
+
+
 if __name__ == '__main__':
     import argparse
-    import matplotlib.pyplot as plt
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--data', type=str,
@@ -84,12 +91,7 @@ if __name__ == '__main__':
         zmap = fill_zmap(zmap, size=7)
         filename = '%s.tif' % name
         save_zmap(filename, zmap)
-
-        plt.figure()
-        plt.imshow(zmap, cmap='jet')
-        plt.colorbar()
-        plt.show()
-
+        show_zmap(zmap)
 
 
         img = read_zmap(filename)

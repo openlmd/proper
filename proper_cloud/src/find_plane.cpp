@@ -155,8 +155,7 @@ int matrix_transform(const pcl::PointCloud<pcl::PointXYZ>::Ptr &source_cloud,
 }
 
 
-int main (int argc, char** argv)
-{
+int main (int argc, char** argv) {
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
 
   if ((argc > 1) && (pcl::io::loadPCDFile<pcl::PointXYZ> (argv[1], *cloud) < 0))  {
@@ -168,7 +167,6 @@ int main (int argc, char** argv)
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered2 (new pcl::PointCloud<pcl::PointXYZ>);
-
 
   filterSubsampling(cloud, cloud_filtered);
   filterRemoval(cloud_filtered, cloud_filtered2);
@@ -183,7 +181,6 @@ int main (int argc, char** argv)
        << " data points (" << pcl::getFieldsList(*cloud_filtered2) << ")." << std::endl;
 
   pcl::io::savePCDFileASCII("downsampled.pcd", *cloud_filtered2);
-
 
 
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_plane (new pcl::PointCloud<pcl::PointXYZ>);
@@ -249,18 +246,10 @@ int main (int argc, char** argv)
   pcl::io::savePCDFileASCII("plane_cloud.pcd", *cloud_plane);
   std::cerr << "Saved " << cloud_plane->points.size() << " data points to plane_cloud.pcd." << std::endl;
 
-  //pcl::PointXYZ min_pt;
-  //pcl::PointXYZ max_pt;
-  //pcl::getMinMax3D(*cloud_plane, min_pt, max_pt);
-
   pcl::PointXYZ minPt, maxPt;
   pcl::getMinMax3D(*cloud_plane, minPt, maxPt);
-  std::cout << "Max x: " << maxPt.x << std::endl;
-  std::cout << "Max y: " << maxPt.y << std::endl;
-  std::cout << "Max z: " << maxPt.z << std::endl;
-  std::cout << "Min x: " << minPt.x << std::endl;
-  std::cout << "Min y: " << minPt.y << std::endl;
-  std::cout << "Min z: " << minPt.z << std::endl;
+  std::cout << "Max (x, y, z): " << maxPt.x << ", " << maxPt.y << ", " << maxPt.z << std::endl;
+  std::cout << "Min (x, y, z): " << minPt.x << ", " << minPt.y << ", " << minPt.z << std::endl;
 
   // Executing the transformation
   pcl::PointCloud<pcl::PointXYZ>::Ptr transformed_cloud (new pcl::PointCloud<pcl::PointXYZ> ());

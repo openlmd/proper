@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import os
-import tf
 import sys
 import rospy
 import rospkg
@@ -19,6 +18,7 @@ from python_qt_binding import QtCore
 from mashes_measures.msg import MsgStatus
 
 from planning.planning import Planning
+import cloud.pcd_tool as pcd_tool
 
 
 path = rospkg.RosPack().get_path('proper_cloud')
@@ -32,7 +32,7 @@ class QtScan(QtGui.QWidget):
         loadUi(os.path.join(path, 'resources', 'scan.ui'), self)
 
         rospy.Subscriber(
-            '/ueye/cloud', PointCloud2, self.cbPointCloud, queue_size=1)
+            '/ueye/scan', PointCloud2, self.cbPointCloud, queue_size=5)
         rospy.Subscriber(
             '/supervisor/status', MsgStatus, self.cbStatus, queue_size=1)
 
@@ -41,6 +41,7 @@ class QtScan(QtGui.QWidget):
 
         self.btnPlane.clicked.connect(self.btnPlaneClicked)
         self.btnRecord.clicked.connect(self.btnRecordClicked)
+        self.btnZmap.clicked.connect(self.btnZmapClicked)
         self.btnScan.clicked.connect(self.btnScanClicked)
 
         self.sbPositionX.valueChanged.connect(self.changePosition)
@@ -55,7 +56,6 @@ class QtScan(QtGui.QWidget):
         self.status = False
         self.running = False
         self.recording = False
-        self.listener = tf.TransformListener()
 
         self.path = []
         self.scan_markers = None
@@ -63,37 +63,11 @@ class QtScan(QtGui.QWidget):
         self.position = np.array([0, 0, 10])
         self.size = np.array([100, 200, 0])
 
-    def point_cloud_to_workobject(self, stamp, points3d):
-        self.listener.waitForTransform(
-            '/world', '/workobject', stamp, rospy.Duration(1.0))
-        (position, quaternion) = self.listener.lookupTransform(
-            '/world', '/workobject', stamp)
-        matrix = tf.transformations.quaternion_matrix(quaternion)
-        matrix[:3, 3] = position
-        matrix = np.linalg.inv(matrix)
-        points = np.hstack((points3d, np.ones((len(points3d), 1))))
-        points = np.float32([np.dot(matrix, point)[:3] for point in points])
-        return points
-
-    def point_cloud_to_world(self, stamp, points3d):
-        """Transforms the point cloud to world from camera coordiantes."""
-        self.listener.waitForTransform(
-            '/world', '/camera0', stamp, rospy.Duration(1.0))
-        (position, quaternion) = self.listener.lookupTransform(
-            '/world', '/camera0', stamp)
-        matrix = tf.transformations.quaternion_matrix(quaternion)
-        matrix[:3, 3] = position
-        points = np.hstack((points3d, np.ones((len(points3d), 1))))
-        points = np.float32([np.dot(matrix, point)[:3] for point in points])
-        return points
-
     def cbPointCloud(self, msg_cloud):
         if self.recording:
-            stamp = msg_cloud.header.stamp
             points = pc2.read_points(msg_cloud, skip_nans=False)
             points3d = np.float32([point for point in points])
-            points3d = self.point_cloud_to_world(stamp, points3d)
-            points3d = self.point_cloud_to_workobject(stamp, points3d)
+            print self.filename
             with open(self.filename, 'a') as f:
                 np.savetxt(f, points3d, fmt='%.6f')
 
@@ -147,13 +121,23 @@ class QtScan(QtGui.QWidget):
                     self, 'Save file', os.path.join(path, 'data', 'test.xyz'),
                     'Point Cloud Files (*.xyz)')[0]
                 self.filename = filename
-                print 'Recording %s ...' % filename
                 with open(self.filename, 'w') as f:
                     pass
                 self.running = True
                 self.btnRecord.setText('Stop recording...')
             except:
                 pass
+
+    def btnZmapClicked(self):
+        filename = QtGui.QFileDialog.getOpenFileName(
+            self, 'Load file', os.path.join(path, 'data', 'test.xyz'),
+            'Point Cloud Files (*.xyz)')[0]
+        name, extension = os.path.splitext(filename)
+        cloud = pcd_tool.read_cloud(filename)
+        zmap = pcd_tool.zmap_from_cloud(cloud)
+        zmap = pcd_tool.fill_zmap(zmap, size=7)
+        pcd_tool.save_zmap('%s.tif' % name, zmap)
+        pcd_tool.show_zmap(zmap)
 
     def btnScanClicked(self):
         self.accepted.emit(self.path)
