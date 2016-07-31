@@ -18,7 +18,9 @@ from python_qt_binding import QtCore
 from mashes_measures.msg import MsgStatus
 
 from planning.planning import Planning
+from cloud.contours import Segmentation
 import cloud.pcd_tool as pcd_tool
+import cloud.contours as contours
 
 
 path = rospkg.RosPack().get_path('proper_cloud')
@@ -137,7 +139,10 @@ class QtScan(QtGui.QWidget):
         zmap = pcd_tool.zmap_from_cloud(cloud)
         zmap = pcd_tool.fill_zmap(zmap, size=7)
         pcd_tool.save_zmap('%s.tif' % name, zmap)
-        pcd_tool.show_zmap(zmap)
+        segmentation = Segmentation()
+        segmentation.plot_zmap(zmap)
+        slice = contours.slice_of_contours(segmentation.contours)
+        print slice
 
     def btnScanClicked(self):
         self.accepted.emit(self.path)

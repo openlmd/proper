@@ -62,11 +62,10 @@ class QtPart(QtGui.QWidget):
         self.setWindowTitle(filename)
         self.robpath.load_mesh(filename)
 
-        #TODO: Change bpoints.
         #TODO: Add info from velocity estimation module.
-        self.mesh_size = self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1
-        self.updatePosition(self.robpath.mesh.bpoint1)  # Rename to position
-        self.updateSize(self.robpath.mesh.bpoint2 - self.robpath.mesh.bpoint1)
+        self.mesh_size = self.robpath.mesh.size
+        self.updatePosition(self.robpath.mesh.position)
+        self.updateSize(self.robpath.mesh.size)
 
         self.part_markers = PartMarkers()
         self.part_markers.set_mesh(self.robpath.mesh)
@@ -82,6 +81,9 @@ class QtPart(QtGui.QWidget):
         overlap = 0.01 * self.sbOverlap.value()
         print height, width, overlap
         self.robpath.set_track(height, width, overlap)
+        self.robpath.set_process(rospy.get_param('/process/speed'),
+                                 rospy.get_param('/process/power'),
+                                 rospy.get_param('/process/focus'))
 
     def updateLayers(self):
         self.npoints = 0
