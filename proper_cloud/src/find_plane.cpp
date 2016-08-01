@@ -128,19 +128,6 @@ int matrix_transform(const pcl::PointCloud<pcl::PointXYZ>::Ptr &source_cloud,
   //* AngleAxisf(0.33*M_PI, Vector3f::UnitZ());
   //cout << m << endl << "is unitary: " << m.isUnitary() << endl;
 
-  Eigen::Matrix2d mat;
-  mat << 1, 2,
-         3, 4;
-  Eigen::Vector2d u(-1,1), v(2,0);
-  std::cout << "Here is mat*mat:\n" << mat*mat << std::endl;
-  std::cout << "Here is mat*u:\n" << mat*u << std::endl;
-  std::cout << "Here is u^T*mat:\n" << u.transpose()*mat << std::endl;
-  std::cout << "Here is u^T*v:\n" << u.transpose()*v << std::endl;
-  std::cout << "Here is u*v^T:\n" << u*v.transpose() << std::endl;
-  std::cout << "Let's multiply mat by itself" << std::endl;
-  mat = mat*mat;
-  std::cout << "Now mat is mat:\n" << mat << std::endl;
-
   // METHOD #2: Using a Affine3f. This method is easier and less error prone
   Eigen::Affine3f transform_2 = Eigen::Affine3f::Identity();
 
