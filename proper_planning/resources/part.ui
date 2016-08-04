@@ -138,8 +138,33 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="2" colspan="2">
+       <widget class="QPushButton" name="chbContour">
+        <property name="font">
+         <font>
+          <weight>50</weight>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Contour</string>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0" colspan="2">
-       <widget class="QCheckBox" name="chbFill">
+       <widget class="QPushButton" name="chbFill">
         <property name="font">
          <font>
           <weight>50</weight>
@@ -155,27 +180,11 @@
         <property name="text">
          <string>Fill Layer</string>
         </property>
-        <property name="checked">
+        <property name="checkable">
          <bool>true</bool>
         </property>
-       </widget>
-      </item>
-      <item row="1" column="2" colspan="2">
-       <widget class="QCheckBox" name="chbContour">
-        <property name="font">
-         <font>
-          <weight>50</weight>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
-        <property name="autoFillBackground">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>Contour</string>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
