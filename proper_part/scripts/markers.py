@@ -178,11 +178,11 @@ class ScanMarkers():
         self.marker_array.markers.append(self.plane.marker)
         self.path = LinesMarker()
         self.path.set_frame('/workobject')
-        self.path.set_color((0.5, 0.5, 0.0, 1.0))
+        self.path.set_color((0.8, 0.0, 0.2, 1.0))
         self.marker_array.markers.append(self.path.marker)
         self.laser = SegmentsMarker()
         self.laser.set_frame('/workobject')
-        self.laser.set_color((0.7, 0.0, 0.0, 1.0))
+        self.laser.set_color((0.8, 0.0, 0.0, 1.0))
         self.marker_array.markers.append(self.laser.marker)
         for id, m in enumerate(self.marker_array.markers):
             m.id = id
@@ -227,7 +227,7 @@ class PartMarkers():
         self.marker_array.markers.append(self.path.marker)
         self.laser = SegmentsMarker()
         self.laser.set_frame('/workobject')
-        self.laser.set_color((0.7, 0.0, 0.0, 1.0))
+        self.laser.set_color((0.8, 0.0, 0.0, 1.0))
         self.marker_array.markers.append(self.laser.marker)
         for id, m in enumerate(self.marker_array.markers):
             m.id = id
@@ -258,11 +258,11 @@ class PathMarkers():
 
         self.path = LinesMarker()
         self.path.set_frame('/workobject')
-        self.path.set_color((0.7, 0.7, 0.7, 1.0))
+        self.path.set_color((0.8, 0.0, 0.2, 1.0))
         self.marker_array.markers.append(self.path.marker)
         self.laser = SegmentsMarker()
         self.laser.set_frame('/workobject')
-        self.laser.set_color((0.7, 0.3, 0.0, 1.0))
+        self.laser.set_color((0.8, 0.2, 0.0, 1.0))
         self.marker_array.markers.append(self.laser.marker)
         self.arrow = ArrowMarker(0.075)
         self.arrow.set_color((0, 0, 0, 0))

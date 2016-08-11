@@ -53,10 +53,10 @@ processing.
 {"powder":true}
 ```
 
-- *wait_time*: programs a wait time interruption in seconds.
+- *wait*: programs a wait time interruption in seconds.
 
 ```json
-{"wait_time":0.5}
+{"wait":0.5}
 ```
 
 - *speed*: sets the TCP linear speed in mm/s.

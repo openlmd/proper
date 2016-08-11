@@ -55,7 +55,8 @@ def read_zmap(filename):
 def fill_zmap(zmap, size=5):
     kernel = np.ones((size, size), np.uint8)
     closing = cv2.morphologyEx(zmap, cv2.MORPH_CLOSE, kernel)
-    return closing
+    zmap = closing.astype(np.uint16)
+    return zmap
 
 
 def save_zmap(filename, zmap):

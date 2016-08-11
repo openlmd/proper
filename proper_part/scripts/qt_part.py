@@ -58,12 +58,10 @@ class QtPart(QtGui.QWidget):
         filename = QtGui.QFileDialog.getOpenFileName(
             self, 'Open file', os.path.join(path, 'data'),
             'Mesh Files (*.stl)')[0]
-        print 'Filename:', filename
         self.setWindowTitle(filename)
         self.robpath.load_mesh(filename)
 
         #TODO: Add info from velocity estimation module.
-        self.mesh_size = self.robpath.mesh.size
         self.updatePosition(self.robpath.mesh.position)
         self.updateSize(self.robpath.mesh.size)
 
@@ -72,15 +70,15 @@ class QtPart(QtGui.QWidget):
         self.pub_marker_array.publish(self.part_markers.marker_array)
 
         self.updateLayers()
-
         self.blockSignals(False)
+        self.updatePosition((10, 10, 100))
 
     def updateParameters(self):
-        height = self.sbHeight.value()
-        width = self.sbWidth.value()
+        height = self.sbHeight.value() + 0.00001
+        width = self.sbWidth.value() + 0.00001
         overlap = 0.01 * self.sbOverlap.value()
-        print height, width, overlap
         self.robpath.set_track(height, width, overlap)
+
         self.robpath.set_process(rospy.get_param('/process/speed'),
                                  rospy.get_param('/process/power'),
                                  rospy.get_param('/process/focus'))
@@ -93,13 +91,11 @@ class QtPart(QtGui.QWidget):
 
     def updateProcess(self):
         if self.robpath.k < len(self.robpath.levels):
-            path = self.robpath.update_process(filled=self.chbFill.isChecked(),
-                                               contour=self.chbContour.isChecked())
+            self.robpath.update_process(filled=self.chbFill.isChecked(),
+                                        contour=self.chbContour.isChecked())
             self.sbStart.setValue(self.robpath.k)
-            print 'Path:', path
-            path = self.robpath.path[self.npoints:-1]
-            self.npoints = self.npoints + len(path)
-            self.part_markers.set_path(path)
+            self.part_markers.set_path(self.robpath.path[self.npoints:-1])
+            self.npoints = len(self.robpath.path)
             self.pub_marker_array.publish(self.part_markers.marker_array)
         else:
             self.processing = False
@@ -151,9 +147,9 @@ class QtPart(QtGui.QWidget):
         self.sbSizeZ.setValue(sz)
 
     def changeSize(self):
-        sx = self.sbSizeX.value()
-        sy = self.sbSizeY.value()
-        sz = self.sbSizeZ.value()
+        sx = self.sbSizeX.value() + 0.001
+        sy = self.sbSizeY.value() + 0.001
+        sz = self.sbSizeZ.value() + 0.001
         self.updatePart(size=(sx, sy, sz))
 
     def updatePart(self, position=None, size=None):

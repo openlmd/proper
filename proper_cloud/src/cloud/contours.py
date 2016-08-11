@@ -58,7 +58,7 @@ def hull_contour(contours, area=1000):
     return contour
 
 
-def slice_of_contours(contours, scale=10):
+def slice_of_contours(zmap, contours, scale=10):
     slice = []
     for contour in contours:
         points = contour.reshape((-1, 2))
@@ -71,7 +71,7 @@ def slice_of_contours(contours, scale=10):
 
 class Segmentation:
     def __init__(self):
-        pass
+        self.zmap = None
 
     def on_select(self, xmin, xmax):
         print xmin, xmax
@@ -80,14 +80,15 @@ class Segmentation:
         self.rect.set_xy((xmin, 0))
         self.rect.set_width(xmax-xmin)
         if xmin == xmax:
-            self.ax1.imshow(zmap)
+            self.ax1.imshow(self.zmap)
         else:
-            self.contours = contours_zmap(zmap, thr=(xmin, xmax))
-            img = draw_contours(zmap, self.contours, color=(255, 0, 0), size=2)
+            self.contours = contours_zmap(self.zmap, thr=(xmin, xmax))
+            img = draw_contours(self.zmap, self.contours, color=(255, 0, 0), size=2)
             self.ax1.imshow(img)
         self.fig.canvas.draw()
 
     def plot_zmap(self, zmap):
+        self.zmap = zmap
         gs = gridspec.GridSpec(5, 1)
         self.fig = plt.figure(figsize=(8, 6))
         self.ax1 = self.fig.add_subplot(gs[:4, :])
@@ -140,7 +141,7 @@ if __name__ == '__main__':
     segmentation.plot_zmap(zmap)
     #contours = approx_contours(segmentation.contours, epsilon=2)
     #contours = [hull_contour(segmentation.contours, area=1000)]
-    slice = slice_of_contours(segmentation.contours)
+    slice = slice_of_contours(zmap, segmentation.contours)
 
     from planning.planning import Planning
     from planning.mlabplot import MPlot3D

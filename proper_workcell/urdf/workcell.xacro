@@ -7,7 +7,7 @@
   </xacro:property>
 
   <xacro:property name="workobject_frame">
-    <origin xyz="1.550 -0.185 0.930" rpy="0 0 0" />
+    <origin xyz="1.550 -0.178 0.9308" rpy="0 0 0" />
   </xacro:property>
 
   <xacro:property name="camera_frame">
