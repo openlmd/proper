@@ -97,11 +97,11 @@ class Robviz(QtGui.QMainWindow):
 
         self.boxPlot.addWidget(MyViz())
 
-        self.qtData = QtData()
-        self.qtScan = QtScan()
-        self.qtParam = QtParam()
-        self.qtPart = QtPart()
-        self.qtPath = QtPath()
+        self.qtData = QtData(self)
+        self.qtScan = QtScan(self)
+        self.qtParam = QtParam(self)
+        self.qtPart = QtPart(self)
+        self.qtPath = QtPath(self)
 
         self.tabWidget.addTab(self.qtData, 'Data')
         self.tabWidget.addTab(self.qtScan, 'Scan')
