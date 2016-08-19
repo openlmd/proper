@@ -3,6 +3,7 @@ import os
 import sys
 import rospy
 import rospkg
+import datetime
 import numpy as np
 
 from visualization_msgs.msg import MarkerArray
@@ -61,7 +62,6 @@ class QtPart(QtGui.QWidget):
         self.setWindowTitle(filename)
         self.robpath.load_mesh(filename)
 
-        #TODO: Add info from velocity estimation module.
         self.updatePosition(self.robpath.mesh.position)
         self.updateSize(self.robpath.mesh.size)
 
@@ -78,7 +78,6 @@ class QtPart(QtGui.QWidget):
         width = self.sbWidth.value() + 0.00001
         overlap = 0.01 * self.sbOverlap.value()
         self.robpath.set_track(height, width, overlap)
-
         self.robpath.set_process(rospy.get_param('/process/speed'),
                                  rospy.get_param('/process/power'),
                                  rospy.get_param('/process/focus'))
@@ -100,6 +99,13 @@ class QtPart(QtGui.QWidget):
         else:
             self.processing = False
             self.timer.stop()
+        self.updateInfo()
+
+    def updateInfo(self):
+        length = self.robpath.planning.path_length(self.robpath.path)
+        time = self.robpath.planning.path_time(length, self.robpath.speed, 50)
+        #self.lblInfo.setText("Estimated time:s %.1f s" % (time))
+        self.lblInfo.setText("Estimated time:   %s" % (str(datetime.timedelta(seconds=int(time)))))
 
     def btnProcessMeshClicked(self):
         if self.processing:

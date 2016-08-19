@@ -729,6 +729,19 @@ border: 1px solid gray;</string>
      </property>
     </widget>
    </item>
+   <item row="13" column="0">
+    <widget class="QLabel" name="lblInfo">
+     <property name="font">
+      <font>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="text">
+      <string>info</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

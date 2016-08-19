@@ -12,5 +12,3 @@ catkin_package()
 include_directories(
   ${catkin_INCLUDE_DIRS}
 )
-
-catkin_python_setup()
