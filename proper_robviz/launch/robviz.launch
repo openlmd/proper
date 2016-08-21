@@ -10,8 +10,9 @@
 
     <node name="cloud" pkg="proper_cloud" type="nd_cloud" respawn="true" />
 
-    <node name="velocity" pkg="mashes_measures" type="nd_velocity.py" respawn="true" />
-    <node name="supervisor" pkg="mashes_measures" type="nd_supervisor.py" respawn="true" />
+    <include file="$(find mashes_measures)/launch/measures.launch">
+      <arg name="gui" value="false" />
+    </include>
 
     <node name="robviz" pkg="proper_robviz" type="robviz.py"/>
 </launch>
