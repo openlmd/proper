@@ -141,8 +141,11 @@ class QtScan(QtGui.QWidget):
         pcd_tool.save_zmap('%s.tif' % name, zmap)
         segmentation = Segmentation()
         segmentation.plot_zmap(zmap)
+        print segmentation.contours
         slice = contours.slice_of_contours(zmap, segmentation.contours)
         print slice
+        # TODO: Send slice to qt_path.
+        contours.show_path_from_slice(slice)
 
     def btnScanClicked(self):
         self.accepted.emit(self.path)

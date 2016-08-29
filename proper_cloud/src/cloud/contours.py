@@ -71,6 +71,7 @@ def slice_of_contours(zmap, contours, scale=10):
 
 class Segmentation:
     def __init__(self):
+        self.contours = []
         self.zmap = None
 
     def on_select(self, xmin, xmax):
@@ -95,19 +96,46 @@ class Segmentation:
         self.ax1.imshow(zmap)
         self.ax1.axes.get_xaxis().set_visible(False)
         self.ax1.axes.get_yaxis().set_visible(False)
-        ax2 = self.fig.add_subplot(gs[4, :])
-        ax2.hist(zmap.flatten(), 100, range=(1, zmap.max()), fc='k', ec='k')
-        ax2.axes.get_yaxis().set_visible(False)
-        height = ax2.get_ylim()[1]
-        self.rect = Rectangle((0, 0), 0, height, alpha=.2, color=(1, 0, 0))
-        ax2.add_patch(self.rect)
-        span = SpanSelector(ax2, self.on_select, 'horizontal', useblit=True,
-                            rectprops=dict(alpha=0.5, facecolor='red'))
+        self.ax2 = self.fig.add_subplot(gs[4, :])
+        self.ax2.hist(
+            zmap.flatten(), 100, range=(1, zmap.max()), fc='k', ec='k')
+        self.ax2.axes.get_yaxis().set_visible(False)
+        self.rect = Rectangle(
+            (0, 0), 0, self.ax2.get_ylim()[1], alpha=.2, color=(1, 0, 0))
+        self.ax2.add_patch(self.rect)
+        self.span = SpanSelector(
+            self.ax2, self.on_select, 'horizontal', useblit=True,
+            rectprops=dict(alpha=0.5, facecolor='red'))
+        plt.ioff()
         plt.show()
 
 
-if __name__ == '__main__':
+def show_path_from_slice(slice):
     import time
+    from planning.planning import Planning
+    from planning.mlabplot import MPlot3D
+    from planning.polyline import filter_polyline
+
+    t0 = time.time()
+    planning = Planning()
+    slice = [filter_polyline(polyline, dist=0.3) for polyline in slice]
+    path = planning.get_path_from_slices([slice], 0.8)
+    t1 = time.time()
+    print 'Time for path:', t1 - t0
+
+    # # Get path with frames
+    # _path = []
+    # for position, orientation, process in path:
+    #    frame, t = calc.quatpose_to_pose(position, orientation)
+    #    _path.append([position, frame, process])
+
+    mplot3d = MPlot3D()
+    mplot3d.draw_slice(slice)
+    mplot3d.draw_path(path)
+    mplot3d.show()
+
+
+if __name__ == '__main__':
     import argparse
 
     parser = argparse.ArgumentParser()
@@ -142,25 +170,4 @@ if __name__ == '__main__':
     #contours = approx_contours(segmentation.contours, epsilon=2)
     #contours = [hull_contour(segmentation.contours, area=1000)]
     slice = slice_of_contours(zmap, segmentation.contours)
-
-    from planning.planning import Planning
-    from planning.mlabplot import MPlot3D
-    from planning.polyline import filter_polyline
-
-    t0 = time.time()
-    planning = Planning()
-    slice = [filter_polyline(polyline, dist=0.3) for polyline in slice]
-    path = planning.get_path_from_slices([slice], 0.8)
-    t1 = time.time()
-    print 'Time for path:', t1 - t0
-
-    # # Get path with frames
-    # _path = []
-    # for position, orientation, process in path:
-    #    frame, t = calc.quatpose_to_pose(position, orientation)
-    #    _path.append([position, frame, process])
-
-    mplot3d = MPlot3D()
-    mplot3d.draw_slice(slice)
-    mplot3d.draw_path(path)
-    mplot3d.show()
+    show_path_from_slice(slice)
