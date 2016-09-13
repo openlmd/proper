@@ -197,6 +197,8 @@ class QtPath(QtGui.QWidget):
             self.insertCommand(str_command[0], insert=True, position=row)
 
     def btnCancelClicked(self):
+        self.sendCommand('{"reset_laser":1}')
+        self.sendCommand('{"reset_powder":1}')
         self.sendCommand('{"cancel":1}')
 
     def getMoveCommands(self):

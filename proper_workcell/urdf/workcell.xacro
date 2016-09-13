@@ -11,7 +11,7 @@
   </xacro:property>
 
   <xacro:property name="camera_frame">
-    <origin xyz="0.0715 0.2219 0.3248" rpy="-1.148206 0.311297 -2.151468" />
+    <origin xyz="0.1085 0.2266 0.3432" rpy="-1.108786 0.296066 -2.162730" />
   </xacro:property>
 
   <!-- Robot cell -->
