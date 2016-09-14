@@ -622,11 +622,6 @@ void PCLViewer::on_pushButton_proj_points_clicked()
     }
 }
 
-void PCLViewer::on_pushButton_save_projections_clicked()
-{
-    //BORRAR
-}
-
 void PCLViewer::on_pushButton_2d_place_clicked()
 {
     try

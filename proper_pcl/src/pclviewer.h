@@ -131,8 +131,6 @@ private slots:
 
   void on_pushButton_proj_points_clicked();
 
-  void on_pushButton_save_projections_clicked();
-
   void on_pushButton_2d_place_clicked();
 
   void on_pushButton_filter_clicked();
