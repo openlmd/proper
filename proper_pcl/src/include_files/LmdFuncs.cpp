@@ -23,6 +23,8 @@ void PointCloudProcess::LoadPointFile(std::string fileName)
 {
     if (fileName != "")
     {
+        new_cloud_xyz.reset(new pcl::PointCloud<pcl::PointXYZ>);
+        selected_points.reset(new pcl::PointCloud<pcl::PointXYZ>);
         cloud_xyz.reset(new pcl::PointCloud<pcl::PointXYZ>);
         if (pcl::io::loadPCDFile<pcl::PointXYZ> (fileName, *cloud_xyz) == -1)
         {
@@ -183,7 +185,7 @@ void PointCloudProcess::RadiusFilter(int kNearest, double radius)
 {
     if (kNearest == -1)
     {
-        kNearest = 10;
+        kNearest = 7;
     }
     if (radius == -1)
     {

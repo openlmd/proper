@@ -1,6 +1,36 @@
 #include "pclviewer.h"
 #include "include_files/ui_pclviewer.h"
 
+//Callback da función para seleccionar os puntos do plano++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+void pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
+{
+    try
+    {
+        struct callback_args_class* data = (struct callback_args_class *)args;
+        if (event.getPointIndex () == -1)
+            return;
+        pcl::PointXYZ current_point;
+        event.getPoint(current_point.x, current_point.y, current_point.z);
+        data->pointProcessPtr->AddPoint(current_point);
+
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+        data->pointProcessPtr->getSelPoints(cloud);
+        // Draw clicked points in yellow:
+        pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> green_handler (cloud, 0, 255, 0);
+        data->viewerPtr->removePointCloud("distance_clicked_points");
+        data->viewerPtr->addPointCloud(cloud, green_handler, "distance_clicked_points");
+        data->viewerPtr->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10, "distance_clicked_points");
+    }
+    catch(char const* error)
+    {
+        std::cout << "Point picking error: " << error << std::endl;
+    }
+    catch(...)
+    {
+        std::cout << "Unknown picking exception.";
+    }
+}
+
 PCLViewer::PCLViewer (QWidget *parent) :
   QMainWindow (parent),
   ui (new Ui::PCLViewer)
@@ -38,42 +68,15 @@ PCLViewer::PCLViewer (QWidget *parent) :
   viewer->addPointCloud (cloud, "cloud");
   viewer->resetCamera ();
   ui->qvtkWidget->update ();
+  cb_args_class.viewerPtr = pcl::visualization::PCLVisualizer::Ptr(viewer);
+  cb_args_class.pointProcessPtr = &pointProcess;
+  viewer->registerPointPickingCallback (pp_callback, (void*)&cb_args_class);
 }
 
 
 PCLViewer::~PCLViewer ()
 {
   delete ui;
-}
-
-//Callback da función para seleccionar os puntos do plano++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-void pp_callback (const pcl::visualization::PointPickingEvent& event, void* args)
-{
-    try
-    {
-        struct callback_args_class* data = (struct callback_args_class *)args;
-        if (event.getPointIndex () == -1)
-            return;
-        pcl::PointXYZ current_point;
-        event.getPoint(current_point.x, current_point.y, current_point.z);
-        data->pointProcessPtr->AddPoint(current_point);
-
-        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
-        data->pointProcessPtr->getSelPoints(cloud);
-        // Draw clicked points in yellow:
-        pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> green_handler (cloud, 0, 255, 0);
-        data->viewerPtr->removePointCloud("distance_clicked_points");
-        data->viewerPtr->addPointCloud(cloud, green_handler, "distance_clicked_points");
-        data->viewerPtr->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 10, "distance_clicked_points");
-    }
-    catch(char const* error)
-    {
-        std::cout << "Point picking error: " << error << std::endl;
-    }
-    catch(...)
-    {
-        std::cout << "Unknown picking exception.";
-    }
 }
 
 //Cargar PCD
@@ -88,15 +91,20 @@ void PCLViewer::on_pushButton_random_2_clicked()
         nome_archivo = fileName.toUtf8().constData();
         pointProcess.LoadPointFile(nome_archivo);
 
+        viewer->removePointCloud("distance_clicked_points");
+        viewer->removePointCloud("cloud");
+        viewer->removePointCloud("cloud_mod");
+        viewer->removeCoordinateSystem();
+        viewer->removeAllShapes();
         // Set up the QVTK window
-        viewer.reset (new pcl::visualization::PCLVisualizer ("viewer", false));
-        ui->qvtkWidget->SetRenderWindow (viewer->getRenderWindow ());
-        viewer->setupInteractor (ui->qvtkWidget->GetInteractor (), ui->qvtkWidget->GetRenderWindow ());
-        ui->qvtkWidget->update ();
+        //viewer.reset (new pcl::visualization::PCLVisualizer ("viewer", false));
+        //ui->qvtkWidget->SetRenderWindow (viewer->getRenderWindow ());
+        //viewer->setupInteractor (ui->qvtkWidget->GetInteractor (), ui->qvtkWidget->GetRenderWindow ());
+        //ui->qvtkWidget->update ();
 
         viewer->resetCamera ();
         ui->qvtkWidget->update ();
-        viewer->addCoordinateSystem(0.05);
+        viewer->addCoordinateSystem(0.05);//"workobject"
 
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         pointProcess.getPointCloud(cloud);
@@ -106,7 +114,7 @@ void PCLViewer::on_pushButton_random_2_clicked()
         viewer->getCameras(cam);
         cam[0].pos[0] = (max_pt.x + min_pt.x) / 2;
         cam[0].pos[1] = (max_pt.y + min_pt.y) / 2;
-        cam[0].pos[2] = max_pt.z * 3/2;
+        //cam[0].pos[2] = (max_pt.z + min_pt.z) / 2;
         cam[0].focal[0] = (max_pt.x + min_pt.x) / 2;
         cam[0].focal[1] = (max_pt.y + min_pt.y) / 2;
         cam[0].focal[2] = max_pt.z;
@@ -117,10 +125,6 @@ void PCLViewer::on_pushButton_random_2_clicked()
         std::cout << "Camara:" << std::endl << " - pos: (" << cam[0].pos[0] << ", "    << cam[0].pos[1] << ", "    << cam[0].pos[2] << ")" << endl
                                                                   << " - view: ("    << cam[0].view[0] << ", "   << cam[0].view[1] << ", "   << cam[0].view[2] << ")"    << endl
                                                                   << " - focal: ("   << cam[0].focal[0] << ", "  << cam[0].focal[1] << ", "  << cam[0].focal[2] << ")"   << endl;
-        cb_args_class.viewerPtr = pcl::visualization::PCLVisualizer::Ptr(viewer);
-        cb_args_class.pointProcessPtr = &pointProcess;
-        viewer->registerPointPickingCallback (pp_callback, (void*)&cb_args_class);
-
     }
     catch(char const* error)
     {
@@ -161,25 +165,24 @@ void PCLViewer::on_pushButton_centra_clicked()
         Eigen::Affine3f sel_frame;
         Eigen::VectorXf plane;
         pointProcess.getPlaneCoeffs(plane);
-        //pointProcess.TransformatioMatrix(plane, sel_frame);
-        viewer->removeCoordinateSystem();
+        //viewer->removeCoordinateSystem();
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         pointProcess.getSelPoints(cloud);
         std::vector<pcl::visualization::Camera> cam;
         viewer->getCameras(cam);
         float fZ;
         cam[0].pos[0] = cloud->points.back().x;
-        //cam[0].pos[0] = cloud->points.at(cloud->points.size()-2).x;
+        //cam[0].pos[0] = current_point.x;
         cam[0].pos[1] = cloud->points.back().y;
-        //cam[0].pos[0] = cloud->points.at(cloud->points.size()-2).y;
+        //cam[0].pos[0] = current_point.y;
         fZ = cloud->points.back().z;
-        //fZ = cloud->points.at(cloud->points.size()-2).z;
+        //fZ = current_point.z;
         cam[0].focal[0] = cam[0].pos[0];
         cam[0].focal[1] = cam[0].pos[1];
         cam[0].focal[2] = fZ;
         pointProcess.PlaceFrameZPlane(plane, cloud->points.at(cloud->points.size()-2), cloud->points.back(), sel_frame);
         viewer->setCameraParameters(cam[0]);
-        viewer->addCoordinateSystem(0.01, sel_frame);
+        viewer->addCoordinateSystem(0.01, sel_frame);//"base_frame"
         std::cout << "Frame: " << std::endl << sel_frame.linear() << std::endl;
         std::cout << "Pos: " << std::endl << sel_frame.translation() << std::endl;
         ui->qvtkWidget->update ();
@@ -205,35 +208,26 @@ void PCLViewer::on_pushButton_funcion_1_clicked()
     if (ui->stackedWidget_filtros->currentIndex() == 0)
     {
         pointProcess.VoxelFilter(ui->doubleSpinBox_voxel_x->value(), ui->doubleSpinBox_voxel_y->value(), ui->doubleSpinBox_voxel_z->value());
-        //ss << "Voxel cloud:" << std::endl << cloud_xyz_modificada->width * cloud_xyz_modificada->height << std::endl;
-        //ss << "Eliminados:" << std::endl << (cloud_xyz_ref->width * cloud_xyz_ref->height) - (cloud_xyz_modificada->width * cloud_xyz_modificada->height) << std::endl;
     }
     //Statistical filter
     else if (ui->stackedWidget_filtros->currentIndex() == 1)
     {
         pointProcess.StatisticalFilter((int)ui->doubleSpinBox_filtro1_kn->value(),ui->doubleSpinBox_filtro1_desv->value());
-        //ss << "Eliminados con estadistica:" << std::endl << (cloud_xyz_ref->width * cloud_xyz_ref->height) - (cloud_xyz_modificada->width * cloud_xyz_modificada->height) << std::endl;
     }
     //Radius filter
     else if (ui->stackedWidget_filtros->currentIndex() == 2)
     {
         pointProcess.RadiusFilter((int)ui->doubleSpinBox_radio_k->value(),ui->doubleSpinBox_radio->value());
-        //ss << "Eliminados con radio:" << std::endl << (cloud_xyz_ref->width * cloud_xyz_ref->height) - (cloud_xyz_modificada->width * cloud_xyz_modificada->height) << std::endl;
     }
     //Resampling
     else if (ui->stackedWidget_filtros->currentIndex() == 3)
     {
         pointProcess.ResamplingPoints(ui->doubleSpinBox_smooth->value());
-        //cloud_xyz_modificada.reset(new pcl::PointCloud<pcl::PointXYZ>);
-        //ss << "Resampled points:" << std::endl << cloud_xyz_modificada->width * cloud_xyz_modificada->height << std::endl;
-        //ss << "Eliminados:" << std::endl << (cloud_xyz_ref->width * cloud_xyz_ref->height) - (cloud_xyz_modificada->width * cloud_xyz_modificada->height) << std::endl;
     }
     //Pass through
     else if (ui->stackedWidget_filtros->currentIndex() == 4)
     {
         pointProcess.PassthroughFilter(ui->doubleSpinBox_min_pass->value(),ui->doubleSpinBox_max_pass->value(),ui->comboBox_pass->currentIndex());
-        //ss << "Pass points:" << std::endl << cloud_xyz_modificada->width * cloud_xyz_modificada->height << std::endl;
-        //ss << "Eliminados:" << std::endl << (cloud_xyz_ref->width * cloud_xyz_ref->height) - (cloud_xyz_modificada->width * cloud_xyz_modificada->height) << std::endl;
     }
 
     pcl::PointCloud<pcl::PointXYZ>::Ptr mod_cloud;
@@ -330,7 +324,6 @@ void PCLViewer::on_pushButton_aceptar_filtro_clicked()
     }
 }
 
-
 //Datos nube
 void PCLViewer::on_pushButton_clicked()
 {
@@ -402,7 +395,6 @@ void PCLViewer::on_doubleSpinBox_sel_size_valueChanged(double arg1)
     ui->qvtkWidget->update ();
 }
 
-//FITTING++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //Axusta plano
 void PCLViewer::on_pushButton_funcion_2_clicked()
 {
@@ -437,8 +429,9 @@ void PCLViewer::on_pushButton_funcion_2_clicked()
     pointProcess.TransformatioMatrix(ground_coeffs);
     pointProcess.getTransformationMatrix(t_matrix);
 
+    //viewer->removeCoordinateSystem("plane_frame");
     ss << "Affine3f: " << std::endl << t_matrix.matrix() << std::endl;
-    viewer->addCoordinateSystem(0.01 ,t_matrix);
+    viewer->addCoordinateSystem(0.01 ,t_matrix);//"plane_frame"
     pointProcess.SaveMatrix();
 
     str = ss.str();
@@ -630,9 +623,10 @@ void PCLViewer::on_pushButton_2d_place_clicked()
         std::stringstream ss;
         Eigen::Affine3f foundPointT = Eigen::Affine3f::Identity();
 
+        //viewer->removeCoordinateSystem("found_point");
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         pointProcess.PlaceFrame2D(ui->doubleSpinBox_2dx->value(), ui->doubleSpinBox_2dy->value(), foundPointT);
-        viewer->addCoordinateSystem(0.01 ,foundPointT);
+        viewer->addCoordinateSystem(0.01 ,foundPointT);//"found_point"
 
         pointProcess.getModPointCloud(cloud);
         viewer->removePointCloud("cloud_mod");
