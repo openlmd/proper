@@ -167,6 +167,22 @@ class QtPath(QtGui.QWidget):
             item_text = self.listWidgetPoses.item(row)
             #self.pub.publish(item_text.text())
             self.sendCommand(item_text.text())
+            if len(self.ok_command.split()) == 0:
+                self.invalid_command("No response command")
+                return
+            if len(self.ok_command.split()) == 1:
+                if self.ok_command.split()[0] == "ERR_COMMAND":
+                    self.invalid_command("Check the command name")
+                    return
+                if self.ok_command.split()[0] == "COORD_ERROR":
+                    self.invalid_command("Check the command parameters")
+                    return
+                if self.ok_command.split()[0] == "NOK":
+                    self.invalid_command("Not a Json comand")
+                    return
+            if len(self.ok_command.split()) == 3:
+                if self.ok_command.split()[2] == "BUFFER_FULL":
+                    return
             row += 1
             if row == n_row:
                 row = 0
@@ -229,13 +245,42 @@ class QtPath(QtGui.QWidget):
             item_text = self.listWidgetPoses.item(row)
             #self.pub.publish(item_text.text())
             self.sendCommand(item_text.text())
-            if self.ok_command == "OK":
-                row += 1
-                if row == n_row:
-                    row = 0
+            if len(self.ok_command.split()) == 3:
+                if self.ok_command.split()[2] == "BUFFER_FULL":
+                    return
+            if len(self.ok_command.split()) == 1:
+                if self.ok_command.split()[0] == "ERR_COMMAND":
                     self.btnRunPathClicked()
-                self.listWidgetPoses.setCurrentRow(row)
+                    self.invalid_command("Check the command name")
+                    return
+                if self.ok_command.split()[0] == "COORD_ERROR":
+                    self.btnRunPathClicked()
+                    self.invalid_command("Check the command parameters")
+                    return
+                if self.ok_command.split()[0] == "NOK":
+                    self.btnRunPathClicked()
+                    self.invalid_command("Not a Json comand")
+                    return
+            if len(self.ok_command.split()) == 0:
+                self.btnRunPathClicked()
+                self.invalid_command("No response command")
+                return
+            row += 1
+            if row == n_row:
+                row = 0
+                self.btnRunPathClicked()
+            self.listWidgetPoses.setCurrentRow(row)
 
+    def invalid_command(self, informative):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Warning)
+        msg.setText("Invalid command")
+        msg.setInformativeText(informative)
+        msg.setWindowTitle("Command error")
+        #msg.setDetailedText("The details are as follows:")
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+        #msg.buttonClicked.connect(msgbtn)
+        retval = msg.exec_()
 
 if __name__ == "__main__":
     rospy.init_node('path_panel')
