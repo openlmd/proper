@@ -140,6 +140,8 @@ class QtPath(QtGui.QWidget):
             self.tmrRunPath.stop()
             self.btnRunPath.setText('Run')
         else:
+            self.sendCommand('{"reset_laser":1}')
+            self.sendCommand('{"reset_powder":1}')
             self.btnRunPath.setText('Stop')
             self.tmrRunPath.start(100)  # time in ms
 
@@ -174,7 +176,7 @@ class QtPath(QtGui.QWidget):
                 if self.ok_command.split()[0] == "ERR_COMMAND":
                     self.invalid_command("Check the command name")
                     return
-                if self.ok_command.split()[0] == "COORD_ERROR":
+                if self.ok_command.split()[0] == "PARAM_ERROR":
                     self.invalid_command("Check the command parameters")
                     return
                 if self.ok_command.split()[0] == "NOK":
@@ -253,7 +255,7 @@ class QtPath(QtGui.QWidget):
                     self.btnRunPathClicked()
                     self.invalid_command("Check the command name")
                     return
-                if self.ok_command.split()[0] == "COORD_ERROR":
+                if self.ok_command.split()[0] == "PARAM_ERROR":
                     self.btnRunPathClicked()
                     self.invalid_command("Check the command parameters")
                     return
