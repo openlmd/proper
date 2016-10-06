@@ -23,6 +23,8 @@ void PointCloudProcess::LoadPointFile(std::string fileName)
 {
     if (fileName != "")
     {
+        new_cloud_xyz.reset(new pcl::PointCloud<pcl::PointXYZ>);
+        selected_points.reset(new pcl::PointCloud<pcl::PointXYZ>);
         cloud_xyz.reset(new pcl::PointCloud<pcl::PointXYZ>);
         if (pcl::io::loadPCDFile<pcl::PointXYZ> (fileName, *cloud_xyz) == -1)
         {
@@ -127,17 +129,14 @@ void PointCloudProcess::VoxelFilter(double leafX, double leafY, double leafZ)
     if (leafX == -1)
     {
         leafX = (max_pt.x - min_pt.x) / (cloud_xyz->width * cloud_xyz->height);
-
     }
     if (leafY == -1)
     {
         leafY = (max_pt.y - min_pt.y) / (cloud_xyz->width * cloud_xyz->height);
-
     }
     if (leafZ == -1)
     {
         leafZ = (max_pt.z - min_pt.z) / (cloud_xyz->width * cloud_xyz->height);
-
     }
     if (leafX>0 && leafY>0 && leafZ>0)
     {
@@ -186,7 +185,7 @@ void PointCloudProcess::RadiusFilter(int kNearest, double radius)
 {
     if (kNearest == -1)
     {
-        kNearest = 10;
+        kNearest = 7;
     }
     if (radius == -1)
     {
@@ -257,7 +256,6 @@ void PointCloudProcess::ResamplingPoints(double radius)
     }
     return;
 }
-
 
 void PointCloudProcess::AddPoint(pcl::PointCloud<pcl::PointXYZ>::Ptr &add_cloud, pcl::PointXYZ sel_point)
 {
@@ -394,16 +392,7 @@ void PointCloudProcess::PlaceFrameZPlane(Eigen::VectorXf a, pcl::PointXYZ orig, 
     Eigen::Quaternionf cuat;
     cuat = Eigen::Quaternionf(frame.linear());
 
-    ofstream myfile;
-    myfile.open ("base_frame.json", ios::out | ios::trunc);
-    myfile << "{\"base_frame\": {" << std::endl;
-    myfile << "\t" << "\"u\": [" << frame(0,0) << ", " << frame(1,0) << ", " << frame(2,0) << "]," << std::endl;
-    myfile << "\t" << "\"v\": [" << frame(0,1) << ", " << frame(1,1) << ", " << frame(2,1) << "]," << std::endl;
-    myfile << "\t" << "\"w\": [" << frame(0,2) << ", " << frame(1,2) << ", " << frame(2,2) << "]," << std::endl;
-    myfile << "\t" << "\"t\": [" << frame(0,3) << ", " << frame(1,3) << ", " << frame(2,3) << "]" << std::endl;
-    myfile << "\t" << "\"quat\": [" << cuat.x() << ", " << cuat.y() << ", " << cuat.z() << ", " << cuat.w() << "]," << std::endl;
-    myfile << "}}";
-    myfile.close();
+    SaveMatrix("base_frame.json", frame);
 }
 
 void PointCloudProcess::CutPlane(bool updown, double offset)
@@ -438,23 +427,25 @@ void PointCloudProcess::getTransformationMatrix(Eigen::Affine3f &tMatrix)
     tMatrix = t_matrix;
 }
 
-void PointCloudProcess::SaveMatrix(const std::string fileName)
+void PointCloudProcess::SaveMatrix(const std::string fileName, Eigen::Affine3f matrix)
 {
+    Eigen::Quaternionf cuat;
+    cuat = Eigen::Quaternionf(matrix.linear());
     ofstream myfile;
     myfile.open (fileName.c_str(), ios::out | ios::trunc);
     myfile << "{\"matrix\": {" << std::endl;
-    myfile << "\t" << "\"u\": [" << t_matrix(0,0) << ", " << t_matrix(1,0) << ", " << t_matrix(2,0) << "]," << std::endl;
-    myfile << "\t" << "\"v\": [" << t_matrix(0,1) << ", " << t_matrix(1,1) << ", " << t_matrix(2,1) << "]," << std::endl;
-    myfile << "\t" << "\"w\": [" << t_matrix(0,2) << ", " << t_matrix(1,2) << ", " << t_matrix(2,2) << "]," << std::endl;
-    myfile << "\t" << "\"t\": [" << min_pt.x << ", " << min_pt.y << ", " << min_pt.z << "]" << std::endl;
+    myfile << "\t" << "\"u\": [" << matrix(0,0) << ", " << matrix(1,0) << ", " << matrix(2,0) << "]," << std::endl;
+    myfile << "\t" << "\"v\": [" << matrix(0,1) << ", " << matrix(1,1) << ", " << matrix(2,1) << "]," << std::endl;
+    myfile << "\t" << "\"w\": [" << matrix(0,2) << ", " << matrix(1,2) << ", " << matrix(2,2) << "]," << std::endl;
+    myfile << "\t" << "\"t\": [" << matrix(0,3) << ", " << matrix(1,3) << ", " << matrix(2,3) << "]" << std::endl;
+    myfile << "\t" << "\"quat\": [" << cuat.x() << ", " << cuat.y() << ", " << cuat.z() << ", " << cuat.w() << "]," << std::endl;
     myfile << "}}";
     myfile.close();
+}
 
-//    ofstream myfile;
-//    myfile.open ("plane.txt", ios::out | ios::trunc);
-//    myfile << "Matriz de transformación:\n";
-//    myfile << t_matrix.matrix();
-//    myfile.close();
+void PointCloudProcess::SaveMatrix(const std::string fileName)
+{
+  SaveMatrix(fileName, t_matrix);
 }
 
 void PointCloudProcess::ReorientPointCloud(Eigen::Affine3f tMatrix)
@@ -521,7 +512,6 @@ void PointCloudProcess::ProjectPointCloud(const std::string fileName)
     compression_params.push_back(CV_IMWRITE_PNG_COMPRESSION);
     compression_params.push_back(3);
     cv::imwrite(fileName, oProjection, compression_params);
-
 }
 
 void PointCloudProcess::PlaceFrame2D(int xVal, int yVal, Eigen::Affine3f &foundPointT)
@@ -568,15 +558,7 @@ void PointCloudProcess::PlaceFrame2D(int xVal, int yVal, Eigen::Affine3f &foundP
     foundPointT (2, 3) = f_pt.z;
     foundPointT.rotate(Eigen::AngleAxisf(0,Eigen::Vector3f::UnitZ()));
 
-    Eigen::Quaternionf cuat;
-    cuat = Eigen::Quaternionf(foundPointT.linear());
-    ofstream myfile;
-    myfile.open ("frame.json", ios::out | ios::trunc);
-    myfile << "{\"frame\": {" << std::endl;
-    myfile << "\t" << "\"pos\": [" << foundPointT (0, 3) << ", " << foundPointT (1, 3) << ", " << foundPointT (2, 3) << "]," << std::endl;
-    myfile << "\t" << "\"quat\": [" << cuat.x() << ", " << cuat.y() << ", " << cuat.z() << ", " << cuat.w() << "]," << std::endl;
-    myfile << "}}";
-    myfile.close();
+    SaveMatrix("found_point.json", foundPointT);
 }
 
 }

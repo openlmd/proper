@@ -5,6 +5,15 @@ find_package (Qt4 REQUIRED)
 find_package (VTK REQUIRED)
 find_package (PCL 1.7.1 REQUIRED)
 find_package( OpenCV REQUIRED )
+find_package(catkin REQUIRED COMPONENTS
+  tf
+  roscpp
+  pcl_ros
+  pcl_conversions
+  sensor_msgs
+)
+
+catkin_package()
 
 include_directories (${PCL_INCLUDE_DIRS})
 include_directories( ${OpenCV_INCLUDE_DIRS} )

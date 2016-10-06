@@ -50,6 +50,8 @@ class QtPath(QtGui.QWidget):
         self.btnRunPath.clicked.connect(self.btnRunPathClicked)
         icon = QtGui.QIcon.fromTheme('media-playback-start')
         self.btnRunPath.setIcon(icon)
+        self.btnRunTest.clicked.connect(self.btnRunTestClicked)
+        self.btnRunTest.setIcon(icon)
 
         self.btnDelete.clicked.connect(self.btnDeleteClicked)
         self.btnLoadPose.clicked.connect(self.btnLoadPoseClicked)
@@ -59,6 +61,7 @@ class QtPath(QtGui.QWidget):
         self.listWidgetPoses.itemSelectionChanged.connect(self.lstPosesClicked)
         self.listWidgetPoses.itemDoubleClicked.connect(self.qlistDoubleClicked)
 
+        self.testing = False
         self.ok_command = "OK"
         self.path_markers = PathMarkers()
 
@@ -137,10 +140,39 @@ class QtPath(QtGui.QWidget):
     def btnRunPathClicked(self):
         """Start-Stop sending commands to robot from the list of commands."""
         if self.tmrRunPath.isActive():
-            self.tmrRunPath.stop()
-            self.btnRunPath.setText('Run')
+            if not self.testing:
+                self.tmrRunPath.stop()
+                self.btnRunPath.setText('Run')
+                icon = QtGui.QIcon.fromTheme('media-playback-start')
+                self.btnRunPath.setIcon(icon)
+                self.btnRunTest.setEnabled(True)
         else:
+            self.btnRunTest.setEnabled(False)
+            self.sendCommand('{"reset_laser":1}')
+            self.sendCommand('{"reset_powder":1}')
             self.btnRunPath.setText('Stop')
+            icon = QtGui.QIcon.fromTheme('media-playback-stop')
+            self.btnRunPath.setIcon(icon)
+            self.tmrRunPath.start(100)  # time in ms
+
+    def btnRunTestClicked(self):
+        """Start-Stop sending test commands to robot from the list of commands."""
+        if self.tmrRunPath.isActive():
+            if self.testing:
+                self.tmrRunPath.stop()
+                self.btnRunTest.setText('Test')
+                icon = QtGui.QIcon.fromTheme('media-playback-start')
+                self.btnRunTest.setIcon(icon)
+                self.testing = False
+                self.btnRunPath.setEnabled(True)
+        else:
+            self.testing = True
+            self.btnRunPath.setEnabled(False)
+            self.sendCommand('{"reset_laser":1}')
+            self.sendCommand('{"reset_powder":1}')
+            self.btnRunTest.setText('Stop')
+            icon = QtGui.QIcon.fromTheme('media-playback-stop')
+            self.btnRunTest.setIcon(icon)
             self.tmrRunPath.start(100)  # time in ms
 
     def btnDeleteClicked(self):
@@ -167,6 +199,22 @@ class QtPath(QtGui.QWidget):
             item_text = self.listWidgetPoses.item(row)
             #self.pub.publish(item_text.text())
             self.sendCommand(item_text.text())
+            if len(self.ok_command.split()) == 0:
+                self.invalid_command("No response command")
+                return
+            if len(self.ok_command.split()) == 1:
+                if self.ok_command.split()[0] == "ERR_COMMAND":
+                    self.invalid_command("Check the command name")
+                    return
+                if self.ok_command.split()[0] == "PARAM_ERROR":
+                    self.invalid_command("Check the command parameters")
+                    return
+                if self.ok_command.split()[0] == "NOK":
+                    self.invalid_command("Not a Json comand")
+                    return
+            if len(self.ok_command.split()) == 3:
+                if self.ok_command.split()[2] == "BUFFER_FULL":
+                    return
             row += 1
             if row == n_row:
                 row = 0
@@ -214,6 +262,18 @@ class QtPath(QtGui.QWidget):
         self.pub_marker_array.publish(self.path_markers.marker_array)
 
     def sendCommand(self, command):
+        if self.testing:
+            command = command.lower()
+            command = command.replace(' ','')
+            if command.lower().find('laser') == 2:
+                return
+            if command.lower().find('powder') == 2:
+                return
+            if command.lower().find('move') == 2:
+                if command.find(',true') > 0:
+                    command = command.replace(',true','')
+                if command.find(',false') > 0:
+                    command = command.replace(',false','')
         rob_response = self.send_command(command)
         print 'Sended command:', command
         print 'Received response:', rob_response
@@ -227,15 +287,58 @@ class QtPath(QtGui.QWidget):
             if row == -1:
                 row = 0
             item_text = self.listWidgetPoses.item(row)
-            #self.pub.publish(item_text.text())
             self.sendCommand(item_text.text())
-            if self.ok_command == "OK":
-                row += 1
-                if row == n_row:
-                    row = 0
+            if len(self.ok_command.split()) == 3:
+                if self.ok_command.split()[2] == "BUFFER_FULL":
+                    return
+            if len(self.ok_command.split()) == 1:
+                if self.ok_command.split()[0] == "ERR_COMMAND":
+                    if self.testing:
+                        self.btnRunTestClicked()
+                    else:
+                        self.btnRunPathClicked()
+                    self.invalid_command("Check the command name")
+                    return
+                if self.ok_command.split()[0] == "PARAM_ERROR":
+                    if self.testing:
+                        self.btnRunTestClicked()
+                    else:
+                        self.btnRunPathClicked()
+                    self.invalid_command("Check the command parameters")
+                    return
+                if self.ok_command.split()[0] == "NOK":
+                    if self.testing:
+                        self.btnRunTestClicked()
+                    else:
+                        self.btnRunPathClicked()
+                    self.invalid_command("Not a Json comand")
+                    return
+            if len(self.ok_command.split()) == 0:
+                if self.testing:
+                    self.btnRunTestClicked()
+                else:
                     self.btnRunPathClicked()
-                self.listWidgetPoses.setCurrentRow(row)
+                self.invalid_command("No response command")
+                return
+            row += 1
+            if row == n_row:
+                row = 0
+                if self.testing:
+                    self.btnRunTestClicked()
+                else:
+                    self.btnRunPathClicked()
+            self.listWidgetPoses.setCurrentRow(row)
 
+    def invalid_command(self, informative):
+        msg = QtGui.QMessageBox()
+        msg.setIcon(QtGui.QMessageBox.Warning)
+        msg.setText("Invalid command")
+        msg.setInformativeText(informative)
+        msg.setWindowTitle("Command error")
+        #msg.setDetailedText("The details are as follows:")
+        msg.setStandardButtons(QtGui.QMessageBox.Ok)
+        #msg.buttonClicked.connect(msgbtn)
+        retval = msg.exec_()
 
 if __name__ == "__main__":
     rospy.init_node('path_panel')

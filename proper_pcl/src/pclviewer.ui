@@ -32,658 +32,685 @@
      <verstretch>0</verstretch>
     </sizepolicy>
    </property>
-   <layout class="QGridLayout" name="gridLayout_7">
-    <item row="0" column="3" rowspan="3">
-     <widget class="QVTKWidget" name="qvtkWidget" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="sizeIncrement">
-       <size>
-        <width>1</width>
-        <height>1</height>
-       </size>
-      </property>
-      <property name="autoFillBackground">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0">
-     <widget class="QTabWidget" name="tabWidget">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="currentIndex">
-       <number>0</number>
-      </property>
-      <widget class="QWidget" name="tab_filtros">
+   <widget class="QWidget" name="gridLayoutWidget_4">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>347</width>
+      <height>621</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_16">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetFixedSize</enum>
+     </property>
+     <item row="1" column="0">
+      <widget class="QTabWidget" name="tabWidget">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <sizepolicy hsizetype="Fixed" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <attribute name="title">
-        <string>Filtros</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="4" column="0" colspan="3">
-         <widget class="QTextBrowser" name="textBrowser_datos"/>
-        </item>
-        <item row="6" column="0" colspan="3">
-         <widget class="QStackedWidget" name="stackedWidget_filtros">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
-          </property>
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <widget class="QWidget" name="page_voxel">
-           <layout class="QGridLayout" name="gridLayout_2">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_2">
-              <property name="text">
-               <string>Size X</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_voxel_x">
-              <property name="decimals">
-               <number>6</number>
-              </property>
-              <property name="singleStep">
-               <double>0.000100000000000</double>
-              </property>
-              <property name="value">
-               <double>0.010000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_4">
-              <property name="text">
-               <string>Size Y</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_voxel_y">
-              <property name="decimals">
-               <number>6</number>
-              </property>
-              <property name="singleStep">
-               <double>0.000100000000000</double>
-              </property>
-              <property name="value">
-               <double>0.010000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Size Z</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_voxel_z">
-              <property name="decimals">
-               <number>6</number>
-              </property>
-              <property name="singleStep">
-               <double>0.000100000000000</double>
-              </property>
-              <property name="value">
-               <double>0.010000000000000</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="page_morph">
-           <layout class="QGridLayout" name="gridLayout_3">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label">
-              <property name="text">
-               <string>K numero neighbors</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_filtro1_kn">
-              <property name="decimals">
-               <number>0</number>
-              </property>
-              <property name="singleStep">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>5.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_3">
-              <property name="text">
-               <string>Desviación típica</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_filtro1_desv">
-              <property name="decimals">
-               <number>4</number>
-              </property>
-              <property name="singleStep">
-               <double>0.000100000000000</double>
-              </property>
-              <property name="value">
-               <double>0.010000000000000</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="page_filtro_2">
-           <layout class="QGridLayout" name="gridLayout_4">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_8">
-              <property name="text">
-               <string>Radio</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_radio">
-              <property name="decimals">
-               <number>4</number>
-              </property>
-              <property name="singleStep">
-               <double>0.000100000000000</double>
-              </property>
-              <property name="value">
-               <double>0.010000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_7">
-              <property name="text">
-               <string>Numero K</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_radio_k">
-              <property name="decimals">
-               <number>0</number>
-              </property>
-              <property name="singleStep">
-               <double>1.000000000000000</double>
-              </property>
-              <property name="value">
-               <double>7.000000000000000</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="page_resampling">
-           <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_6">
-              <property name="text">
-               <string>Search Radius</string>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_smooth">
-              <property name="decimals">
-               <number>5</number>
-              </property>
-              <property name="singleStep">
-               <double>0.000100000000000</double>
-              </property>
-              <property name="value">
-               <double>0.001000000000000</double>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
-          <widget class="QWidget" name="page_pass">
-           <layout class="QGridLayout" name="gridLayout_10">
-            <item row="0" column="0" colspan="2">
-             <widget class="QComboBox" name="comboBox_pass">
-              <item>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
+       <widget class="QWidget" name="tab_filtros">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <attribute name="title">
+         <string>Filtros</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="4" column="0" colspan="3">
+          <widget class="QTextBrowser" name="textBrowser_datos"/>
+         </item>
+         <item row="6" column="0" colspan="3">
+          <widget class="QStackedWidget" name="stackedWidget_filtros">
+           <property name="frameShape">
+            <enum>QFrame::StyledPanel</enum>
+           </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
+           <widget class="QWidget" name="page_voxel">
+            <layout class="QGridLayout" name="gridLayout_2">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_2">
                <property name="text">
-                <string>X filter</string>
+                <string>Size X</string>
                </property>
-              </item>
-              <item>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_voxel_x">
+               <property name="decimals">
+                <number>6</number>
+               </property>
+               <property name="singleStep">
+                <double>0.000100000000000</double>
+               </property>
+               <property name="value">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_4">
                <property name="text">
-                <string>Y filter</string>
+                <string>Size Y</string>
                </property>
-              </item>
-              <item>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_voxel_y">
+               <property name="decimals">
+                <number>6</number>
+               </property>
+               <property name="singleStep">
+                <double>0.000100000000000</double>
+               </property>
+               <property name="value">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_5">
                <property name="text">
-                <string>Z filter</string>
+                <string>Size Z</string>
                </property>
-              </item>
-             </widget>
-            </item>
-            <item row="2" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_max_pass">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>-99.000000000000000</double>
-              </property>
-              <property name="singleStep">
-               <double>0.010000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="0">
-             <widget class="QLabel" name="label_12">
-              <property name="text">
-               <string>Mínimo:</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QDoubleSpinBox" name="doubleSpinBox_min_pass">
-              <property name="decimals">
-               <number>3</number>
-              </property>
-              <property name="minimum">
-               <double>-99.000000000000000</double>
-              </property>
-              <property name="singleStep">
-               <double>0.010000000000000</double>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="label_13">
-              <property name="text">
-               <string>Máximo:</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_voxel_z">
+               <property name="decimals">
+                <number>6</number>
+               </property>
+               <property name="singleStep">
+                <double>0.000100000000000</double>
+               </property>
+               <property name="value">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_morph">
+            <layout class="QGridLayout" name="gridLayout_3">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>K numero neighbors</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_filtro1_kn">
+               <property name="decimals">
+                <number>0</number>
+               </property>
+               <property name="singleStep">
+                <double>1.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>5.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_3">
+               <property name="text">
+                <string>Desviación típica</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_filtro1_desv">
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="singleStep">
+                <double>0.000100000000000</double>
+               </property>
+               <property name="value">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_filtro_2">
+            <layout class="QGridLayout" name="gridLayout_4">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_8">
+               <property name="text">
+                <string>Radio</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_radio">
+               <property name="decimals">
+                <number>4</number>
+               </property>
+               <property name="singleStep">
+                <double>0.000100000000000</double>
+               </property>
+               <property name="value">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_7">
+               <property name="text">
+                <string>Numero K</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_radio_k">
+               <property name="decimals">
+                <number>0</number>
+               </property>
+               <property name="singleStep">
+                <double>1.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>7.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_resampling">
+            <layout class="QGridLayout" name="gridLayout_8">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_6">
+               <property name="text">
+                <string>Search Radius</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_smooth">
+               <property name="decimals">
+                <number>5</number>
+               </property>
+               <property name="singleStep">
+                <double>0.000100000000000</double>
+               </property>
+               <property name="value">
+                <double>0.001000000000000</double>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="page_pass">
+            <layout class="QGridLayout" name="gridLayout_10">
+             <item row="0" column="0" colspan="2">
+              <widget class="QComboBox" name="comboBox_pass">
+               <item>
+                <property name="text">
+                 <string>X filter</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Y filter</string>
+                </property>
+               </item>
+               <item>
+                <property name="text">
+                 <string>Z filter</string>
+                </property>
+               </item>
+              </widget>
+             </item>
+             <item row="2" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_max_pass">
+               <property name="decimals">
+                <number>3</number>
+               </property>
+               <property name="minimum">
+                <double>-99.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QLabel" name="label_12">
+               <property name="text">
+                <string>Mínimo:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="1">
+              <widget class="QDoubleSpinBox" name="doubleSpinBox_min_pass">
+               <property name="decimals">
+                <number>3</number>
+               </property>
+               <property name="minimum">
+                <double>-99.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>0.010000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="label_13">
+               <property name="text">
+                <string>Máximo:</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
           </widget>
-         </widget>
-        </item>
-        <item row="5" column="0" colspan="3">
-         <widget class="QComboBox" name="comboBox_filtros">
-          <property name="currentIndex">
-           <number>0</number>
-          </property>
-          <item>
-           <property name="text">
-            <string>Voxel Grid</string>
+         </item>
+         <item row="5" column="0" colspan="3">
+          <widget class="QComboBox" name="comboBox_filtros">
+           <property name="currentIndex">
+            <number>0</number>
            </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Filtro estadístico</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Filtro radios</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Resampling</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Pass trough</string>
-           </property>
-          </item>
-         </widget>
-        </item>
-        <item row="1" column="2">
-         <widget class="QPushButton" name="pushButton_deshacer_filtro">
-          <property name="text">
-           <string>Deshacer</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QPushButton" name="pushButton">
-          <property name="text">
-           <string>Datos nube</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QPushButton" name="pushButton_funcion_1">
-          <property name="text">
-           <string>Aplicar</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QPushButton" name="pushButton_aceptar_filtro">
-          <property name="text">
-           <string>Aceptar</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QPushButton" name="pushButton_filter">
-          <property name="text">
-           <string>Autofiltro</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab_fit">
-       <attribute name="title">
-        <string>Fitting</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_5">
-        <item row="4" column="2">
-         <widget class="QPushButton" name="pushButton_centra">
-          <property name="text">
-           <string>Centra punto</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButton_recorta_plano">
-          <property name="text">
-           <string>Recorta</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QPushButton" name="pushButton_reorienta">
-          <property name="text">
-           <string>Reorienta</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QPushButton" name="pushButton_deshacer_plano">
-          <property name="text">
-           <string>Deshacer</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QPushButton" name="pushButton_distances">
-          <property name="text">
-           <string>Distancia al plano</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButton_funcion_2">
-          <property name="text">
-           <string>Ajusta plano</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="0" colspan="2">
-         <widget class="QLabel" name="label_14">
-          <property name="text">
-           <string>Distance threshold:</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="0" colspan="2">
-         <widget class="QPushButton" name="pushButton_aceptar_fitting">
-          <property name="text">
-           <string>Acepta</string>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="2">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_ransac_dist">
-          <property name="decimals">
-           <number>5</number>
-          </property>
-          <property name="singleStep">
-           <double>0.000100000000000</double>
-          </property>
-          <property name="value">
-           <double>0.001000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="0" colspan="3">
-         <widget class="QTextBrowser" name="textBrowser_datos_2"/>
-        </item>
-        <item row="4" column="0" colspan="2">
-         <widget class="QCheckBox" name="checkBox_puntos_sup">
-          <property name="text">
-           <string>Superiores</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-          <property name="tristate">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0" colspan="3">
-         <layout class="QGridLayout" name="gridLayout_12">
-          <item row="1" column="4">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_angle">
-            <property name="decimals">
-             <number>5</number>
-            </property>
-            <property name="minimum">
-             <double>-10.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>10.000000000000000</double>
-            </property>
-            <property name="singleStep">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_15">
+           <item>
             <property name="text">
-             <string>X:</string>
+             <string>Voxel Grid</string>
             </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_2dx">
-            <property name="minimum">
-             <double>-500.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>5000.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QDoubleSpinBox" name="doubleSpinBox_2dy">
-            <property name="minimum">
-             <double>-500.000000000000000</double>
-            </property>
-            <property name="maximum">
-             <double>5000.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0" rowspan="2">
-           <widget class="QPushButton" name="pushButton_2d_place">
+           </item>
+           <item>
             <property name="text">
-             <string>Situa 2d</string>
+             <string>Filtro estadístico</string>
             </property>
-           </widget>
-          </item>
-          <item row="0" column="3">
-           <widget class="QLabel" name="label_16">
+           </item>
+           <item>
             <property name="text">
-             <string>Y:</string>
+             <string>Filtro radios</string>
             </property>
-           </widget>
-          </item>
-          <item row="1" column="2" colspan="2">
-           <widget class="QLabel" name="label_17">
+           </item>
+           <item>
             <property name="text">
-             <string>Angulo:</string>
+             <string>Resampling</string>
             </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-       </layout>
+           </item>
+           <item>
+            <property name="text">
+             <string>Pass trough</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="3">
+          <layout class="QGridLayout" name="gridLayout_13">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="pushButton_aceptar_filtro">
+             <property name="text">
+              <string>Aceptar</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QPushButton" name="pushButton_deshacer_filtro">
+             <property name="text">
+              <string>Deshacer</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="pushButton_filter">
+             <property name="text">
+              <string>Autofiltro</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="pushButton">
+             <property name="text">
+              <string>Datos nube</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2">
+            <widget class="QPushButton" name="pushButton_funcion_1">
+             <property name="text">
+              <string>Aplicar</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_fit">
+        <attribute name="title">
+         <string>Fitting</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="6" column="0" colspan="3">
+          <widget class="QTextBrowser" name="textBrowser_datos_2"/>
+         </item>
+         <item row="7" column="0" colspan="3">
+          <layout class="QGridLayout" name="gridLayout_12">
+           <item row="1" column="4">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_angle">
+             <property name="decimals">
+              <number>5</number>
+             </property>
+             <property name="minimum">
+              <double>-10.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>10.000000000000000</double>
+             </property>
+             <property name="singleStep">
+              <double>0.100000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_15">
+             <property name="text">
+              <string>X:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="2">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_2dx">
+             <property name="minimum">
+              <double>-500.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>5000.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="4">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_2dy">
+             <property name="minimum">
+              <double>-500.000000000000000</double>
+             </property>
+             <property name="maximum">
+              <double>5000.000000000000000</double>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" rowspan="2">
+            <widget class="QPushButton" name="pushButton_2d_place">
+             <property name="text">
+              <string>Situa 2d</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
+            <widget class="QLabel" name="label_16">
+             <property name="text">
+              <string>Y:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="2" colspan="2">
+            <widget class="QLabel" name="label_17">
+             <property name="text">
+              <string>Angulo:</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item row="0" column="0" colspan="3">
+          <layout class="QGridLayout" name="gridLayout_9">
+           <item row="0" column="0">
+            <widget class="QPushButton" name="pushButton_aceptar_fitting">
+             <property name="text">
+              <string>Acepta</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0">
+            <widget class="QPushButton" name="pushButton_recorta_plano">
+             <property name="text">
+              <string>Recorta</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="pushButton_distances">
+             <property name="text">
+              <string>Distancia</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QPushButton" name="pushButton_reorienta">
+             <property name="text">
+              <string>Reorienta</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="pushButton_funcion_2">
+             <property name="text">
+              <string>Ajusta plano</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QPushButton" name="pushButton_deshacer_plano">
+             <property name="text">
+              <string>Deshacer</string>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="0">
+            <widget class="QCheckBox" name="checkBox_puntos_sup">
+             <property name="text">
+              <string>Superiores</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <property name="tristate">
+              <bool>false</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="3" column="1">
+            <widget class="QPushButton" name="pushButton_centra">
+             <property name="text">
+              <string>Centra punto</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="0">
+            <widget class="QLabel" name="label_14">
+             <property name="text">
+              <string>Distance threshold:</string>
+             </property>
+            </widget>
+           </item>
+           <item row="4" column="1">
+            <widget class="QDoubleSpinBox" name="doubleSpinBox_ransac_dist">
+             <property name="decimals">
+              <number>5</number>
+             </property>
+             <property name="singleStep">
+              <double>0.000100000000000</double>
+             </property>
+             <property name="value">
+              <double>0.001000000000000</double>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab_projections">
+        <attribute name="title">
+         <string>Pojection</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_11">
+         <item row="0" column="0">
+          <widget class="QPushButton" name="pushButton_proj_points">
+           <property name="text">
+            <string>Project points</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="2">
+          <widget class="QTextBrowser" name="textBrowser_projection"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="tab">
+        <attribute name="title">
+         <string>Otros</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="1" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_cloud_size">
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_mod_size">
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Sel point cloud</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Point cloud size</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="1">
+          <widget class="QDoubleSpinBox" name="doubleSpinBox_sel_size">
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="singleStep">
+            <double>0.100000000000000</double>
+           </property>
+           <property name="value">
+            <double>1.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="label_10">
+           <property name="text">
+            <string>Mod point cloud</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
-      <widget class="QWidget" name="tab_projections">
-       <attribute name="title">
-        <string>Pojection</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_11">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButton_proj_points">
-          <property name="text">
-           <string>Project points</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QPushButton" name="pushButton_save_projections">
-          <property name="text">
-           <string>Save Proj</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0" colspan="2">
-         <widget class="QTextBrowser" name="textBrowser_projection"/>
-        </item>
-       </layout>
-      </widget>
-      <widget class="QWidget" name="tab">
-       <attribute name="title">
-        <string>Otros</string>
-       </attribute>
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="1" column="1">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_cloud_size">
-          <property name="decimals">
-           <number>1</number>
-          </property>
-          <property name="singleStep">
-           <double>0.100000000000000</double>
-          </property>
-          <property name="value">
-           <double>1.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_mod_size">
-          <property name="decimals">
-           <number>1</number>
-          </property>
-          <property name="singleStep">
-           <double>0.100000000000000</double>
-          </property>
-          <property name="value">
-           <double>1.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_11">
-          <property name="text">
-           <string>Sel point cloud</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_9">
-          <property name="text">
-           <string>Point cloud size</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QDoubleSpinBox" name="doubleSpinBox_sel_size">
-          <property name="decimals">
-           <number>1</number>
-          </property>
-          <property name="singleStep">
-           <double>0.100000000000000</double>
-          </property>
-          <property name="value">
-           <double>1.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_10">
-          <property name="text">
-           <string>Mod point cloud</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </widget>
-    </item>
-    <item row="0" column="0">
-     <widget class="QSplitter" name="splitter">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Horizontal</enum>
-      </property>
-      <widget class="QPushButton" name="pushButton_random_2">
+     </item>
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_7">
+       <property name="sizeConstraint">
+        <enum>QLayout::SetMaximumSize</enum>
+       </property>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="pushButton_gardar">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Garda nube</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="pushButton_random_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Carga nube</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="gridLayoutWidget_5">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>10</y>
+      <width>601</width>
+      <height>621</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_17">
+     <property name="sizeConstraint">
+      <enum>QLayout::SetMinimumSize</enum>
+     </property>
+     <item row="0" column="0">
+      <widget class="QVTKWidget" name="qvtkWidget">
        <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="text">
-        <string>Carga nube</string>
+       <property name="sizeIncrement">
+        <size>
+         <width>1</width>
+         <height>1</height>
+        </size>
+       </property>
+       <property name="autoFillBackground">
+        <bool>true</bool>
        </property>
       </widget>
-      <widget class="QPushButton" name="pushButton_gardar">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="text">
-        <string>Garda nube</string>
-       </property>
-      </widget>
-     </widget>
-    </item>
-   </layout>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
  <customwidgets>

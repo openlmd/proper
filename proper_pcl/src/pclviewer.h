@@ -77,10 +77,6 @@ public:
 protected:
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
   PointCloudT::Ptr cloud;
-  //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz ;
-  //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz_modificada ;
-  //pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_xyz_ref ;
-  //pcl::PointCloud<pcl::PointXYZ>::Ptr clicked_points_3d;
 
   unsigned int red;
   unsigned int green;
@@ -90,8 +86,6 @@ protected:
 
   Eigen::VectorXf ground_coeffs;
   Eigen::Affine3f t_matrix;
-
-  //QImage qProjection;
 
   //struct callback_args cb_args;
   struct callback_args_class cb_args_class;
@@ -131,16 +125,12 @@ private slots:
 
   void on_pushButton_proj_points_clicked();
 
-  void on_pushButton_save_projections_clicked();
-
   void on_pushButton_2d_place_clicked();
 
   void on_pushButton_filter_clicked();
 
 private:
   Ui::PCLViewer *ui;
-
-
 
 };
 

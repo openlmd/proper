@@ -70,6 +70,7 @@ public:
     void PlaceFrameZPlane(Eigen::VectorXf a, pcl::PointXYZ orig, pcl::PointXYZ dirX, Eigen::Affine3f &frame);
     void CutPlane(bool updown, double offset);
     void getTransformationMatrix(Eigen::Affine3f &tMatrix);
+    void SaveMatrix(const std::string fileName, Eigen::Affine3f matrix);
     void SaveMatrix(const std::string fileName = "plane.json");
     void ReorientPointCloud(Eigen::Affine3f tMatrix);
     void ReorientPointCloud();
