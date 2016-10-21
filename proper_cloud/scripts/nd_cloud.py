@@ -40,8 +40,8 @@ class NdCloud():
             stamp = msg_cloud.header.stamp
             points = pc2.read_points(msg_cloud, skip_nans=False)
             points3d = np.float32([point for point in points])
-            matrix1 = self.transform_matrix('/world', '/camera0', stamp)
-            matrix2 = self.transform_matrix('/world', '/workobject', stamp)
+            matrix1 = self.transform_matrix('/base_link', '/camera0', stamp)
+            matrix2 = self.transform_matrix('/base_link', '/workobject', stamp)
             matrix = np.dot(np.linalg.inv(matrix2), matrix1)
             points3d = self.transform_point_cloud(matrix, points3d)
             # rospy.loginfo(points3d)

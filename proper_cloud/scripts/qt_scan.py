@@ -35,8 +35,8 @@ class QtScan(QtGui.QWidget):
 
         rospy.Subscriber(
             '/ueye/scan', PointCloud2, self.cbPointCloud, queue_size=5)
-        rospy.Subscriber(
-            '/supervisor/status', MsgStatus, self.cbStatus, queue_size=1)
+        # rospy.Subscriber(
+        #     '/supervisor/status', MsgStatus, self.cbStatus, queue_size=1)
 
         self.pub_marker_array = rospy.Publisher(
             'visualization_marker_array', MarkerArray, queue_size=10)
@@ -116,6 +116,7 @@ class QtScan(QtGui.QWidget):
     def btnRecordClicked(self):
         if self.running:
             self.running = False
+            self.recording = False
             self.btnRecord.setText('Record Cloud')
         else:
             try:
@@ -126,6 +127,7 @@ class QtScan(QtGui.QWidget):
                 with open(self.filename, 'w') as f:
                     pass
                 self.running = True
+                self.recording = True
                 self.btnRecord.setText('Stop recording...')
             except:
                 pass
