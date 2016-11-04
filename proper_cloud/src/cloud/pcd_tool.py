@@ -94,7 +94,6 @@ if __name__ == '__main__':
         save_zmap(filename, zmap)
         show_zmap(zmap)
 
-
         img = read_zmap(filename)
 
         sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
@@ -104,10 +103,10 @@ if __name__ == '__main__':
         plt.figure()
         plt.subplot(2, 2, 1), plt.imshow(img, cmap='gray')
         plt.title('Original'), plt.xticks([]), plt.yticks([])
-        plt.subplot(2,2,2),plt.imshow(np.absolute(sobelxy),cmap = 'gray')
+        plt.subplot(2, 2, 2), plt.imshow(np.absolute(sobelxy), cmap='gray')
         plt.title('Sobel XY'), plt.xticks([]), plt.yticks([])
-        plt.subplot(2,2,3),plt.imshow(np.absolute(sobelx),cmap = 'gray')
+        plt.subplot(2, 2, 3), plt.imshow(np.absolute(sobelx), cmap='gray')
         plt.title('Sobel X'), plt.xticks([]), plt.yticks([])
-        plt.subplot(2,2,4),plt.imshow(np.absolute(sobely),cmap = 'gray')
+        plt.subplot(2, 2, 4), plt.imshow(np.absolute(sobely), cmap='gray')
         plt.title('Sobel Y'), plt.xticks([]), plt.yticks([])
         plt.show()

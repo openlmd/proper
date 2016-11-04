@@ -1,1 +1,1 @@
-../../proper_part/scripts/qt_part.py
+../../../robpath/robpath_part/scripts/qt_part.py
