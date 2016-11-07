@@ -150,6 +150,7 @@ class QtPath(QtGui.QWidget):
             self.btnRunTest.setEnabled(False)
             self.sendCommand('{"reset_laser":1}')
             self.sendCommand('{"reset_powder":1}')
+            self.sendCommand('{"reset_wire":1}')
             self.btnRunPath.setText('Stop')
             icon = QtGui.QIcon.fromTheme('media-playback-stop')
             self.btnRunPath.setIcon(icon)
@@ -170,6 +171,7 @@ class QtPath(QtGui.QWidget):
             self.btnRunPath.setEnabled(False)
             self.sendCommand('{"reset_laser":1}')
             self.sendCommand('{"reset_powder":1}')
+            self.sendCommand('{"reset_wire":1}')
             self.btnRunTest.setText('Stop')
             icon = QtGui.QIcon.fromTheme('media-playback-stop')
             self.btnRunTest.setIcon(icon)
@@ -247,6 +249,7 @@ class QtPath(QtGui.QWidget):
     def btnCancelClicked(self):
         self.sendCommand('{"reset_laser":1}')
         self.sendCommand('{"reset_powder":1}')
+        self.sendCommand('{"reset_wire":1}')
         self.sendCommand('{"cancel":1}')
 
     def getMoveCommands(self):
