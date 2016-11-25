@@ -33,7 +33,7 @@ tools.
 In recent years, several closed-loop control systems have been proposed to
 improve the laser cladding stability during the process [1]. These control
 systems mainly use a coaxial arrangement for the melt pool monitoring  (i.e.
-  temperature or width), acting on the laser power to overcome the effects of
+temperature or width), acting on the laser power to overcome the effects of
 thermal variations. However, LMD suffers from a lack of more specific
 solutions beyond the melt pool monitoring and control.
 

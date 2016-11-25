@@ -23,7 +23,7 @@ import cloud.pcd_tool as pcd_tool
 import cloud.contours as contours
 
 
-path = rospkg.RosPack().get_path('proper_cloud')
+dirname = rospkg.RosPack().get_path('proper_cloud')
 
 
 class QtScan(QtGui.QWidget):
@@ -31,7 +31,7 @@ class QtScan(QtGui.QWidget):
 
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        loadUi(os.path.join(path, 'resources', 'scan.ui'), self)
+        loadUi(os.path.join(dirname, 'resources', 'scan.ui'), self)
 
         rospy.Subscriber(
             '/ueye/scan', PointCloud2, self.cbPointCloud, queue_size=5)
@@ -44,6 +44,7 @@ class QtScan(QtGui.QWidget):
         self.btnPlane.clicked.connect(self.btnPlaneClicked)
         self.btnRecord.clicked.connect(self.btnRecordClicked)
         self.btnZmap.clicked.connect(self.btnZmapClicked)
+        self.btnPath.clicked.connect(self.btnPathClicked)
         self.btnScan.clicked.connect(self.btnScanClicked)
 
         self.sbPositionX.valueChanged.connect(self.changePosition)
@@ -64,6 +65,7 @@ class QtScan(QtGui.QWidget):
         self.planning = Planning()
         self.position = np.array([0, 0, 10])
         self.size = np.array([100, 200, 0])
+        self.segmentation = Segmentation()
 
     def cbPointCloud(self, msg_cloud):
         if self.recording:
@@ -121,7 +123,7 @@ class QtScan(QtGui.QWidget):
         else:
             try:
                 filename = QtGui.QFileDialog.getSaveFileName(
-                    self, 'Save file', os.path.join(path, 'data', 'test.xyz'),
+                    self, 'Save file', os.path.join(dirname, 'data', 'test.xyz'),
                     'Point Cloud Files (*.xyz)')[0]
                 self.filename = filename
                 with open(self.filename, 'w') as f:
@@ -134,20 +136,25 @@ class QtScan(QtGui.QWidget):
 
     def btnZmapClicked(self):
         filename = QtGui.QFileDialog.getOpenFileName(
-            self, 'Load file', os.path.join(path, 'data', 'test.xyz'),
+            self, 'Load file', os.path.join(dirname, 'data', 'test.xyz'),
             'Point Cloud Files (*.xyz)')[0]
         name, extension = os.path.splitext(filename)
         cloud = pcd_tool.read_cloud(filename)
-        zmap = pcd_tool.zmap_from_cloud(cloud)
-        zmap = pcd_tool.fill_zmap(zmap, size=7)
-        pcd_tool.save_zmap('%s.tif' % name, zmap)
-        segmentation = Segmentation()
-        segmentation.plot_zmap(zmap)
-        print segmentation.contours
-        slice = contours.slice_of_contours(zmap, segmentation.contours)
-        print slice
+        self.zmap = pcd_tool.zmap_from_cloud(cloud)
+        self.zmap = pcd_tool.fill_zmap(self.zmap, size=7)
+        pcd_tool.save_zmap('%s.tif' % name, self.zmap)
+        self.segmentation.plot_zmap(self.zmap)
+
+    def btnPathClicked(self):
+        slice = contours.slice_of_contours(self.zmap, self.segmentation.contours)
+        print 'Slice', slice
+        path = self.planning.get_path_from_slices([slice], track_distance=1.2, focus=0)
+        print 'Path', path
         # TODO: Send slice to qt_path.
-        contours.show_path_from_slice(slice)
+        #contours.show_path_from_slice(slice)
+        self.path = [[pos, ori] for pos, ori, bol in path]
+        self.scan_markers.set_path(self.path)
+        self.pub_marker_array.publish(self.scan_markers.marker_array)
 
     def btnScanClicked(self):
         self.accepted.emit(self.path)
