@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="7" column="0">
+   <item row="8" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -391,7 +391,7 @@ border: 1px solid gray;</string>
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
+   <item row="9" column="0">
     <widget class="QPushButton" name="btnScan">
      <property name="text">
       <string>Accept Scan</string>
@@ -402,6 +402,13 @@ border: 1px solid gray;</string>
     <widget class="QPushButton" name="btnZmap">
      <property name="text">
       <string>Create Zmap</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QPushButton" name="btnPath">
+     <property name="text">
+      <string>Update Path</string>
      </property>
     </widget>
    </item>
