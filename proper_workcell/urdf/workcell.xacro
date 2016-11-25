@@ -3,15 +3,16 @@
   <property name="pi" value="3.141592654" />
 
   <xacro:property name="tcp_frame">
-    <origin xyz="0.2462 -0.0203 0.4320" rpy="${pi} -1.047197555 ${pi}" />
+    <origin xyz="0.24646 -0.02439 0.433932" rpy="${pi} -1.047197555 ${pi}" />
   </xacro:property>
 
   <xacro:property name="workobject_frame">
-    <origin xyz="-0.19128875 0.19347143 0.10301394" rpy="-0.005628050440181059 0.005713681035339754 -1.5507089198045247" />
+    <origin xyz="1.550 -0.185 0.930" rpy="0 0 0" />
+    <!--<origin xyz="-0.19128875 0.19347143 0.10301394" rpy="-0.005628050440181059 0.005713681035339754 -1.5507089198045247" />-->
   </xacro:property>
 
   <xacro:property name="camera_frame">
-    <origin xyz="0.0981 0.2154 0.357" rpy="-1.1426954999537553 0.3065542584105746 -2.172373016740387" />
+    <origin xyz="0.1032 0.2245 0.3464" rpy="-1.091010543013552 0.3125730462781303 -2.197140695867136" />
   </xacro:property>
 
   <!-- Robot cell -->
@@ -46,10 +47,11 @@
   <link name="workobject" />
 
   <joint name="workobject" type="fixed">
-    <parent link="irbp_a250/tool0"/>
+    <parent link="base_link" />
+    <!--<parent link="irbp_a250/tool0"/>-->
     <child link="workobject" />
     <xacro:insert_block name="workobject_frame" />
-    <axis xyz="0 0 1"/>
+    <!--<axis xyz="0 0 1"/>-->
   </joint>
 
   <!-- Camera -->
