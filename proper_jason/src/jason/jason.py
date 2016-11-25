@@ -52,7 +52,7 @@ class Jason():
             commands.append('{"move": [[-50, -50, 125], [1, 0, 0, 0]]}')
             commands.append('{"laser": false}')
         else:
-            commands.append('{"speed": 20}')
+            commands.append('{"speed": 10}')
             commands.append('{"move":[[-25, -50, 125], [1.0, 0.0, 0.0, 0.0]]}')
             commands.extend([self.get_command_pose(pose) for pose in path])
             commands.append('{"move":[[-25, -50, 125], [1.0, 0.0, 0.0, 0.0]]}')

@@ -142,17 +142,19 @@ class QtScan(QtGui.QWidget):
         cloud = pcd_tool.read_cloud(filename)
         self.zmap = pcd_tool.zmap_from_cloud(cloud)
         self.zmap = pcd_tool.fill_zmap(self.zmap, size=7)
+        self.zmap = contours.erode_zmap(self.zmap, size=5, iterations=5)
         pcd_tool.save_zmap('%s.tif' % name, self.zmap)
         self.segmentation.plot_zmap(self.zmap)
 
     def btnPathClicked(self):
         slice = contours.slice_of_contours(self.zmap, self.segmentation.contours)
         print 'Slice', slice
-        path = self.planning.get_path_from_slices([slice], track_distance=1.2, focus=0)
+        path = self.planning.get_path_from_slices([slice], track_distance=1.3, focus=0)
         print 'Path', path
         # TODO: Send slice to qt_path.
         #contours.show_path_from_slice(slice)
-        self.path = [[pos, ori] for pos, ori, bol in path]
+        self.path = path
+        #self.path = [[pos, ori] for pos, ori, bol in path]
         self.scan_markers.set_path(self.path)
         self.pub_marker_array.publish(self.scan_markers.marker_array)
 

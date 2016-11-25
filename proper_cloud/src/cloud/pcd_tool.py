@@ -90,7 +90,7 @@ if __name__ == '__main__':
         cloud = read_cloud(filename)
         zmap = zmap_from_cloud(cloud)
         zmap = fill_zmap(zmap, size=7)
-        filename = '%s.tif' % name
+        filename = '%s.png' % name
         save_zmap(filename, zmap)
         show_zmap(zmap)
 

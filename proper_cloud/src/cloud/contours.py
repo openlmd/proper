@@ -21,6 +21,12 @@ def fill_zmap(zmap, size=5):
     return closing
 
 
+def erode_zmap(zmap, size=10, iterations=1):
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (size, size))
+    erosion = cv2.erode(zmap, kernel, iterations=iterations)
+    return erosion
+
+
 def contours_zmap(zmap, thr=100):
     img_thr = np.zeros(zmap.shape, np.uint8)
     if type(thr) is tuple:
@@ -62,7 +68,7 @@ def slice_of_contours(zmap, contours, scale=10):
     slice = []
     for contour in contours:
         points = contour.reshape((-1, 2))
-        points = [[x, y, zmap[y, x]] for x, y in points]
+        points = [[y, x, zmap[y, x]] for x, y in points]
         points.append(points[0])
         points = np.array(points, np.float)
         slice.append((1. / scale) * points)
