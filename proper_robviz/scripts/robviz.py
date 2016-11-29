@@ -101,19 +101,20 @@ class Robviz(QtGui.QMainWindow):
         self.boxPlot.addWidget(MyViz())
 
         self.qtData = QtData(self)
-        self.qtScan = QtScan(self)
         self.qtParam = QtParam(self)
+        self.qtScan = QtScan(self)
         self.qtPart = QtPart(self)
         self.qtPath = QtPath(self)
 
         self.tabWidget.addTab(self.qtData, 'Data')
-        self.tabWidget.addTab(self.qtScan, 'Scan')
         self.tabWidget.addTab(self.qtParam, 'Params')
+        self.tabWidget.addTab(self.qtScan, 'Scan')
         self.tabWidget.addTab(self.qtPart, 'Part')
         self.tabWidget.addTab(self.qtPath, 'Path')
 
-        self.qtScan.accepted.connect(self.qtScanAccepted)
+        self.qtData.accepted.connect(self.qtDataAccepted)
         self.qtParam.accepted.connect(self.qtParamAccepted)
+        self.qtScan.accepted.connect(self.qtScanAccepted)
         self.qtPart.accepted.connect(self.qtPartAccepted)
 
         self.btnQuit.setIcon(QtGui.QIcon.fromTheme('application-exit'))
@@ -154,15 +155,18 @@ class Robviz(QtGui.QMainWindow):
             self.lblLaser.setStyleSheet(
                 "background-color: rgb(0, 0, 255); color: rgb(0, 0, 0);")
 
+    def qtDataAccepted(self):
+        self.tabWidget.setCurrentWidget(self.qtParam)
+
+    def qtParamAccepted(self):
+        self.tabWidget.setCurrentWidget(self.qtPart)
+
     def qtScanAccepted(self, path):
         print 'Path:', path
         commands = self.qtPath.jason.path2cmds(path)
         print 'Commands:', commands
         self.qtPath.loadCommands(commands)
         self.tabWidget.setCurrentWidget(self.qtPath)
-
-    def qtParamAccepted(self):
-        self.tabWidget.setCurrentWidget(self.qtPart)
 
     def qtPartAccepted(self, path):
         commands = self.qtPath.jason.path2cmds(path)

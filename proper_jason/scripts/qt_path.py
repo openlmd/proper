@@ -118,6 +118,7 @@ class QtPath(QtGui.QWidget):
         [self.insertCommand(cmd) for cmd in commands]
         self.arr = []
         self.getMoveCommands()
+        rospy.set_param('/routine', '\n'.join(commands))
 
     def btnLoadPathClicked(self):
         filename = QtGui.QFileDialog.getOpenFileName(
@@ -148,6 +149,8 @@ class QtPath(QtGui.QWidget):
                 self.btnRunTest.setEnabled(True)
         else:
             self.btnRunTest.setEnabled(False)
+            commands = self.jason.get_reset_commands()
+            print 'Reset commands', commands
             self.sendCommand('{"reset_laser":1}')
             self.sendCommand('{"reset_powder":1}')
             self.sendCommand('{"reset_wire":1}')
@@ -169,6 +172,8 @@ class QtPath(QtGui.QWidget):
         else:
             self.testing = True
             self.btnRunPath.setEnabled(False)
+            commands = self.jason.get_reset_commands()
+            print 'Reset commands', commands
             self.sendCommand('{"reset_laser":1}')
             self.sendCommand('{"reset_powder":1}')
             self.sendCommand('{"reset_wire":1}')
