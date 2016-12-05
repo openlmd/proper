@@ -8,7 +8,7 @@
       <arg name="sim" value="$(arg sim)" />
     </include>
 
-    <node name="cloud" pkg="proper_cloud" type="nd_cloud.py" respawn="true" />
+    <node name="cloud" pkg="proper_cloud" type="nd_cloud" respawn="true" />
 
     <include file="$(find mashes_measures)/launch/measures.launch">
       <arg name="gui" value="false" />
