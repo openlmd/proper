@@ -8,10 +8,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <run_depend>proper_abb</run_depend>
   <run_depend>proper_cloud</run_depend>
   <run_depend>proper_jason</run_depend>
-  <run_depend>proper_planning</run_depend>
+  <run_depend>proper_part</run_depend>
   <run_depend>proper_robviz</run_depend>
   <run_depend>proper_workcell</run_depend>
 

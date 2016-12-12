@@ -1,27 +1,20 @@
 #!/usr/bin/env python
-import os
 import rospy
-import rospkg
-import rosparam
 import numpy as np
 
-import tf
-import std_msgs
 import sensor_msgs.point_cloud2 as pc2
-from sensor_msgs.msg import PointCloud2, PointField
+from sensor_msgs.msg import PointCloud2
 
 
-class Cloud():
+class PubCloud():
     def __init__(self):
-        rospy.init_node('pub_cloud', anonymous=True)
+        rospy.init_node('pub_cloud')
 
-        cloud_topic = rospy.get_param('~cloud', '/camera/cloud') # cameara/points
-        self.cloud_pub = rospy.Publisher(cloud_topic, PointCloud2, queue_size=5)
+        cloud_topic = rospy.get_param('~cloud', '/camera/points')
+        self.cloud_pub = rospy.Publisher(
+            cloud_topic, PointCloud2, queue_size=5)
 
-        self.sequence = 0
-        self.pcloud = PointCloud2()
-
-        r = rospy.Rate(10) # 10hz
+        r = rospy.Rate(10)
         while not rospy.is_shutdown():
             self.pub_point_cloud()
             r.sleep()
@@ -29,23 +22,19 @@ class Cloud():
     def pub_point_cloud(self):
         stamp = rospy.Time.now()
         points3d = np.random.random((100, 3))
-        points3d[:,0] = 0.01 * points3d[:,1]
-        points3d[:,1] = np.linspace(-0.1, 0.1, 100)
-        points3d[:,2] = 0.05 * points3d[:,2] + 0.25
+        points3d[:, 0] = 0.01 * points3d[:, 1]
+        points3d[:, 1] = np.linspace(-0.1, 0.1, 100)
+        points3d[:, 2] = 0.05 * points3d[:, 2] + 0.25
         #rospy.loginfo(points3d)
-        # ERROR: Calibration done in meters
-        #cloud = profile3d * 0.001 # Conversion from milimeters to meters
-        self.sequence = self.sequence + 1
-        self.pcloud = pc2.create_cloud_xyz32(self.pcloud.header, points3d)
-        self.pcloud.header = std_msgs.msg.Header(frame_id="/camera0",
-                                                 stamp=stamp,
-                                                 seq=self.sequence)
-        self.cloud_pub.publish(self.pcloud)
-
+        cloud_out = PointCloud2()
+        cloud_out.header.stamp = stamp
+        cloud_out.header.frame_id = "/camera0"
+        cloud_out = pc2.create_cloud_xyz32(cloud_out.header, points3d)
+        self.cloud_pub.publish(cloud_out)
 
 
 if __name__ == '__main__':
     try:
-        Cloud()
+        PubCloud()
     except rospy.ROSInterruptException:
         pass

@@ -33,7 +33,7 @@ tools.
 In recent years, several closed-loop control systems have been proposed to
 improve the laser cladding stability during the process [1]. These control
 systems mainly use a coaxial arrangement for the melt pool monitoring  (i.e.
-  temperature or width), acting on the laser power to overcome the effects of
+temperature or width), acting on the laser power to overcome the effects of
 thermal variations. However, LMD suffers from a lack of more specific
 solutions beyond the melt pool monitoring and control.
 
@@ -62,22 +62,11 @@ Informatics (INDIN), vol., no., pp. 308-313, 22-24 July 2015.
 
 ## Description
 
-The 3D monitoring system uses the [Etna Project](https://github.com/openlmd/etna)
-implementation to provide an on-line scanning solution based on the
-triangulation principle integrated with the laser head.
-
-A 2D camera, a laser stripe, and the coupling element are only the hardware
-components required to perform the scanning functions based on triangulation.
-To improve the overall performance of the solution a NIR camera from IDS is
-used, because the sensor of this camera provides an improved sensitivity (about
-60%) in the range of the laser wavelength (660nm). This sensitivity is a key
-factor to minimize the exposition time, reducing the distortion error caused by
-the movement in the image.
-
-This solution provides the calibrated geometrical information in robot working  
-coordinates, allowing the scanning and dimensional control of the piece. The
-laser line is detected in the image and transformed to 3D coordinates in the
-camera frame. Finally, the point cloud is resolved on-line in the working cell  
+It is based on the [3D monitoring system](https://github.com/openlmd/etna),
+which provides an on-line scanning solution able to provide accurate and
+calibrated geometrical information in robot working coordinates. The laser
+line is detected in the image and transformed to 3D coordinates in the camera
+frame. Finally, the point cloud is resolved on-line in the working cell
 coordinates with independence of the process speed and the robot path
 trajectory.
 

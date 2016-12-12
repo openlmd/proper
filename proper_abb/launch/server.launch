@@ -1,7 +1,0 @@
-<launch>
-  <arg name="robot_ip" default="172.20.0.100" />
-
-  <node name="robot_server" pkg="proper_abb" type="nd_robot_server.py">
-    <param name="robot_ip" type="str" value="$(arg robot_ip)" />
-  </node>
-</launch>

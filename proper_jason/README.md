@@ -1,48 +1,105 @@
 # Server Robot Commands
 
-List of available jason commands that can be published on topic "robot_command_json".
+List of available jason commands that can be published on topic "robot_command_json":
 
-- ## vel
-#### {"vel":30}
-Sets robot TCP linear speed in mm/s.
+- *tool*: sets the tool pose (position and orientation).
 
-- ## pose
-#### {"pose":[[800, 0, 800], [0, 0, 1, 0]]}
-Appends single cartesian pose to the robot buffer.
-#### {"pose":[[800, 0, 1200], [0, 0, 1, 0],true]}
-Appends single cartesian pose with signal trigger to the robot buffer.
+```json
+{"tool":[[0, 0, 0], [1, 0, 0, 0]]}
+```
 
-- ## path_move
-#### {"path_move":1}
-Immediately execute linear moves to every pose in the remote buffer.
+- *workobject*: sets the workobject pose (position and orientation).
 
-- ## path_clear
-#### {"path_move":1}
-Immediately execute linear moves to every pose in the remote buffer.
+```json
+{"workobject":[[0, 0, 0], [1, 0, 0, 0]]}
+```
+
+- *laser*: starts (true) and stops (false) the laser equipment to be ready for
+processing.
+
+```json
+{"laser":true}
+```
+
+- *power*: sets the laser power in W.
+
+```json
+{"power":1000}
+```
+
+- *carrier*: sets the carrier gas value in l/min.
 
 
-- ## workobject
-#### {"workobject":[[0, 0, 0], [1, 0, 0, 0]]}
-Immediately execute linear moves to every pose in the remote buffer.
+```json
+{"carrier":5}
+```
 
-- ## tool
-#### {"tool":[[0, 0, 0], [1, 0, 0, 0]]}
-Immediately execute linear moves to every pose in the remote buffer.
+- *turntable*: sets the turntable value in rpm.
 
-- ## move
-#### {"move":[[800, 0, 800], [0, 0, 1, 0]]}
-Moves to a cartesian pose linearly.
-#### {"move":[[800, 0, 1200], [0, 0, 1, 0],true]}
-Moves to a cartesian pose linearly with signal trigger.
 
-- ## movej
-#### {"movej":[[800, 0, 800], [0, 0, 1, 0]]}
-Moves to a cartesian pose.
+```json
+{"turntable":4}
+```
 
-- ## set_dio
-#### {"set_dio":[1, 0]}
-Set or reset(first element) a digital output(second element).
+- *stirrer*: sets the stirrer value in %.
 
-- ## set_ao
-#### {"set_ao":[3.5, 0]}
-Set a float value(first element) to an analog output(second element).
+```json
+{"stirrer":20}
+```
+
+- *powder*: starts (true) and stops (false) the powder flow from the feeder.
+
+```json
+{"powder":true}
+```
+
+- *wait*: programs a wait time interruption in seconds.
+
+```json
+{"wait":0.5}
+```
+
+- *speed*: sets the TCP linear speed in mm/s.
+
+```json
+{"speed":30}
+```
+
+- *pose*: appends a single cartesian pose to the buffer, and activates or
+deactivates the laser when the boolean option appears.
+
+```json
+{"pose":[[800, 0, 800], [0, 0, 1, 0]]}
+```
+
+```json
+{"pose":[[800, 0, 1200], [0, 0, 1, 0],true]}
+```
+
+- *path_move*: immediately executes linear moves to every pose in the buffer.
+
+```json
+{"path_move":1}
+```
+
+- *path_clear*: immediately executes linear moves to every pose in the buffer.
+
+```json
+{"path_move":1}
+```
+
+- *move*: moves to a cartesian pose linearly, and process the signal when is present.
+
+```json
+{"move":[[800, 0, 800], [0, 0, 1, 0]]}
+```
+
+```json
+{"move":[[800, 0, 1200], [0, 0, 1, 0],true]}
+```
+
+- *movej*: moves the system to the specified cartesian pose.
+
+```json
+{"movej":[[800, 0, 800], [0, 0, 1, 0]]}
+```

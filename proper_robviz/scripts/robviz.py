@@ -10,13 +10,12 @@ from python_qt_binding import QtCore
 
 import rviz
 
-import numpy as np
-from std_msgs.msg import String
-from mashes_measures.msg import MsgVelocity
+from mashes_measures.msg import MsgStatus
 
+from qt_data import QtData
+from qt_scan import QtScan
 from qt_param import QtParam
 from qt_part import QtPart
-from qt_scan import QtScan
 from qt_path import QtPath
 
 
@@ -27,14 +26,10 @@ class MyViz(QtGui.QWidget):
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
 
-        ## rviz.VisualizationFrame is the main container widget of the
-        ## regular RViz application. In this example, we disable everything
-        ## so that the only thing visible is the 3D render window.
         self.frame = rviz.VisualizationFrame()
         self.frame.setSplashPath("")
         self.frame.initialize()
 
-        # Read the configuration from the config file for visualization.
         reader = rviz.YamlConfigReader()
         config = rviz.Config()
 
@@ -74,8 +69,6 @@ class MyViz(QtGui.QWidget):
 
         layout.addWidget(self.frame)
 
-    ## switchToView() works by looping over the views saved in the
-    ## ViewManager and looking for one with a matching name.
     def switchToView(self, view_name):
         view_man = self.manager.getViewManager()
         for i in range(view_man.getNumViews()):
@@ -97,42 +90,83 @@ class MyViz(QtGui.QWidget):
         self.switchToView("Top View")
 
 
-class RobPathUI(QtGui.QMainWindow):
+class Robviz(QtGui.QMainWindow):
     def __init__(self):
-        super(RobPathUI, self).__init__()
+        super(Robviz, self).__init__()
         loadUi(os.path.join(path, 'resources', 'robviz.ui'), self)
+
+        rospy.Subscriber(
+            '/supervisor/status', MsgStatus, self.cbStatus, queue_size=1)
 
         self.boxPlot.addWidget(MyViz())
 
-        self.qtParam = QtParam()
-        self.qtPart = QtPart()
-        self.qtScan = QtScan()
-        self.qtPath = QtPath()
+        self.qtData = QtData(self)
+        self.qtScan = QtScan(self)
+        self.qtParam = QtParam(self)
+        self.qtPart = QtPart(self)
+        self.qtPath = QtPath(self)
 
-        self.tabWidget.addTab(self.qtParam, 'Parameters')
-        self.tabWidget.addTab(self.qtPart, 'Part')
+        self.tabWidget.addTab(self.qtData, 'Data')
         self.tabWidget.addTab(self.qtScan, 'Scan')
+        self.tabWidget.addTab(self.qtParam, 'Params')
+        self.tabWidget.addTab(self.qtPart, 'Part')
         self.tabWidget.addTab(self.qtPath, 'Path')
 
+        self.qtScan.accepted.connect(self.qtScanAccepted)
         self.qtParam.accepted.connect(self.qtParamAccepted)
         self.qtPart.accepted.connect(self.qtPartAccepted)
 
+        self.btnQuit.setIcon(QtGui.QIcon.fromTheme('application-exit'))
         self.btnQuit.clicked.connect(self.btnQuitClicked)
-        icon = QtGui.QIcon.fromTheme('application-exit')
-        self.btnQuit.setIcon(icon)
 
-        rospy.Subscriber(
-            '/velocity', MsgVelocity, self.cb_velocity, queue_size=1)
+        self.speed = 0
+        self.power = 0
+        self.running = False
+        self.laser_on = False
 
-    def cb_velocity(self, msg_velocity):
-        self.lblInfo.setText("Speed: %.1f mm/s" % (1000 * msg_velocity.speed))
+        tmrInfo = QtCore.QTimer(self)
+        tmrInfo.timeout.connect(self.updateStatus)
+        tmrInfo.start(100)
 
-    def qtParamAccepted(self, params):
-        [self.qtPath.insertCommand(cmd) for cmd in params]
+    def cbStatus(self, msg_status):
+        self.running = msg_status.running
+        self.laser_on = msg_status.laser_on
+        self.speed = msg_status.speed
+        self.power = msg_status.power
+
+    def updateStatus(self):
+        self.lblSpeed.setText("Speed: %.1f mm/s" % (self.speed))
+        self.lblPower.setText("Power: %i W" % (self.power))
+        if self.running:
+            self.lblStatus.setText('Running')
+            self.lblStatus.setStyleSheet(
+                "background-color: rgb(0, 255, 0); color: rgb(0, 0, 0);")
+        else:
+            self.lblStatus.setText('Stopped')
+            self.lblStatus.setStyleSheet(
+                "background-color: rgb(255, 0, 0); color: rgb(0, 0, 0);")
+        if self.laser_on:
+            self.lblLaser.setText('Laser ON')
+            self.lblLaser.setStyleSheet(
+                "background-color: rgb(255, 255, 0); color: rgb(0, 0, 0);")
+        else:
+            self.lblLaser.setText('Laser OFF')
+            self.lblLaser.setStyleSheet(
+                "background-color: rgb(0, 0, 255); color: rgb(0, 0, 0);")
+
+    def qtScanAccepted(self, path):
+        print 'Path:', path
+        commands = self.qtPath.jason.path2cmds(path)
+        print 'Commands:', commands
+        self.qtPath.loadCommands(commands)
+        self.tabWidget.setCurrentWidget(self.qtPath)
+
+    def qtParamAccepted(self):
+        self.tabWidget.setCurrentWidget(self.qtPart)
 
     def qtPartAccepted(self, path):
-        cmds = self.qtPath.jason.path2cmds(path)
-        [self.qtPath.insertCommand(cmd) for cmd in cmds]
+        commands = self.qtPath.jason.path2cmds(path)
+        self.qtPath.loadCommands(commands)
         self.tabWidget.setCurrentWidget(self.qtPath)
 
     def btnQuitClicked(self):
@@ -143,6 +177,6 @@ if __name__ == '__main__':
     rospy.init_node('robviz')
 
     app = QtGui.QApplication(sys.argv)
-    robpath = RobPathUI()
-    robpath.show()
+    robviz = Robviz()
+    robviz.show()
     app.exec_()
