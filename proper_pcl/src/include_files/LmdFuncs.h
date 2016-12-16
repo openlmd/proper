@@ -178,6 +178,7 @@ class PointCloudProcess {
     void FineAlign();
     void Segment(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &colored_cloud);
     void Extract(int index, pcl::PointCloud<pcl::PointXYZ>::Ptr &segment_cloud);
+    void Extract(int index);
 
     cloud_s settings;
 

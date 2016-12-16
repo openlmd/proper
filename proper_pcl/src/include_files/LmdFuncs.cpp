@@ -718,4 +718,9 @@ void PointCloudProcess::getPlaneCoeffs(Eigen::VectorXf &coeffs) {
     }
   }
 
+  void PointCloudProcess::Extract(int index) {
+    Extract(index, new_cloud_xyz);
+  }
+
+
 }  // namespace OpenLmd

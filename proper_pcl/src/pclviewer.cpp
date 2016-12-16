@@ -388,11 +388,28 @@ void PCLViewer::on_doubleSpinBox_sel_size_valueChanged(double arg1)
 
 void PCLViewer::on_spinBox_cluster_valueChanged(int argv)
 {
+  try {
     pcl::PointCloud<pcl::PointXYZ>::Ptr seg_cloud;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
     seg_cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
-    pointProcess.Extract(argv, seg_cloud);
+    pointProcess.Extract(argv);
     viewer->removePointCloud ("cloud");
-    viewer->addPointCloud (seg_cloud, "cloud");
+    pointProcess.getModPointCloud(seg_cloud);
+    cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    pointProcess.getPointCloud(cloud);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red_handler (cloud, 255, 0, 0);
+    viewer->removePointCloud ("cloud_mod");
+    viewer->addPointCloud (cloud, "cloud");
+    viewer->addPointCloud(seg_cloud, red_handler, "cloud_mod");
+    }
+    catch(char const* error)
+    {
+        std::cout << "Region selection error: " << error << std::endl;
+    }
+    catch(...)
+    {
+        std::cout << "Unknown region selection exception." << std::endl;
+    }
 }
 
 //Axusta plano
@@ -760,6 +777,7 @@ void PCLViewer::on_pushButton_test_clicked()
     pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud;
     colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
     pointProcess.Segment(colored_cloud);
+    viewer->removePointCloud ("cloud_mod");
     viewer->removePointCloud ("cloud");
     viewer->addPointCloud (colored_cloud, "cloud");
   }
