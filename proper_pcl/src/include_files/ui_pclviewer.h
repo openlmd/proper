@@ -701,8 +701,8 @@ public:
         retranslateUi(PCLViewer);
         QObject::connect(comboBox_filtros, SIGNAL(currentIndexChanged(int)), stackedWidget_filtros, SLOT(setCurrentIndex(int)));
 
-        tabWidget->setCurrentIndex(4);
-        stackedWidget_filtros->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(0);
+        stackedWidget_filtros->setCurrentIndex(4);
         comboBox_filtros->setCurrentIndex(0);
 
 
@@ -714,15 +714,15 @@ public:
         PCLViewer->setWindowTitle(QApplication::translate("PCLViewer", "PCLViewer", 0, QApplication::UnicodeUTF8));
         actionLoad->setText(QApplication::translate("PCLViewer", "Load", 0, QApplication::UnicodeUTF8));
         actionSave->setText(QApplication::translate("PCLViewer", "Save", 0, QApplication::UnicodeUTF8));
-        pushButton_gardar->setText(QApplication::translate("PCLViewer", "Garda nube", 0, QApplication::UnicodeUTF8));
-        pushButton_load->setText(QApplication::translate("PCLViewer", "Carga nube", 0, QApplication::UnicodeUTF8));
+        pushButton_gardar->setText(QApplication::translate("PCLViewer", "Save Cloud", 0, QApplication::UnicodeUTF8));
+        pushButton_load->setText(QApplication::translate("PCLViewer", "Load Cloud", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("PCLViewer", "Size X", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("PCLViewer", "Size Y", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("PCLViewer", "Size Z", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("PCLViewer", "K numero neighbors", 0, QApplication::UnicodeUTF8));
-        label_3->setText(QApplication::translate("PCLViewer", "Desviaci\303\263n t\303\255pica", 0, QApplication::UnicodeUTF8));
-        label_8->setText(QApplication::translate("PCLViewer", "Radio", 0, QApplication::UnicodeUTF8));
-        label_7->setText(QApplication::translate("PCLViewer", "Numero K", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("PCLViewer", "K n neighbors:", 0, QApplication::UnicodeUTF8));
+        label_3->setText(QApplication::translate("PCLViewer", "Deviation:", 0, QApplication::UnicodeUTF8));
+        label_8->setText(QApplication::translate("PCLViewer", "Radius:", 0, QApplication::UnicodeUTF8));
+        label_7->setText(QApplication::translate("PCLViewer", "Param K:", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("PCLViewer", "Search Radius", 0, QApplication::UnicodeUTF8));
         comboBox_pass->clear();
         comboBox_pass->insertItems(0, QStringList()
@@ -730,36 +730,36 @@ public:
          << QApplication::translate("PCLViewer", "Y filter", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("PCLViewer", "Z filter", 0, QApplication::UnicodeUTF8)
         );
-        label_12->setText(QApplication::translate("PCLViewer", "M\303\255nimo:", 0, QApplication::UnicodeUTF8));
-        label_13->setText(QApplication::translate("PCLViewer", "M\303\241ximo:", 0, QApplication::UnicodeUTF8));
+        label_12->setText(QApplication::translate("PCLViewer", "Min:", 0, QApplication::UnicodeUTF8));
+        label_13->setText(QApplication::translate("PCLViewer", "Max:", 0, QApplication::UnicodeUTF8));
         comboBox_filtros->clear();
         comboBox_filtros->insertItems(0, QStringList()
          << QApplication::translate("PCLViewer", "Voxel Grid", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("PCLViewer", "Filtro estad\303\255stico", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("PCLViewer", "Filtro radios", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("PCLViewer", "Statistical filter", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("PCLViewer", "Radius search filter", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("PCLViewer", "Resampling", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("PCLViewer", "Pass trough", 0, QApplication::UnicodeUTF8)
         );
-        pushButton_aceptar_filtro->setText(QApplication::translate("PCLViewer", "Aceptar", 0, QApplication::UnicodeUTF8));
-        pushButton_deshacer_filtro->setText(QApplication::translate("PCLViewer", "Deshacer", 0, QApplication::UnicodeUTF8));
-        pushButton_filter->setText(QApplication::translate("PCLViewer", "Autofiltro", 0, QApplication::UnicodeUTF8));
-        pushButton->setText(QApplication::translate("PCLViewer", "Datos nube", 0, QApplication::UnicodeUTF8));
-        pushButton_funcion_1->setText(QApplication::translate("PCLViewer", "Aplicar", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tab_filtros), QApplication::translate("PCLViewer", "Filtros", 0, QApplication::UnicodeUTF8));
+        pushButton_aceptar_filtro->setText(QApplication::translate("PCLViewer", "Accept", 0, QApplication::UnicodeUTF8));
+        pushButton_deshacer_filtro->setText(QApplication::translate("PCLViewer", "Undo", 0, QApplication::UnicodeUTF8));
+        pushButton_filter->setText(QApplication::translate("PCLViewer", "Autofilter", 0, QApplication::UnicodeUTF8));
+        pushButton->setText(QApplication::translate("PCLViewer", "Cloud data", 0, QApplication::UnicodeUTF8));
+        pushButton_funcion_1->setText(QApplication::translate("PCLViewer", "Apply", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_filtros), QApplication::translate("PCLViewer", "Filter", 0, QApplication::UnicodeUTF8));
         label_15->setText(QApplication::translate("PCLViewer", "X:", 0, QApplication::UnicodeUTF8));
-        pushButton_2d_place->setText(QApplication::translate("PCLViewer", "Situa 2d", 0, QApplication::UnicodeUTF8));
+        pushButton_2d_place->setText(QApplication::translate("PCLViewer", "Place 2d", 0, QApplication::UnicodeUTF8));
         label_16->setText(QApplication::translate("PCLViewer", "Y:", 0, QApplication::UnicodeUTF8));
-        label_17->setText(QApplication::translate("PCLViewer", "Angulo:", 0, QApplication::UnicodeUTF8));
-        pushButton_aceptar_fitting->setText(QApplication::translate("PCLViewer", "Acepta", 0, QApplication::UnicodeUTF8));
+        label_17->setText(QApplication::translate("PCLViewer", "Angle:", 0, QApplication::UnicodeUTF8));
+        pushButton_aceptar_fitting->setText(QApplication::translate("PCLViewer", "Accept", 0, QApplication::UnicodeUTF8));
         pushButton_recorta_plano->setText(QApplication::translate("PCLViewer", "Recorta", 0, QApplication::UnicodeUTF8));
-        pushButton_distances->setText(QApplication::translate("PCLViewer", "Distancia", 0, QApplication::UnicodeUTF8));
-        pushButton_reorienta->setText(QApplication::translate("PCLViewer", "Reorienta", 0, QApplication::UnicodeUTF8));
-        pushButton_funcion_2->setText(QApplication::translate("PCLViewer", "Ajusta plano", 0, QApplication::UnicodeUTF8));
-        pushButton_deshacer_plano->setText(QApplication::translate("PCLViewer", "Deshacer", 0, QApplication::UnicodeUTF8));
-        checkBox_puntos_sup->setText(QApplication::translate("PCLViewer", "Superiores", 0, QApplication::UnicodeUTF8));
-        pushButton_centra->setText(QApplication::translate("PCLViewer", "Centra punto", 0, QApplication::UnicodeUTF8));
+        pushButton_distances->setText(QApplication::translate("PCLViewer", "Distance", 0, QApplication::UnicodeUTF8));
+        pushButton_reorienta->setText(QApplication::translate("PCLViewer", "Reorient", 0, QApplication::UnicodeUTF8));
+        pushButton_funcion_2->setText(QApplication::translate("PCLViewer", "Plane fit", 0, QApplication::UnicodeUTF8));
+        pushButton_deshacer_plano->setText(QApplication::translate("PCLViewer", "Undo", 0, QApplication::UnicodeUTF8));
+        checkBox_puntos_sup->setText(QApplication::translate("PCLViewer", "Upper", 0, QApplication::UnicodeUTF8));
+        pushButton_centra->setText(QApplication::translate("PCLViewer", "Center point", 0, QApplication::UnicodeUTF8));
         label_14->setText(QApplication::translate("PCLViewer", "Distance threshold:", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tab_fit), QApplication::translate("PCLViewer", "Fitting", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_fit), QApplication::translate("PCLViewer", "Fit", 0, QApplication::UnicodeUTF8));
         pushButton_proj_points->setText(QApplication::translate("PCLViewer", "Project points", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_projections), QApplication::translate("PCLViewer", "Pojection", 0, QApplication::UnicodeUTF8));
         pushButton_load_model->setText(QApplication::translate("PCLViewer", "Load Model", 0, QApplication::UnicodeUTF8));
@@ -770,9 +770,9 @@ public:
         label_11->setText(QApplication::translate("PCLViewer", "Sel point cloud", 0, QApplication::UnicodeUTF8));
         label_9->setText(QApplication::translate("PCLViewer", "Point cloud size", 0, QApplication::UnicodeUTF8));
         label_10->setText(QApplication::translate("PCLViewer", "Mod point cloud", 0, QApplication::UnicodeUTF8));
-        pushButton_test->setText(QApplication::translate("PCLViewer", "Funci\303\263n Test", 0, QApplication::UnicodeUTF8));
+        pushButton_test->setText(QApplication::translate("PCLViewer", "Function Test", 0, QApplication::UnicodeUTF8));
         label_18->setText(QApplication::translate("PCLViewer", "Cluster:", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("PCLViewer", "Otros", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("PCLViewer", "Test", 0, QApplication::UnicodeUTF8));
         menuSettings->setTitle(QApplication::translate("PCLViewer", "Settings", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 

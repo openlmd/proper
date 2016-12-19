@@ -55,7 +55,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Garda nube</string>
+           <string>Save Cloud</string>
           </property>
          </widget>
         </item>
@@ -68,7 +68,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Carga nube</string>
+           <string>Load Cloud</string>
           </property>
          </widget>
         </item>
@@ -83,7 +83,7 @@
          </sizepolicy>
         </property>
         <property name="currentIndex">
-         <number>4</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tab_filtros">
          <property name="sizePolicy">
@@ -93,7 +93,7 @@
           </sizepolicy>
          </property>
          <attribute name="title">
-          <string>Filtros</string>
+          <string>Filter</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout">
           <item row="4" column="0" colspan="3">
@@ -118,7 +118,7 @@
              <enum>QFrame::StyledPanel</enum>
             </property>
             <property name="currentIndex">
-             <number>0</number>
+             <number>4</number>
             </property>
             <widget class="QWidget" name="page_voxel">
              <layout class="QGridLayout" name="gridLayout_2">
@@ -201,7 +201,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>K numero neighbors</string>
+                 <string>K n neighbors:</string>
                 </property>
                </widget>
               </item>
@@ -221,7 +221,7 @@
               <item row="1" column="0">
                <widget class="QLabel" name="label_3">
                 <property name="text">
-                 <string>Desviación típica</string>
+                 <string>Deviation:</string>
                 </property>
                </widget>
               </item>
@@ -251,7 +251,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Radio</string>
+                 <string>Radius:</string>
                 </property>
                </widget>
               </item>
@@ -271,7 +271,7 @@
               <item row="1" column="0">
                <widget class="QLabel" name="label_7">
                 <property name="text">
-                 <string>Numero K</string>
+                 <string>Param K:</string>
                 </property>
                </widget>
               </item>
@@ -369,7 +369,7 @@
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string>Mínimo:</string>
+                 <string>Min:</string>
                 </property>
                </widget>
               </item>
@@ -389,7 +389,7 @@
               <item row="2" column="0">
                <widget class="QLabel" name="label_13">
                 <property name="text">
-                 <string>Máximo:</string>
+                 <string>Max:</string>
                 </property>
                </widget>
               </item>
@@ -415,12 +415,12 @@
             </item>
             <item>
              <property name="text">
-              <string>Filtro estadístico</string>
+              <string>Statistical filter</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Filtro radios</string>
+              <string>Radius search filter</string>
              </property>
             </item>
             <item>
@@ -440,35 +440,35 @@
             <item row="0" column="0">
              <widget class="QPushButton" name="pushButton_aceptar_filtro">
               <property name="text">
-               <string>Aceptar</string>
+               <string>Accept</string>
               </property>
              </widget>
             </item>
             <item row="0" column="2">
              <widget class="QPushButton" name="pushButton_deshacer_filtro">
               <property name="text">
-               <string>Deshacer</string>
+               <string>Undo</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
              <widget class="QPushButton" name="pushButton_filter">
               <property name="text">
-               <string>Autofiltro</string>
+               <string>Autofilter</string>
               </property>
              </widget>
             </item>
             <item row="1" column="1">
              <widget class="QPushButton" name="pushButton">
               <property name="text">
-               <string>Datos nube</string>
+               <string>Cloud data</string>
               </property>
              </widget>
             </item>
             <item row="1" column="2">
              <widget class="QPushButton" name="pushButton_funcion_1">
               <property name="text">
-               <string>Aplicar</string>
+               <string>Apply</string>
               </property>
              </widget>
             </item>
@@ -478,7 +478,7 @@
         </widget>
         <widget class="QWidget" name="tab_fit">
          <attribute name="title">
-          <string>Fitting</string>
+          <string>Fit</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="6" column="0" colspan="3">
@@ -539,7 +539,7 @@
             <item row="0" column="0" rowspan="2">
              <widget class="QPushButton" name="pushButton_2d_place">
               <property name="text">
-               <string>Situa 2d</string>
+               <string>Place 2d</string>
               </property>
              </widget>
             </item>
@@ -553,7 +553,7 @@
             <item row="1" column="2" colspan="2">
              <widget class="QLabel" name="label_17">
               <property name="text">
-               <string>Angulo:</string>
+               <string>Angle:</string>
               </property>
              </widget>
             </item>
@@ -564,7 +564,7 @@
             <item row="0" column="0">
              <widget class="QPushButton" name="pushButton_aceptar_fitting">
               <property name="text">
-               <string>Acepta</string>
+               <string>Accept</string>
               </property>
              </widget>
             </item>
@@ -578,35 +578,35 @@
             <item row="1" column="1">
              <widget class="QPushButton" name="pushButton_distances">
               <property name="text">
-               <string>Distancia</string>
+               <string>Distance</string>
               </property>
              </widget>
             </item>
             <item row="2" column="1">
              <widget class="QPushButton" name="pushButton_reorienta">
               <property name="text">
-               <string>Reorienta</string>
+               <string>Reorient</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0">
              <widget class="QPushButton" name="pushButton_funcion_2">
               <property name="text">
-               <string>Ajusta plano</string>
+               <string>Plane fit</string>
               </property>
              </widget>
             </item>
             <item row="0" column="1">
              <widget class="QPushButton" name="pushButton_deshacer_plano">
               <property name="text">
-               <string>Deshacer</string>
+               <string>Undo</string>
               </property>
              </widget>
             </item>
             <item row="3" column="0">
              <widget class="QCheckBox" name="checkBox_puntos_sup">
               <property name="text">
-               <string>Superiores</string>
+               <string>Upper</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -619,7 +619,7 @@
             <item row="3" column="1">
              <widget class="QPushButton" name="pushButton_centra">
               <property name="text">
-               <string>Centra punto</string>
+               <string>Center point</string>
               </property>
              </widget>
             </item>
@@ -734,7 +734,7 @@
         </widget>
         <widget class="QWidget" name="tab">
          <attribute name="title">
-          <string>Otros</string>
+          <string>Test</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="2" column="1">
@@ -806,7 +806,7 @@
           <item row="0" column="0" colspan="2">
            <widget class="QPushButton" name="pushButton_test">
             <property name="text">
-             <string>Función Test</string>
+             <string>Function Test</string>
             </property>
            </widget>
           </item>
