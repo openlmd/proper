@@ -157,6 +157,10 @@ private slots:
 private:
   Ui::PCLViewer *ui;
 
+  void settings_from_gui();
+
+  void settings_to_gui();
+
 };
 
 #endif // PCLVIEWER_H

@@ -230,6 +230,12 @@ namespace OpenLmd {
       return;
   }
 
+  void PointCloudProcess::VoxelFilter() {
+    VoxelFilter(settings.filters.voxel_grid.leaf_size_x,
+                settings.filters.voxel_grid.leaf_size_y,
+                settings.filters.voxel_grid.leaf_size_z);
+  }
+
   void PointCloudProcess::StatisticalFilter(int kNearest, double multiplier) {
       if (kNearest == -1) {
           kNearest = 10;
@@ -249,6 +255,11 @@ namespace OpenLmd {
           throw "Invalid statistical parameters";
       }
       return;
+  }
+
+  void PointCloudProcess::StatisticalFilter() {
+    StatisticalFilter(settings.filters.statistical.k_neighbors,
+                      settings.filters.statistical.deviation);
   }
 
   void PointCloudProcess::RadiusFilter(int kNearest, double radius) {
@@ -272,6 +283,11 @@ namespace OpenLmd {
       return;
   }
 
+  void PointCloudProcess::RadiusFilter() {
+    RadiusFilter(settings.filters.radius_search.k_neighbors,
+                 settings.filters.radius_search.radius);
+  }
+
   void PointCloudProcess::PassthroughFilter(double min, double max, int axis) {
       if (axis >= 0 && axis <= 2) {
           pcl::PassThrough<pcl::PointXYZ> pass;
@@ -292,6 +308,15 @@ namespace OpenLmd {
       return;
   }
 
+  void PointCloudProcess::PassthroughFilter() {
+    PassthroughFilter(settings.filters.passthrough.x.min,
+                      settings.filters.passthrough.x.max, 0);
+    PassthroughFilter(settings.filters.passthrough.y.min,
+                      settings.filters.passthrough.y.max, 1);
+    PassthroughFilter(settings.filters.passthrough.z.min,
+                      settings.filters.passthrough.z.max,2);
+  }
+
   void PointCloudProcess::ResamplingPoints(double radius) {
       if (radius == -1) {
           radius = (max_pt.x - min_pt.x + max_pt.y - min_pt.y + max_pt.z - min_pt.z) / (3 * sqrt(cloud_xyz->width * cloud_xyz->height)) * radius / 2;
@@ -310,6 +335,10 @@ namespace OpenLmd {
           throw "Invalid resampling parameters";
       }
       return;
+  }
+
+  void PointCloudProcess::ResamplingPoints() {
+    ResamplingPoints(settings.filters.resampling.search_radius);
   }
 
   void PointCloudProcess::AddPoint(pcl::PointCloud<pcl::PointXYZ>::Ptr &add_cloud, pcl::PointXYZ sel_point) {
@@ -665,6 +694,9 @@ void PointCloudProcess::getPlaneCoeffs(Eigen::VectorXf &coeffs) {
   }
 
   void PointCloudProcess::Segment(pcl::PointCloud<pcl::PointXYZRGB>::Ptr &colored_cloud) {
+    if (cloud_xyz->points.size() == 0) {
+      throw "Point process 'cloud_xyz' empty";
+    }
     pcl::search::Search<pcl::PointXYZ>::Ptr tree = boost::shared_ptr<pcl::search::Search<pcl::PointXYZ> > (new pcl::search::KdTree<pcl::PointXYZ>);
     pcl::PointCloud <pcl::Normal>::Ptr normals (new pcl::PointCloud <pcl::Normal>);
     pcl::NormalEstimation<pcl::PointXYZ, pcl::Normal> normal_estimator;
@@ -706,6 +738,9 @@ void PointCloudProcess::getPlaneCoeffs(Eigen::VectorXf &coeffs) {
   }
 
   void PointCloudProcess::Extract(int index, pcl::PointCloud<pcl::PointXYZ>::Ptr &segment_cloud) {
+    if (clusters.size() == 0) {
+      throw "No clusters detected";
+    }
     pcl::PointIndices::Ptr inliers (new pcl::PointIndices);
     if (clusters.size() >= index) {
       *inliers = clusters[index];

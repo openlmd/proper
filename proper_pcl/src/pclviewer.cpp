@@ -79,6 +79,14 @@ PCLViewer::~PCLViewer ()
   delete ui;
 }
 
+void settings_from_gui() {
+  // TODO: Load parameters from gui and save it to file.
+}
+
+void settings_to_gui() {
+  // TODO: Load parameters from settings member a show it.
+}
+
 //Cargar PCD
 void PCLViewer::on_pushButton_load_clicked()
 {

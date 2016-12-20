@@ -149,10 +149,15 @@ class PointCloudProcess {
     // Reset 'cloud_xyz' to 'new_cloud_xyz'
     void ModifyPointCloud();
     void VoxelFilter(double leafX, double leafY, double leafZ);
+    void VoxelFilter();
     void StatisticalFilter(int kNearest, double multiplier);
+    void StatisticalFilter();
     void RadiusFilter(int kNearest, double radius);
+    void RadiusFilter();
     void PassthroughFilter(double min, double max, int axis);
+    void PassthroughFilter();
     void ResamplingPoints(double radius);
+    void ResamplingPoints();
     // Add a point to a cloud
     void AddPoint(pcl::PointCloud<pcl::PointXYZ>::Ptr &add_cloud, pcl::PointXYZ sel_point);
     // Add a point to 'selected_points'
