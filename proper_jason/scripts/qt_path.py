@@ -76,9 +76,17 @@ class QtPath(QtGui.QWidget):
         workobject = [workobject.origin.position,
                       list(tf.quaternion_from_euler(*workobject.origin.rotation))]
         print 'Workobject:', workobject
-        powder = rospy.get_param('/powder')
+        if rospy.has_param('/powder'):
+            powder = rospy.get_param('/powder')
+        else:
+            print '/powder param missing, loaded default'
+            powder = {'carrier': 5.0, 'shield': 10.0, 'stirrer': 20.0, 'turntable': 4.0}
         print 'Powder:', powder
-        process = rospy.get_param('/process')
+        if rospy.has_param('/process'):
+            process = rospy.get_param('/process')
+        else:
+            print '/process param missing, loaded default'
+            process = {'focus': 0, 'power': 1000, 'speed': 8}
         print 'Process:', process
 
         self.jason = Jason()
