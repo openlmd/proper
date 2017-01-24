@@ -251,6 +251,16 @@ class QtPath(QtGui.QWidget):
         self.sendCommand('{"reset_powder":1}')
         self.sendCommand('{"reset_wire":1}')
         self.sendCommand('{"cancel":1}')
+        if self.tmrRunPath.isActive():
+            self.tmrRunPath.stop()
+            icon = QtGui.QIcon.fromTheme('media-playback-start')
+            self.btnRunPath.setText('Run')
+            self.btnRunTest.setText('Test')
+            self.btnRunPath.setIcon(icon)
+            self.btnRunTest.setIcon(icon)
+            self.testing = False
+            self.btnRunTest.setEnabled(True)
+            self.btnRunPath.setEnabled(True)
 
     def getMoveCommands(self):
         n_row = self.listWidgetPoses.count()
