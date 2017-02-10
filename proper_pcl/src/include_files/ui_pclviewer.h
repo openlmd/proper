@@ -20,7 +20,10 @@
 #include <QtGui/QHeaderView>
 #include <QtGui/QLabel>
 #include <QtGui/QMainWindow>
+#include <QtGui/QMenu>
+#include <QtGui/QMenuBar>
 #include <QtGui/QPushButton>
+#include <QtGui/QSpinBox>
 #include <QtGui/QStackedWidget>
 #include <QtGui/QTabWidget>
 #include <QtGui/QTextBrowser>
@@ -32,9 +35,14 @@ QT_BEGIN_NAMESPACE
 class Ui_PCLViewer
 {
 public:
+    QAction *actionLoad;
+    QAction *actionSave;
     QWidget *centralwidget;
-    QWidget *gridLayoutWidget_4;
+    QGridLayout *gridLayout_14;
     QGridLayout *gridLayout_16;
+    QGridLayout *gridLayout_7;
+    QPushButton *pushButton_gardar;
+    QPushButton *pushButton_load;
     QTabWidget *tabWidget;
     QWidget *tab_filtros;
     QGridLayout *gridLayout;
@@ -104,6 +112,14 @@ public:
     QGridLayout *gridLayout_11;
     QPushButton *pushButton_proj_points;
     QTextBrowser *textBrowser_projection;
+    QWidget *tab_align;
+    QWidget *gridLayoutWidget;
+    QGridLayout *gridLayout_15;
+    QPushButton *pushButton_load_model;
+    QPushButton *pushButton_delete_model;
+    QPushButton *pushButton_fine_alignment;
+    QPushButton *pushButton_init_align;
+    QTextBrowser *textBrowser_align;
     QWidget *tab;
     QGridLayout *gridLayout_6;
     QDoubleSpinBox *doubleSpinBox_cloud_size;
@@ -112,12 +128,13 @@ public:
     QLabel *label_9;
     QDoubleSpinBox *doubleSpinBox_sel_size;
     QLabel *label_10;
-    QGridLayout *gridLayout_7;
-    QPushButton *pushButton_gardar;
-    QPushButton *pushButton_random_2;
-    QWidget *gridLayoutWidget_5;
+    QPushButton *pushButton_test;
+    QLabel *label_18;
+    QSpinBox *spinBox_cluster;
     QGridLayout *gridLayout_17;
     QVTKWidget *qvtkWidget;
+    QMenuBar *menuBar;
+    QMenu *menuSettings;
 
     void setupUi(QMainWindow *PCLViewer)
     {
@@ -126,6 +143,10 @@ public:
         PCLViewer->resize(966, 641);
         PCLViewer->setMinimumSize(QSize(966, 641));
         PCLViewer->setMaximumSize(QSize(5000, 5000));
+        actionLoad = new QAction(PCLViewer);
+        actionLoad->setObjectName(QString::fromUtf8("actionLoad"));
+        actionSave = new QAction(PCLViewer);
+        actionSave->setObjectName(QString::fromUtf8("actionSave"));
         centralwidget = new QWidget(PCLViewer);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         QSizePolicy sizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -133,36 +154,65 @@ public:
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(centralwidget->sizePolicy().hasHeightForWidth());
         centralwidget->setSizePolicy(sizePolicy);
-        gridLayoutWidget_4 = new QWidget(centralwidget);
-        gridLayoutWidget_4->setObjectName(QString::fromUtf8("gridLayoutWidget_4"));
-        gridLayoutWidget_4->setGeometry(QRect(10, 10, 347, 621));
-        gridLayout_16 = new QGridLayout(gridLayoutWidget_4);
+        gridLayout_14 = new QGridLayout(centralwidget);
+        gridLayout_14->setObjectName(QString::fromUtf8("gridLayout_14"));
+        gridLayout_14->setSizeConstraint(QLayout::SetDefaultConstraint);
+        gridLayout_16 = new QGridLayout();
         gridLayout_16->setObjectName(QString::fromUtf8("gridLayout_16"));
-        gridLayout_16->setSizeConstraint(QLayout::SetFixedSize);
-        gridLayout_16->setContentsMargins(0, 0, 0, 0);
-        tabWidget = new QTabWidget(gridLayoutWidget_4);
-        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
-        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
+        gridLayout_16->setSizeConstraint(QLayout::SetNoConstraint);
+        gridLayout_7 = new QGridLayout();
+        gridLayout_7->setObjectName(QString::fromUtf8("gridLayout_7"));
+        gridLayout_7->setSizeConstraint(QLayout::SetFixedSize);
+        pushButton_gardar = new QPushButton(centralwidget);
+        pushButton_gardar->setObjectName(QString::fromUtf8("pushButton_gardar"));
+        QSizePolicy sizePolicy1(QSizePolicy::Minimum, QSizePolicy::Fixed);
         sizePolicy1.setHorizontalStretch(0);
         sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
-        tabWidget->setSizePolicy(sizePolicy1);
-        tab_filtros = new QWidget();
-        tab_filtros->setObjectName(QString::fromUtf8("tab_filtros"));
-        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy1.setHeightForWidth(pushButton_gardar->sizePolicy().hasHeightForWidth());
+        pushButton_gardar->setSizePolicy(sizePolicy1);
+
+        gridLayout_7->addWidget(pushButton_gardar, 0, 1, 1, 1);
+
+        pushButton_load = new QPushButton(centralwidget);
+        pushButton_load->setObjectName(QString::fromUtf8("pushButton_load"));
+        sizePolicy1.setHeightForWidth(pushButton_load->sizePolicy().hasHeightForWidth());
+        pushButton_load->setSizePolicy(sizePolicy1);
+
+        gridLayout_7->addWidget(pushButton_load, 0, 0, 1, 1);
+
+
+        gridLayout_16->addLayout(gridLayout_7, 0, 0, 1, 1);
+
+        tabWidget = new QTabWidget(centralwidget);
+        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
+        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(0);
-        sizePolicy2.setHeightForWidth(tab_filtros->sizePolicy().hasHeightForWidth());
-        tab_filtros->setSizePolicy(sizePolicy2);
+        sizePolicy2.setHeightForWidth(tabWidget->sizePolicy().hasHeightForWidth());
+        tabWidget->setSizePolicy(sizePolicy2);
+        tab_filtros = new QWidget();
+        tab_filtros->setObjectName(QString::fromUtf8("tab_filtros"));
+        QSizePolicy sizePolicy3(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy3.setHorizontalStretch(0);
+        sizePolicy3.setVerticalStretch(0);
+        sizePolicy3.setHeightForWidth(tab_filtros->sizePolicy().hasHeightForWidth());
+        tab_filtros->setSizePolicy(sizePolicy3);
         gridLayout = new QGridLayout(tab_filtros);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         textBrowser_datos = new QTextBrowser(tab_filtros);
         textBrowser_datos->setObjectName(QString::fromUtf8("textBrowser_datos"));
+        QSizePolicy sizePolicy4(QSizePolicy::Expanding, QSizePolicy::MinimumExpanding);
+        sizePolicy4.setHorizontalStretch(0);
+        sizePolicy4.setVerticalStretch(0);
+        sizePolicy4.setHeightForWidth(textBrowser_datos->sizePolicy().hasHeightForWidth());
+        textBrowser_datos->setSizePolicy(sizePolicy4);
 
         gridLayout->addWidget(textBrowser_datos, 4, 0, 1, 3);
 
         stackedWidget_filtros = new QStackedWidget(tab_filtros);
         stackedWidget_filtros->setObjectName(QString::fromUtf8("stackedWidget_filtros"));
+        sizePolicy1.setHeightForWidth(stackedWidget_filtros->sizePolicy().hasHeightForWidth());
+        stackedWidget_filtros->setSizePolicy(sizePolicy1);
         stackedWidget_filtros->setFrameShape(QFrame::StyledPanel);
         page_voxel = new QWidget();
         page_voxel->setObjectName(QString::fromUtf8("page_voxel"));
@@ -170,6 +220,11 @@ public:
         gridLayout_2->setObjectName(QString::fromUtf8("gridLayout_2"));
         label_2 = new QLabel(page_voxel);
         label_2->setObjectName(QString::fromUtf8("label_2"));
+        QSizePolicy sizePolicy5(QSizePolicy::Fixed, QSizePolicy::Preferred);
+        sizePolicy5.setHorizontalStretch(0);
+        sizePolicy5.setVerticalStretch(0);
+        sizePolicy5.setHeightForWidth(label_2->sizePolicy().hasHeightForWidth());
+        label_2->setSizePolicy(sizePolicy5);
 
         gridLayout_2->addWidget(label_2, 0, 0, 1, 1);
 
@@ -214,6 +269,8 @@ public:
         gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
         label = new QLabel(page_morph);
         label->setObjectName(QString::fromUtf8("label"));
+        sizePolicy5.setHeightForWidth(label->sizePolicy().hasHeightForWidth());
+        label->setSizePolicy(sizePolicy5);
 
         gridLayout_3->addWidget(label, 0, 0, 1, 1);
 
@@ -245,6 +302,8 @@ public:
         gridLayout_4->setObjectName(QString::fromUtf8("gridLayout_4"));
         label_8 = new QLabel(page_filtro_2);
         label_8->setObjectName(QString::fromUtf8("label_8"));
+        sizePolicy5.setHeightForWidth(label_8->sizePolicy().hasHeightForWidth());
+        label_8->setSizePolicy(sizePolicy5);
 
         gridLayout_4->addWidget(label_8, 0, 0, 1, 1);
 
@@ -276,6 +335,8 @@ public:
         gridLayout_8->setObjectName(QString::fromUtf8("gridLayout_8"));
         label_6 = new QLabel(page_resampling);
         label_6->setObjectName(QString::fromUtf8("label_6"));
+        sizePolicy5.setHeightForWidth(label_6->sizePolicy().hasHeightForWidth());
+        label_6->setSizePolicy(sizePolicy5);
 
         gridLayout_8->addWidget(label_6, 0, 0, 1, 1);
 
@@ -294,6 +355,8 @@ public:
         gridLayout_10->setObjectName(QString::fromUtf8("gridLayout_10"));
         comboBox_pass = new QComboBox(page_pass);
         comboBox_pass->setObjectName(QString::fromUtf8("comboBox_pass"));
+        sizePolicy1.setHeightForWidth(comboBox_pass->sizePolicy().hasHeightForWidth());
+        comboBox_pass->setSizePolicy(sizePolicy1);
 
         gridLayout_10->addWidget(comboBox_pass, 0, 0, 1, 2);
 
@@ -307,6 +370,8 @@ public:
 
         label_12 = new QLabel(page_pass);
         label_12->setObjectName(QString::fromUtf8("label_12"));
+        sizePolicy5.setHeightForWidth(label_12->sizePolicy().hasHeightForWidth());
+        label_12->setSizePolicy(sizePolicy5);
 
         gridLayout_10->addWidget(label_12, 1, 0, 1, 1);
 
@@ -329,6 +394,8 @@ public:
 
         comboBox_filtros = new QComboBox(tab_filtros);
         comboBox_filtros->setObjectName(QString::fromUtf8("comboBox_filtros"));
+        sizePolicy1.setHeightForWidth(comboBox_filtros->sizePolicy().hasHeightForWidth());
+        comboBox_filtros->setSizePolicy(sizePolicy1);
 
         gridLayout->addWidget(comboBox_filtros, 5, 0, 1, 3);
 
@@ -369,6 +436,8 @@ public:
         gridLayout_5->setObjectName(QString::fromUtf8("gridLayout_5"));
         textBrowser_datos_2 = new QTextBrowser(tab_fit);
         textBrowser_datos_2->setObjectName(QString::fromUtf8("textBrowser_datos_2"));
+        sizePolicy4.setHeightForWidth(textBrowser_datos_2->sizePolicy().hasHeightForWidth());
+        textBrowser_datos_2->setSizePolicy(sizePolicy4);
 
         gridLayout_5->addWidget(textBrowser_datos_2, 6, 0, 1, 3);
 
@@ -487,15 +556,51 @@ public:
         gridLayout_11->setObjectName(QString::fromUtf8("gridLayout_11"));
         pushButton_proj_points = new QPushButton(tab_projections);
         pushButton_proj_points->setObjectName(QString::fromUtf8("pushButton_proj_points"));
+        sizePolicy1.setHeightForWidth(pushButton_proj_points->sizePolicy().hasHeightForWidth());
+        pushButton_proj_points->setSizePolicy(sizePolicy1);
 
-        gridLayout_11->addWidget(pushButton_proj_points, 0, 0, 1, 1);
+        gridLayout_11->addWidget(pushButton_proj_points, 0, 0, 1, 2);
 
         textBrowser_projection = new QTextBrowser(tab_projections);
         textBrowser_projection->setObjectName(QString::fromUtf8("textBrowser_projection"));
+        sizePolicy4.setHeightForWidth(textBrowser_projection->sizePolicy().hasHeightForWidth());
+        textBrowser_projection->setSizePolicy(sizePolicy4);
 
         gridLayout_11->addWidget(textBrowser_projection, 2, 0, 1, 2);
 
         tabWidget->addTab(tab_projections, QString());
+        tab_align = new QWidget();
+        tab_align->setObjectName(QString::fromUtf8("tab_align"));
+        gridLayoutWidget = new QWidget(tab_align);
+        gridLayoutWidget->setObjectName(QString::fromUtf8("gridLayoutWidget"));
+        gridLayoutWidget->setGeometry(QRect(10, 10, 321, 71));
+        gridLayout_15 = new QGridLayout(gridLayoutWidget);
+        gridLayout_15->setObjectName(QString::fromUtf8("gridLayout_15"));
+        gridLayout_15->setContentsMargins(0, 0, 0, 0);
+        pushButton_load_model = new QPushButton(gridLayoutWidget);
+        pushButton_load_model->setObjectName(QString::fromUtf8("pushButton_load_model"));
+
+        gridLayout_15->addWidget(pushButton_load_model, 0, 0, 1, 1);
+
+        pushButton_delete_model = new QPushButton(gridLayoutWidget);
+        pushButton_delete_model->setObjectName(QString::fromUtf8("pushButton_delete_model"));
+
+        gridLayout_15->addWidget(pushButton_delete_model, 0, 1, 1, 1);
+
+        pushButton_fine_alignment = new QPushButton(gridLayoutWidget);
+        pushButton_fine_alignment->setObjectName(QString::fromUtf8("pushButton_fine_alignment"));
+
+        gridLayout_15->addWidget(pushButton_fine_alignment, 1, 1, 1, 1);
+
+        pushButton_init_align = new QPushButton(gridLayoutWidget);
+        pushButton_init_align->setObjectName(QString::fromUtf8("pushButton_init_align"));
+
+        gridLayout_15->addWidget(pushButton_init_align, 1, 0, 1, 1);
+
+        textBrowser_align = new QTextBrowser(tab_align);
+        textBrowser_align->setObjectName(QString::fromUtf8("textBrowser_align"));
+        textBrowser_align->setGeometry(QRect(10, 90, 311, 421));
+        tabWidget->addTab(tab_align, QString());
         tab = new QWidget();
         tab->setObjectName(QString::fromUtf8("tab"));
         gridLayout_6 = new QGridLayout(tab);
@@ -506,7 +611,7 @@ public:
         doubleSpinBox_cloud_size->setSingleStep(0.1);
         doubleSpinBox_cloud_size->setValue(1);
 
-        gridLayout_6->addWidget(doubleSpinBox_cloud_size, 1, 1, 1, 1);
+        gridLayout_6->addWidget(doubleSpinBox_cloud_size, 2, 1, 1, 1);
 
         doubleSpinBox_mod_size = new QDoubleSpinBox(tab);
         doubleSpinBox_mod_size->setObjectName(QString::fromUtf8("doubleSpinBox_mod_size"));
@@ -514,17 +619,19 @@ public:
         doubleSpinBox_mod_size->setSingleStep(0.1);
         doubleSpinBox_mod_size->setValue(1);
 
-        gridLayout_6->addWidget(doubleSpinBox_mod_size, 2, 1, 1, 1);
+        gridLayout_6->addWidget(doubleSpinBox_mod_size, 3, 1, 1, 1);
 
         label_11 = new QLabel(tab);
         label_11->setObjectName(QString::fromUtf8("label_11"));
 
-        gridLayout_6->addWidget(label_11, 3, 0, 1, 1);
+        gridLayout_6->addWidget(label_11, 4, 0, 1, 1);
 
         label_9 = new QLabel(tab);
         label_9->setObjectName(QString::fromUtf8("label_9"));
+        sizePolicy5.setHeightForWidth(label_9->sizePolicy().hasHeightForWidth());
+        label_9->setSizePolicy(sizePolicy5);
 
-        gridLayout_6->addWidget(label_9, 1, 0, 1, 1);
+        gridLayout_6->addWidget(label_9, 2, 0, 1, 1);
 
         doubleSpinBox_sel_size = new QDoubleSpinBox(tab);
         doubleSpinBox_sel_size->setObjectName(QString::fromUtf8("doubleSpinBox_sel_size"));
@@ -532,66 +639,70 @@ public:
         doubleSpinBox_sel_size->setSingleStep(0.1);
         doubleSpinBox_sel_size->setValue(1);
 
-        gridLayout_6->addWidget(doubleSpinBox_sel_size, 3, 1, 1, 1);
+        gridLayout_6->addWidget(doubleSpinBox_sel_size, 4, 1, 1, 1);
 
         label_10 = new QLabel(tab);
         label_10->setObjectName(QString::fromUtf8("label_10"));
 
-        gridLayout_6->addWidget(label_10, 2, 0, 1, 1);
+        gridLayout_6->addWidget(label_10, 3, 0, 1, 1);
+
+        pushButton_test = new QPushButton(tab);
+        pushButton_test->setObjectName(QString::fromUtf8("pushButton_test"));
+
+        gridLayout_6->addWidget(pushButton_test, 0, 0, 1, 2);
+
+        label_18 = new QLabel(tab);
+        label_18->setObjectName(QString::fromUtf8("label_18"));
+
+        gridLayout_6->addWidget(label_18, 1, 0, 1, 1);
+
+        spinBox_cluster = new QSpinBox(tab);
+        spinBox_cluster->setObjectName(QString::fromUtf8("spinBox_cluster"));
+
+        gridLayout_6->addWidget(spinBox_cluster, 1, 1, 1, 1);
 
         tabWidget->addTab(tab, QString());
 
         gridLayout_16->addWidget(tabWidget, 1, 0, 1, 1);
 
-        gridLayout_7 = new QGridLayout();
-        gridLayout_7->setObjectName(QString::fromUtf8("gridLayout_7"));
-        gridLayout_7->setSizeConstraint(QLayout::SetMaximumSize);
-        pushButton_gardar = new QPushButton(gridLayoutWidget_4);
-        pushButton_gardar->setObjectName(QString::fromUtf8("pushButton_gardar"));
-        QSizePolicy sizePolicy3(QSizePolicy::MinimumExpanding, QSizePolicy::Fixed);
-        sizePolicy3.setHorizontalStretch(0);
-        sizePolicy3.setVerticalStretch(0);
-        sizePolicy3.setHeightForWidth(pushButton_gardar->sizePolicy().hasHeightForWidth());
-        pushButton_gardar->setSizePolicy(sizePolicy3);
 
-        gridLayout_7->addWidget(pushButton_gardar, 0, 1, 1, 1);
+        gridLayout_14->addLayout(gridLayout_16, 0, 0, 1, 1);
 
-        pushButton_random_2 = new QPushButton(gridLayoutWidget_4);
-        pushButton_random_2->setObjectName(QString::fromUtf8("pushButton_random_2"));
-        sizePolicy3.setHeightForWidth(pushButton_random_2->sizePolicy().hasHeightForWidth());
-        pushButton_random_2->setSizePolicy(sizePolicy3);
-
-        gridLayout_7->addWidget(pushButton_random_2, 0, 0, 1, 1);
-
-
-        gridLayout_16->addLayout(gridLayout_7, 0, 0, 1, 1);
-
-        gridLayoutWidget_5 = new QWidget(centralwidget);
-        gridLayoutWidget_5->setObjectName(QString::fromUtf8("gridLayoutWidget_5"));
-        gridLayoutWidget_5->setGeometry(QRect(360, 10, 601, 621));
-        gridLayout_17 = new QGridLayout(gridLayoutWidget_5);
+        gridLayout_17 = new QGridLayout();
         gridLayout_17->setObjectName(QString::fromUtf8("gridLayout_17"));
-        gridLayout_17->setSizeConstraint(QLayout::SetMinimumSize);
-        gridLayout_17->setContentsMargins(0, 0, 0, 0);
-        qvtkWidget = new QVTKWidget(gridLayoutWidget_5);
+        gridLayout_17->setSizeConstraint(QLayout::SetDefaultConstraint);
+        qvtkWidget = new QVTKWidget(centralwidget);
         qvtkWidget->setObjectName(QString::fromUtf8("qvtkWidget"));
-        QSizePolicy sizePolicy4(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-        sizePolicy4.setHorizontalStretch(0);
-        sizePolicy4.setVerticalStretch(0);
-        sizePolicy4.setHeightForWidth(qvtkWidget->sizePolicy().hasHeightForWidth());
-        qvtkWidget->setSizePolicy(sizePolicy4);
+        QSizePolicy sizePolicy6(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+        sizePolicy6.setHorizontalStretch(0);
+        sizePolicy6.setVerticalStretch(0);
+        sizePolicy6.setHeightForWidth(qvtkWidget->sizePolicy().hasHeightForWidth());
+        qvtkWidget->setSizePolicy(sizePolicy6);
         qvtkWidget->setSizeIncrement(QSize(1, 1));
         qvtkWidget->setAutoFillBackground(true);
 
         gridLayout_17->addWidget(qvtkWidget, 0, 0, 1, 1);
 
+
+        gridLayout_14->addLayout(gridLayout_17, 0, 1, 1, 1);
+
         PCLViewer->setCentralWidget(centralwidget);
+        menuBar = new QMenuBar(PCLViewer);
+        menuBar->setObjectName(QString::fromUtf8("menuBar"));
+        menuBar->setGeometry(QRect(0, 0, 966, 25));
+        menuSettings = new QMenu(menuBar);
+        menuSettings->setObjectName(QString::fromUtf8("menuSettings"));
+        PCLViewer->setMenuBar(menuBar);
+
+        menuBar->addAction(menuSettings->menuAction());
+        menuSettings->addAction(actionLoad);
+        menuSettings->addAction(actionSave);
 
         retranslateUi(PCLViewer);
         QObject::connect(comboBox_filtros, SIGNAL(currentIndexChanged(int)), stackedWidget_filtros, SLOT(setCurrentIndex(int)));
 
         tabWidget->setCurrentIndex(0);
-        stackedWidget_filtros->setCurrentIndex(0);
+        stackedWidget_filtros->setCurrentIndex(4);
         comboBox_filtros->setCurrentIndex(0);
 
 
@@ -601,13 +712,17 @@ public:
     void retranslateUi(QMainWindow *PCLViewer)
     {
         PCLViewer->setWindowTitle(QApplication::translate("PCLViewer", "PCLViewer", 0, QApplication::UnicodeUTF8));
+        actionLoad->setText(QApplication::translate("PCLViewer", "Load", 0, QApplication::UnicodeUTF8));
+        actionSave->setText(QApplication::translate("PCLViewer", "Save", 0, QApplication::UnicodeUTF8));
+        pushButton_gardar->setText(QApplication::translate("PCLViewer", "Save Cloud", 0, QApplication::UnicodeUTF8));
+        pushButton_load->setText(QApplication::translate("PCLViewer", "Load Cloud", 0, QApplication::UnicodeUTF8));
         label_2->setText(QApplication::translate("PCLViewer", "Size X", 0, QApplication::UnicodeUTF8));
         label_4->setText(QApplication::translate("PCLViewer", "Size Y", 0, QApplication::UnicodeUTF8));
         label_5->setText(QApplication::translate("PCLViewer", "Size Z", 0, QApplication::UnicodeUTF8));
-        label->setText(QApplication::translate("PCLViewer", "K numero neighbors", 0, QApplication::UnicodeUTF8));
-        label_3->setText(QApplication::translate("PCLViewer", "Desviaci\303\263n t\303\255pica", 0, QApplication::UnicodeUTF8));
-        label_8->setText(QApplication::translate("PCLViewer", "Radio", 0, QApplication::UnicodeUTF8));
-        label_7->setText(QApplication::translate("PCLViewer", "Numero K", 0, QApplication::UnicodeUTF8));
+        label->setText(QApplication::translate("PCLViewer", "K n neighbors:", 0, QApplication::UnicodeUTF8));
+        label_3->setText(QApplication::translate("PCLViewer", "Deviation:", 0, QApplication::UnicodeUTF8));
+        label_8->setText(QApplication::translate("PCLViewer", "Radius:", 0, QApplication::UnicodeUTF8));
+        label_7->setText(QApplication::translate("PCLViewer", "Param K:", 0, QApplication::UnicodeUTF8));
         label_6->setText(QApplication::translate("PCLViewer", "Search Radius", 0, QApplication::UnicodeUTF8));
         comboBox_pass->clear();
         comboBox_pass->insertItems(0, QStringList()
@@ -615,44 +730,50 @@ public:
          << QApplication::translate("PCLViewer", "Y filter", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("PCLViewer", "Z filter", 0, QApplication::UnicodeUTF8)
         );
-        label_12->setText(QApplication::translate("PCLViewer", "M\303\255nimo:", 0, QApplication::UnicodeUTF8));
-        label_13->setText(QApplication::translate("PCLViewer", "M\303\241ximo:", 0, QApplication::UnicodeUTF8));
+        label_12->setText(QApplication::translate("PCLViewer", "Min:", 0, QApplication::UnicodeUTF8));
+        label_13->setText(QApplication::translate("PCLViewer", "Max:", 0, QApplication::UnicodeUTF8));
         comboBox_filtros->clear();
         comboBox_filtros->insertItems(0, QStringList()
          << QApplication::translate("PCLViewer", "Voxel Grid", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("PCLViewer", "Filtro estad\303\255stico", 0, QApplication::UnicodeUTF8)
-         << QApplication::translate("PCLViewer", "Filtro radios", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("PCLViewer", "Statistical filter", 0, QApplication::UnicodeUTF8)
+         << QApplication::translate("PCLViewer", "Radius search filter", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("PCLViewer", "Resampling", 0, QApplication::UnicodeUTF8)
          << QApplication::translate("PCLViewer", "Pass trough", 0, QApplication::UnicodeUTF8)
         );
-        pushButton_aceptar_filtro->setText(QApplication::translate("PCLViewer", "Aceptar", 0, QApplication::UnicodeUTF8));
-        pushButton_deshacer_filtro->setText(QApplication::translate("PCLViewer", "Deshacer", 0, QApplication::UnicodeUTF8));
-        pushButton_filter->setText(QApplication::translate("PCLViewer", "Autofiltro", 0, QApplication::UnicodeUTF8));
-        pushButton->setText(QApplication::translate("PCLViewer", "Datos nube", 0, QApplication::UnicodeUTF8));
-        pushButton_funcion_1->setText(QApplication::translate("PCLViewer", "Aplicar", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tab_filtros), QApplication::translate("PCLViewer", "Filtros", 0, QApplication::UnicodeUTF8));
+        pushButton_aceptar_filtro->setText(QApplication::translate("PCLViewer", "Accept", 0, QApplication::UnicodeUTF8));
+        pushButton_deshacer_filtro->setText(QApplication::translate("PCLViewer", "Undo", 0, QApplication::UnicodeUTF8));
+        pushButton_filter->setText(QApplication::translate("PCLViewer", "Autofilter", 0, QApplication::UnicodeUTF8));
+        pushButton->setText(QApplication::translate("PCLViewer", "Cloud data", 0, QApplication::UnicodeUTF8));
+        pushButton_funcion_1->setText(QApplication::translate("PCLViewer", "Apply", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_filtros), QApplication::translate("PCLViewer", "Filter", 0, QApplication::UnicodeUTF8));
         label_15->setText(QApplication::translate("PCLViewer", "X:", 0, QApplication::UnicodeUTF8));
-        pushButton_2d_place->setText(QApplication::translate("PCLViewer", "Situa 2d", 0, QApplication::UnicodeUTF8));
+        pushButton_2d_place->setText(QApplication::translate("PCLViewer", "Place 2d", 0, QApplication::UnicodeUTF8));
         label_16->setText(QApplication::translate("PCLViewer", "Y:", 0, QApplication::UnicodeUTF8));
-        label_17->setText(QApplication::translate("PCLViewer", "Angulo:", 0, QApplication::UnicodeUTF8));
-        pushButton_aceptar_fitting->setText(QApplication::translate("PCLViewer", "Acepta", 0, QApplication::UnicodeUTF8));
+        label_17->setText(QApplication::translate("PCLViewer", "Angle:", 0, QApplication::UnicodeUTF8));
+        pushButton_aceptar_fitting->setText(QApplication::translate("PCLViewer", "Accept", 0, QApplication::UnicodeUTF8));
         pushButton_recorta_plano->setText(QApplication::translate("PCLViewer", "Recorta", 0, QApplication::UnicodeUTF8));
-        pushButton_distances->setText(QApplication::translate("PCLViewer", "Distancia", 0, QApplication::UnicodeUTF8));
-        pushButton_reorienta->setText(QApplication::translate("PCLViewer", "Reorienta", 0, QApplication::UnicodeUTF8));
-        pushButton_funcion_2->setText(QApplication::translate("PCLViewer", "Ajusta plano", 0, QApplication::UnicodeUTF8));
-        pushButton_deshacer_plano->setText(QApplication::translate("PCLViewer", "Deshacer", 0, QApplication::UnicodeUTF8));
-        checkBox_puntos_sup->setText(QApplication::translate("PCLViewer", "Superiores", 0, QApplication::UnicodeUTF8));
-        pushButton_centra->setText(QApplication::translate("PCLViewer", "Centra punto", 0, QApplication::UnicodeUTF8));
+        pushButton_distances->setText(QApplication::translate("PCLViewer", "Distance", 0, QApplication::UnicodeUTF8));
+        pushButton_reorienta->setText(QApplication::translate("PCLViewer", "Reorient", 0, QApplication::UnicodeUTF8));
+        pushButton_funcion_2->setText(QApplication::translate("PCLViewer", "Plane fit", 0, QApplication::UnicodeUTF8));
+        pushButton_deshacer_plano->setText(QApplication::translate("PCLViewer", "Undo", 0, QApplication::UnicodeUTF8));
+        checkBox_puntos_sup->setText(QApplication::translate("PCLViewer", "Upper", 0, QApplication::UnicodeUTF8));
+        pushButton_centra->setText(QApplication::translate("PCLViewer", "Center point", 0, QApplication::UnicodeUTF8));
         label_14->setText(QApplication::translate("PCLViewer", "Distance threshold:", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tab_fit), QApplication::translate("PCLViewer", "Fitting", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_fit), QApplication::translate("PCLViewer", "Fit", 0, QApplication::UnicodeUTF8));
         pushButton_proj_points->setText(QApplication::translate("PCLViewer", "Project points", 0, QApplication::UnicodeUTF8));
         tabWidget->setTabText(tabWidget->indexOf(tab_projections), QApplication::translate("PCLViewer", "Pojection", 0, QApplication::UnicodeUTF8));
+        pushButton_load_model->setText(QApplication::translate("PCLViewer", "Load Model", 0, QApplication::UnicodeUTF8));
+        pushButton_delete_model->setText(QApplication::translate("PCLViewer", "Delete", 0, QApplication::UnicodeUTF8));
+        pushButton_fine_alignment->setText(QApplication::translate("PCLViewer", "Fine Alignment", 0, QApplication::UnicodeUTF8));
+        pushButton_init_align->setText(QApplication::translate("PCLViewer", "Initial Alignment", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab_align), QApplication::translate("PCLViewer", "Align", 0, QApplication::UnicodeUTF8));
         label_11->setText(QApplication::translate("PCLViewer", "Sel point cloud", 0, QApplication::UnicodeUTF8));
         label_9->setText(QApplication::translate("PCLViewer", "Point cloud size", 0, QApplication::UnicodeUTF8));
         label_10->setText(QApplication::translate("PCLViewer", "Mod point cloud", 0, QApplication::UnicodeUTF8));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("PCLViewer", "Otros", 0, QApplication::UnicodeUTF8));
-        pushButton_gardar->setText(QApplication::translate("PCLViewer", "Garda nube", 0, QApplication::UnicodeUTF8));
-        pushButton_random_2->setText(QApplication::translate("PCLViewer", "Carga nube", 0, QApplication::UnicodeUTF8));
+        pushButton_test->setText(QApplication::translate("PCLViewer", "Function Test", 0, QApplication::UnicodeUTF8));
+        label_18->setText(QApplication::translate("PCLViewer", "Cluster:", 0, QApplication::UnicodeUTF8));
+        tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("PCLViewer", "Test", 0, QApplication::UnicodeUTF8));
+        menuSettings->setTitle(QApplication::translate("PCLViewer", "Settings", 0, QApplication::UnicodeUTF8));
     } // retranslateUi
 
 };

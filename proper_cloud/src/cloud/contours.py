@@ -1,11 +1,51 @@
+import os
 import cv2
 import numpy as np
-
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 
 from matplotlib.widgets import SpanSelector
 from matplotlib.patches import Rectangle
+
+
+def pcd_to_xyz(filename):
+    points = np.loadtxt(filename, skiprows=11)
+    nfilename = '%s.xyz' % filename[:-4]
+    with open(nfilename, 'w') as f:
+        np.savetxt(f, points[:, :3], fmt='%.6f')
+
+
+def xyz_to_pcd(filename):
+    points3d = np.loadtxt(filename)
+    nfilename = '%s.pcd' % filename[:-4]
+    with open(nfilename, 'w') as f:
+        f.write('# .PCD v.7 - Point Cloud Data file format\n')
+        f.write('VERSION .7\n')
+        f.write('FIELDS x y z\n')
+        f.write('SIZE 4 4 4\n')
+        f.write('TYPE F F F\n')
+        f.write('COUNT 1 1 1\n')
+        f.write('WIDTH %i\n' % len(points3d))
+        f.write('HEIGHT 1\n')
+        f.write('VIEWPOINT 0 0 0 1 0 0 0\n')
+        f.write('POINTS %i\n' % len(points3d))
+        f.write('DATA ascii\n')
+        np.savetxt(f, points3d, fmt='%.6f')
+
+
+def read_cloud(filename):
+    cloud = np.loadtxt(filename)
+    return cloud
+
+
+def zmap_from_cloud(cloud):
+    cloud = cloud[np.all(cloud > 0, axis=1)]
+    points = (np.round(cloud, 4) * 10000).astype(np.int32)
+    x_max = np.max(points[:, 0])
+    y_max = np.max(points[:, 1])
+    zmap = np.zeros((x_max + 1, y_max + 1))
+    zmap[points[:, 0], points[:, 1]] = points[:, 2]
+    return zmap
 
 
 def read_zmap(filename):
@@ -15,10 +55,22 @@ def read_zmap(filename):
     return img
 
 
+def save_zmap(filename, zmap):
+    zmap = zmap.astype(np.uint16)
+    cv2.imwrite(filename, zmap)
+
+
+def show_zmap(zmap):
+    plt.figure()
+    plt.imshow(zmap, cmap='jet')
+    plt.colorbar()
+    plt.show()
+
+
 def fill_zmap(zmap, size=5):
     kernel = np.ones((size, size), np.uint8)
     closing = cv2.morphologyEx(zmap, cv2.MORPH_CLOSE, kernel)
-    return closing
+    return closing.astype(np.uint16)
 
 
 def erode_zmap(zmap, size=10, iterations=1):
@@ -64,17 +116,6 @@ def hull_contour(contours, area=1000):
     return contour
 
 
-def slice_of_contours(zmap, contours, scale=10):
-    slice = []
-    for contour in contours:
-        points = contour.reshape((-1, 2))
-        points = [[y, x, zmap[y, x]] for x, y in points]
-        points.append(points[0])
-        points = np.array(points, np.float)
-        slice.append((1. / scale) * points)
-    return slice
-
-
 class Segmentation:
     def __init__(self):
         self.contours = []
@@ -112,8 +153,36 @@ class Segmentation:
         self.span = SpanSelector(
             self.ax2, self.on_select, 'horizontal', useblit=True,
             rectprops=dict(alpha=0.5, facecolor='red'))
-        plt.ioff()
         plt.show()
+
+
+def slice_of_contours(zmap, contours, scale=10):
+    slice = []
+    for contour in contours:
+        points = contour.reshape((-1, 2))
+        points = [[y, x, zmap[y, x]] for x, y in points]
+        points.append(points[0])
+        points = np.array(points, np.float)
+        slice.append((1. / scale) * points)
+    return slice
+
+
+def lines_of_surface(zmap, lines, scale=10, step=5):
+    zlines = []
+    for line in lines:
+        zline = []
+        line = np.round(line * scale)
+        dist = line[1, 1] - line[0, 1]
+        steps = np.abs(np.round(dist / (step * scale))) + 1
+        ypoints = np.linspace(line[0, 1], line[1, 1], steps)
+        for ypoint in ypoints:
+            x = int(line[0, 0])
+            y = int(ypoint)
+            z = zmap[x, y]
+            zline.append(np.array([x, y, z]))
+        zline = (1. / scale) * np.array(zline)
+        zlines.append(zline)
+    return np.array(zlines)
 
 
 def show_path_from_slice(slice):
@@ -146,21 +215,41 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-d', '--data', type=str,
-                        default='../../data/pro1.tif',
-                        help='path to input zmap image file')
+                        default='../../data/cylinder1.xyz',
+                        help='path to input xyz cloud file')
     parser.add_argument('-t', '--threshold', type=int,
                         default=100, help='threshold value for contours')
     args = parser.parse_args()
     filename = args.data
     threshold = args.threshold
 
-    zmap = read_zmap(filename)
+    name, extension = os.path.splitext(filename)
+    if extension == '.pcd':
+        pcd_to_xyz(filename)
+    if extension == '.xyz':
+        xyz_to_pcd(filename)
+
+    cloud = read_cloud(filename)
+    zmap = zmap_from_cloud(cloud)
     zmap = fill_zmap(zmap, size=7)
 
-    contours = contours_zmap(zmap, thr=threshold)
-    #contours = approx_contours(contours, epsilon=3)
-    img = draw_contours(zmap, contours, color=(255, 0, 0), size=2)
+    filename = '%s.png' % name
+    save_zmap(filename, zmap)
+    show_zmap(zmap)
 
+    #zmap = read_zmap(filename)
+    zmap = fill_zmap(zmap, size=7)
+
+    segmentation = Segmentation()
+    segmentation.plot_zmap(zmap)
+    #contours = approx_contours(segmentation.contours, epsilon=2)
+    #contours = [hull_contour(segmentation.contours, area=1000)]
+    slice = slice_of_contours(zmap, segmentation.contours)
+    print 'Slice', slice
+    #show_path_from_slice(slice)
+
+    contours = approx_contours(segmentation.contours, epsilon=3)
+    img = draw_contours(zmap, contours, color=(255, 0, 0), size=2)
     #contour = hull_contour(contours, area=1500)
     #img = draw_contours(zmap, [contour], color=(255, 0, 0), size=2)
 
@@ -171,9 +260,25 @@ if __name__ == '__main__':
     plt.imshow(img)
     plt.show()
 
-    segmentation = Segmentation()
-    segmentation.plot_zmap(zmap)
-    #contours = approx_contours(segmentation.contours, epsilon=2)
-    #contours = [hull_contour(segmentation.contours, area=1000)]
-    slice = slice_of_contours(zmap, segmentation.contours)
-    show_path_from_slice(slice)
+    from planning.planning import Planning
+
+    planning = Planning()
+    path = planning.get_path_from_slices([slice], track_distance=1.3, focus=0)
+    lines = planning.get_grated(slice, 1.3)
+    surf_lines = lines_of_surface(zmap, lines)
+    print surf_lines
+    # TODO: Merge function for translate lines (polyline) to path
+    #path = planning.get_path_from_fill_lines(surf_lines)
+    path = []
+    for line in surf_lines:
+        for point in line[:-1]:
+            path.append([point, planning.orientation, True])
+        path.append([line[-1], planning.orientation, False])
+    print path
+
+    from planning.mlabplot import MPlot3D
+
+    mplot3d = MPlot3D()
+    mplot3d.draw_slice(slice)
+    mplot3d.draw_path(path)
+    mplot3d.show()

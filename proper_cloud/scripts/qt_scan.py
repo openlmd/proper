@@ -19,7 +19,6 @@ from mashes_measures.msg import MsgStatus
 
 from planning.planning import Planning
 from cloud.contours import Segmentation
-import cloud.pcd_tool as pcd_tool
 import cloud.contours as contours
 
 
@@ -139,19 +138,16 @@ class QtScan(QtGui.QWidget):
             self, 'Load file', os.path.join(dirname, 'data', 'test.xyz'),
             'Point Cloud Files (*.xyz)')[0]
         name, extension = os.path.splitext(filename)
-        cloud = pcd_tool.read_cloud(filename)
-        self.zmap = pcd_tool.zmap_from_cloud(cloud)
-        self.zmap = pcd_tool.fill_zmap(self.zmap, size=7)
+        cloud = contours.read_cloud(filename)
+        self.zmap = contours.zmap_from_cloud(cloud)
+        self.zmap = contours.fill_zmap(self.zmap, size=7)
         self.zmap = contours.erode_zmap(self.zmap, size=5, iterations=5)
-        pcd_tool.save_zmap('%s.tif' % name, self.zmap)
+        contours.save_zmap('%s.tif' % name, self.zmap)
         self.segmentation.plot_zmap(self.zmap)
 
     def btnPathClicked(self):
         slice = contours.slice_of_contours(self.zmap, self.segmentation.contours)
-        print 'Slice', slice
         path = self.planning.get_path_from_slices([slice], track_distance=1.3, focus=0)
-        print 'Path', path
-        # TODO: Send slice to qt_path.
         #contours.show_path_from_slice(slice)
         self.path = path
         #self.path = [[pos, ori] for pos, ori, bol in path]

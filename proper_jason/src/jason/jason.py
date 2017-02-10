@@ -94,6 +94,19 @@ class Jason():
             cmd = '{"move": [[%.1f, %.1f, %.1f], [%.4f, %.4f, %.4f, %.4f]]}' %(x, y, z, qw, qx, qy, qz)
         return cmd
 
+    def get_reset_commands(self):
+        commands = ['{"reset_laser":1}',
+                    '{"reset_powder":1}',
+                    '{"reset_wire":1}']
+        return commands
+
+    def get_cancel_commands(self):
+        commands = ['{"reset_laser":1}',
+                    '{"reset_powder":1}',
+                    '{"reset_wire":1}',
+                    '{"cancel":1}']
+        return commands
+
 
 if __name__ == '__main__':
     routine = Jason()
