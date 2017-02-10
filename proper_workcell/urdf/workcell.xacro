@@ -12,7 +12,7 @@
   </xacro:property>
 
   <xacro:property name="camera_frame">
-    <origin xyz="0.1032 0.2245 0.3464" rpy="-1.091010543013552 0.3125730462781303 -2.197140695867136" />
+    <origin xyz="0.1124  0.1471  0.36" rpy="-1.0235306080537976 0.2071367767149199 -1.974280886208384" />
   </xacro:property>
 
   <!-- Robot cell -->
