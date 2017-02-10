@@ -511,50 +511,50 @@ void PCLViewer::on_pushButton_deshacer_plano_clicked()
 void PCLViewer::on_pushButton_distances_clicked()
 {
     //TODO: implementar esta función na clase PointCloudProcess
-//    try
-//    {
-//        std::string str;
-//        std::stringstream ss;
-//        float d, d_avg, d_max, d_min;
-//        if (cb_args.distance_points->points.size() > 0){
-//            for (int i=0; i < cb_args.distance_points->points.size(); i++)
-//            {
-//                d = fabs(ground_coeffs(0)*cb_args.distance_points->points[i].x + ground_coeffs(1)*cb_args.distance_points->points[i].y + ground_coeffs(2)*cb_args.distance_points->points[i].z + ground_coeffs(3));
-//                d = d / sqrt(ground_coeffs(0)*ground_coeffs(0) + ground_coeffs(1)*ground_coeffs(1) + ground_coeffs(2)*ground_coeffs(2));
-//                ss << "d" << i << ":" << std::endl << d << std::endl;
-//                if (i == 0)
-//                {
-//                    d_avg = d;
-//                    d_max = d;
-//                    d_min = d;
-//                }
-//                else
-//                {
-//                    if (d < d_min) d_min = d;
-//                    if (d > d_max) d_max = d;
-//                    d_avg += d;
-//                }
-//            }
-//            d_avg = d_avg / cb_args.distance_points->points.size();
-//            ss << "Distancia media:" << std::endl << d_avg << std::endl;
-//            ss << "Distancia max:" << std::endl << d_max << std::endl;
-//            ss << "Distancia min:" << std::endl << d_min << std::endl;
-//        }
-//        else{
-//            ss << "Non se seleccionaron puntos" << std::endl;
-//        }
-//        str = ss.str();
-//        QString qstr = QString::fromStdString(str);
-//        ui->textBrowser_datos_2->append(qstr);
-//    }
-//    catch(char const* error)
-//    {
-//        std::cout << "Plane cutting error: " << error << std::endl;
-//    }
-//    catch(...)
-//    {
-//        std::cout << "Unknown plane cutting exception." << std::endl;
-//    }
+    try
+    {
+        std::string str;
+        std::stringstream ss;
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+        pointProcess.getSelPoints(cloud);
+        float d, d_avg, d_max, d_min;
+        if (cloud->points.size() > 0){
+            for (int i=0; i < cloud->points.size(); i++)
+            {
+               ss << "point " << i << ": " << std::endl << cloud->points[i] << std::endl;
+               if (i == 0)
+               {
+                   d_avg = cloud->points[i].z;
+                   d_max = cloud->points[i].z;
+                   d_min = cloud->points[i].z;
+               }
+               else
+               {
+                   if (cloud->points[i].z < d_min) d_min = cloud->points[i].z;
+                   if (cloud->points[i].z > d_max) d_max = cloud->points[i].z;
+                   d_avg += cloud->points[i].z;
+               }
+           }
+           d_avg = d_avg / cloud->points.size();
+           ss << "Z media:" << std::endl << d_avg << std::endl;
+           ss << "Z max:" << std::endl << d_max << std::endl;
+           ss << "Z min:" << std::endl << d_min << std::endl;
+       }
+       else{
+           ss << "Non se seleccionaron puntos" << std::endl;
+       }
+        str = ss.str();
+        QString qstr = QString::fromStdString(str);
+        ui->textBrowser_datos_2->append(qstr);
+    }
+    catch(char const* error)
+    {
+        std::cout << "Distances error: " << error << std::endl;
+    }
+    catch(...)
+    {
+        std::cout << "Unknown distances exception." << std::endl;
+    }
 }
 
 //Reorienta nube con respecto ao plano
