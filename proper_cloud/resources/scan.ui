@@ -14,7 +14,7 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="8" column="0">
+   <item row="8" column="1">
     <spacer name="verticalSpacer">
      <property name="orientation">
       <enum>Qt::Vertical</enum>
@@ -27,21 +27,21 @@
      </property>
     </spacer>
    </item>
-   <item row="3" column="0">
+   <item row="3" column="1">
     <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
+   <item row="0" column="1">
     <widget class="Line" name="line">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="1" column="0">
+   <item row="1" column="1">
     <widget class="QGroupBox" name="grpPlane">
      <property name="font">
       <font>
@@ -347,14 +347,14 @@ border: 1px solid gray;</string>
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="2" column="1">
     <widget class="QPushButton" name="btnPlane">
      <property name="text">
       <string>Load Plane</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
+   <item row="4" column="1">
     <widget class="QPushButton" name="btnRecord">
      <property name="minimumSize">
       <size>
@@ -384,31 +384,51 @@ border: 1px solid gray;</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="5" column="1">
     <widget class="Line" name="line_3">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
-   <item row="9" column="0">
+   <item row="11" column="1">
     <widget class="QPushButton" name="btnScan">
      <property name="text">
       <string>Accept Scan</string>
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
+   <item row="6" column="1">
     <widget class="QPushButton" name="btnZmap">
      <property name="text">
       <string>Create Zmap</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
+   <item row="7" column="1">
     <widget class="QPushButton" name="btnPath">
      <property name="text">
       <string>Update Path</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QLCDNumber" name="lcdZ">
+     <property name="smallDecimalPoint">
+      <bool>false</bool>
+     </property>
+     <property name="segmentStyle">
+      <enum>QLCDNumber::Flat</enum>
+     </property>
+     <property name="value" stdset="0">
+      <double>0.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QLabel" name="lblZ">
+     <property name="text">
+      <string>Z height:</string>
      </property>
     </widget>
    </item>

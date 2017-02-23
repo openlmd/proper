@@ -20,6 +20,7 @@ from mashes_measures.msg import MsgStatus
 from planning.planning import Planning
 from cloud.contours import Segmentation
 import cloud.contours as contours
+import cloud.distance as distance
 
 
 dirname = rospkg.RosPack().get_path('proper_cloud')
@@ -66,13 +67,29 @@ class QtScan(QtGui.QWidget):
         self.size = np.array([100, 200, 0])
         self.segmentation = Segmentation()
 
+        self.zmax = 0.0
+        self.new_h = False
+
+        rospy.Timer(rospy.Duration(3), self.timer_callback)
+
+    def timer_callback(self, event):
+        if self.new_h:
+            self.new_h = False
+        else:
+            self.lcdZ.setEnabled(False)
+
     def cbPointCloud(self, msg_cloud):
+        points = pc2.read_points(msg_cloud, skip_nans=False)
+        points3d = np.float32([point for point in points])
         if self.recording:
-            points = pc2.read_points(msg_cloud, skip_nans=False)
-            points3d = np.float32([point for point in points])
             print self.filename
             with open(self.filename, 'a') as f:
                 np.savetxt(f, points3d, fmt='%.6f')
+        else:
+            self.zheight = distance.z_heigh_ransac(points3d)
+            self.lcdZ.display(float(self.zheight * 1000.0))
+            self.new_h = True
+            self.lcdZ.setEnabled(True)
 
     def cbStatus(self, msg_status):
         status = msg_status.running
