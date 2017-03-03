@@ -34,7 +34,7 @@ class QtScan(QtGui.QWidget):
         loadUi(os.path.join(dirname, 'resources', 'scan.ui'), self)
 
         rospy.Subscriber(
-            '/ueye/scan', PointCloud2, self.cbPointCloud, queue_size=5)
+            '/ueye/scan', PointCloud2, self.cbPointCloud, queue_size=1)
         # rospy.Subscriber(
         #     '/supervisor/status', MsgStatus, self.cbStatus, queue_size=1)
 
