@@ -33,9 +33,18 @@
 #include <pcl/common/transforms.h>
 #include <pcl/segmentation/sac_segmentation.h>
 #include <pcl/filters/extract_indices.h>
+#include <pcl/features/fpfh_omp.h>
+#include <pcl/features/normal_3d_omp.h>
+#include <pcl/registration/icp.h>
+#include <pcl/registration/sample_consensus_prerejective.h>
+#include <pcl/common/time.h>
 
 // Visualization Toolkit (VTK)
 #include <vtkRenderWindow.h>
+
+//Boost Library
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 //LMD projects functions
 #include "include_files/LmdFuncs.h"
@@ -58,8 +67,8 @@ struct callback_args_class{
 void  pp_callback_plane (const pcl::visualization::PointPickingEvent& event, void* args);
 void  pp_callback_points (const pcl::visualization::PointPickingEvent& event, void* args);
 
-typedef pcl::PointXYZRGBA PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
+typedef pcl::PointXYZRGBA PointTA;
+typedef pcl::PointCloud<PointTA> PointCloudTA;
 
 namespace Ui
 {
@@ -76,7 +85,7 @@ public:
 
 protected:
   boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer;
-  PointCloudT::Ptr cloud;
+  PointCloudTA::Ptr cloud;
 
   unsigned int red;
   unsigned int green;
@@ -91,7 +100,7 @@ protected:
   struct callback_args_class cb_args_class;
 
 private slots:
-  void on_pushButton_random_2_clicked();
+  void on_pushButton_load_clicked();
 
   void on_pushButton_gardar_clicked();
 
@@ -113,6 +122,8 @@ private slots:
 
   void on_doubleSpinBox_sel_size_valueChanged(double arg1);
 
+  void on_spinBox_cluster_valueChanged(int argv);
+
   void on_pushButton_aceptar_filtro_clicked();
 
   void on_pushButton_reorienta_clicked();
@@ -129,8 +140,26 @@ private slots:
 
   void on_pushButton_filter_clicked();
 
+  void on_pushButton_load_model_clicked();
+
+  void on_pushButton_delete_model_clicked();
+
+  void on_pushButton_init_align_clicked();
+
+  void on_pushButton_fine_alignment_clicked();
+
+  void on_pushButton_test_clicked();
+
+  void on_actionLoad_triggered();
+
+  void on_actionSave_triggered();
+
 private:
   Ui::PCLViewer *ui;
+
+  void settings_from_gui();
+
+  void settings_to_gui();
 
 };
 

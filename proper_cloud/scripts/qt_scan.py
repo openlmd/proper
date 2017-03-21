@@ -7,6 +7,7 @@ import numpy as np
 
 import sensor_msgs.point_cloud2 as pc2
 from sensor_msgs.msg import PointCloud2
+import std_msgs
 
 from visualization_msgs.msg import MarkerArray
 from markers import ScanMarkers
@@ -19,8 +20,8 @@ from mashes_measures.msg import MsgStatus
 
 from planning.planning import Planning
 from cloud.contours import Segmentation
-import cloud.pcd_tool as pcd_tool
 import cloud.contours as contours
+import cloud.distance as distance
 
 
 dirname = rospkg.RosPack().get_path('proper_cloud')
@@ -34,9 +35,11 @@ class QtScan(QtGui.QWidget):
         loadUi(os.path.join(dirname, 'resources', 'scan.ui'), self)
 
         rospy.Subscriber(
-            '/ueye/scan', PointCloud2, self.cbPointCloud, queue_size=5)
+            '/ueye/scan', PointCloud2, self.cbPointCloud, queue_size=1)
         # rospy.Subscriber(
         #     '/supervisor/status', MsgStatus, self.cbStatus, queue_size=1)
+        rospy.Subscriber(
+            '/ueye/zheight', std_msgs.msg.Float32, self.cbHeight, queue_size=1)
 
         self.pub_marker_array = rospy.Publisher(
             'visualization_marker_array', MarkerArray, queue_size=10)
@@ -67,13 +70,28 @@ class QtScan(QtGui.QWidget):
         self.size = np.array([100, 200, 0])
         self.segmentation = Segmentation()
 
+        self.zmax = 0.0
+        self.new_h = False
+
+        rospy.Timer(rospy.Duration(5), self.timer_callback)
+
+    def timer_callback(self, event):
+        if self.new_h:
+            self.new_h = False
+        else:
+            self.lcdZ.setEnabled(False)
+
+    def cbHeight(self, msg_float):
+        self.lcdZ.display(float(msg_float.data * 1000.0))
+        self.lcdZ.setEnabled(True)
+
     def cbPointCloud(self, msg_cloud):
+        points = pc2.read_points(msg_cloud, skip_nans=False)
+        self.points3d = np.float32([point for point in points])
         if self.recording:
-            points = pc2.read_points(msg_cloud, skip_nans=False)
-            points3d = np.float32([point for point in points])
             print self.filename
             with open(self.filename, 'a') as f:
-                np.savetxt(f, points3d, fmt='%.6f')
+                np.savetxt(f, self.points3d, fmt='%.6f')
 
     def cbStatus(self, msg_status):
         status = msg_status.running
@@ -131,32 +149,35 @@ class QtScan(QtGui.QWidget):
                 self.running = True
                 self.recording = True
                 self.btnRecord.setText('Stop recording...')
-            except:
-                pass
+            except IOError as error:
+                print error
 
     def btnZmapClicked(self):
         filename = QtGui.QFileDialog.getOpenFileName(
             self, 'Load file', os.path.join(dirname, 'data', 'test.xyz'),
             'Point Cloud Files (*.xyz)')[0]
         name, extension = os.path.splitext(filename)
-        cloud = pcd_tool.read_cloud(filename)
-        self.zmap = pcd_tool.zmap_from_cloud(cloud)
-        self.zmap = pcd_tool.fill_zmap(self.zmap, size=7)
-        self.zmap = contours.erode_zmap(self.zmap, size=5, iterations=5)
-        pcd_tool.save_zmap('%s.tif' % name, self.zmap)
-        self.segmentation.plot_zmap(self.zmap)
+        if os.path.isfile(filename):
+            cloud = contours.read_cloud(filename)
+            self.zmap = contours.zmap_from_cloud(cloud)
+            self.zmap = contours.fill_zmap(self.zmap, size=7)
+            self.zmap = contours.erode_zmap(self.zmap, size=5, iterations=5)
+            contours.save_zmap('%s.tif' % name, self.zmap)
+            self.segmentation.plot_zmap(self.zmap)
+        else:
+            print 'Create Zmap: Incorrect filename'
 
     def btnPathClicked(self):
-        slice = contours.slice_of_contours(self.zmap, self.segmentation.contours)
-        print 'Slice', slice
-        path = self.planning.get_path_from_slices([slice], track_distance=1.3, focus=0)
-        print 'Path', path
-        # TODO: Send slice to qt_path.
-        #contours.show_path_from_slice(slice)
-        self.path = path
-        #self.path = [[pos, ori] for pos, ori, bol in path]
-        self.scan_markers.set_path(self.path)
-        self.pub_marker_array.publish(self.scan_markers.marker_array)
+        try:
+            slice = contours.slice_of_contours(self.zmap, self.segmentation.contours)
+            path = self.planning.get_path_from_slices([slice], track_distance=1.3, focus=0)
+            #contours.show_path_from_slice(slice)
+            self.path = path
+            #self.path = [[pos, ori] for pos, ori, bol in path]
+            self.scan_markers.set_path(self.path)
+            self.pub_marker_array.publish(self.scan_markers.marker_array)
+        except AttributeError as error:
+            print error
 
     def btnScanClicked(self):
         self.accepted.emit(self.path)

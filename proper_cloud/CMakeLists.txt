@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   pcl_ros
   pcl_conversions
   sensor_msgs
+  std_msgs
 )
 
 find_package(octomap REQUIRED)
@@ -28,6 +29,9 @@ catkin_python_setup()
 
 add_executable(nd_talker src/nd_talker.cpp)
 target_link_libraries(nd_talker ${catkin_LIBRARIES})
+
+add_executable(nd_height src/nd_height.cpp)
+target_link_libraries(nd_height ${catkin_LIBRARIES})
 
 add_executable(nd_listener src/nd_listener.cpp)
 target_link_libraries(nd_listener ${catkin_LIBRARIES})

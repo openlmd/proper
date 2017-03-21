@@ -38,7 +38,7 @@ PCLViewer::PCLViewer (QWidget *parent) :
   ui->setupUi (this);
   this->setWindowTitle ("PCL viewer");
   // Setup the cloud pointer
-  cloud.reset (new PointCloudT);
+  cloud.reset (new PointCloudTA);
   // The number of points in the cloud
   cloud->points.resize (200);
 
@@ -79,15 +79,23 @@ PCLViewer::~PCLViewer ()
   delete ui;
 }
 
+void settings_from_gui() {
+  // TODO: Load parameters from gui and save it to file.
+}
+
+void settings_to_gui() {
+  // TODO: Load parameters from settings member a show it.
+}
+
 //Cargar PCD
-void PCLViewer::on_pushButton_random_2_clicked()
+void PCLViewer::on_pushButton_load_clicked()
 {
     try
     {
         std::vector<pcl::visualization::Camera> cam;
         std::string nome_archivo;
         QString fileName = QFileDialog::getOpenFileName(this, tr("Abrir nube de puntos"), "",
-                                                        tr("Point cloud files (*.pcd);;Point Cloud (*.pcd *.ply)"));
+                            tr("Point cloud files (*.pcd);;Point Cloud (*.pcd *.ply)"));
         nome_archivo = fileName.toUtf8().constData();
         pointProcess.LoadPointFile(nome_archivo);
 
@@ -96,11 +104,6 @@ void PCLViewer::on_pushButton_random_2_clicked()
         viewer->removePointCloud("cloud_mod");
         viewer->removeCoordinateSystem();
         viewer->removeAllShapes();
-        // Set up the QVTK window
-        //viewer.reset (new pcl::visualization::PCLVisualizer ("viewer", false));
-        //ui->qvtkWidget->SetRenderWindow (viewer->getRenderWindow ());
-        //viewer->setupInteractor (ui->qvtkWidget->GetInteractor (), ui->qvtkWidget->GetRenderWindow ());
-        //ui->qvtkWidget->update ();
 
         viewer->resetCamera ();
         ui->qvtkWidget->update ();
@@ -114,7 +117,6 @@ void PCLViewer::on_pushButton_random_2_clicked()
         viewer->getCameras(cam);
         cam[0].pos[0] = (max_pt.x + min_pt.x) / 2;
         cam[0].pos[1] = (max_pt.y + min_pt.y) / 2;
-        //cam[0].pos[2] = (max_pt.z + min_pt.z) / 2;
         cam[0].focal[0] = (max_pt.x + min_pt.x) / 2;
         cam[0].focal[1] = (max_pt.y + min_pt.y) / 2;
         cam[0].focal[2] = max_pt.z;
@@ -123,8 +125,8 @@ void PCLViewer::on_pushButton_random_2_clicked()
         viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, ui->doubleSpinBox_cloud_size->value(), "cloud");
         ui->qvtkWidget->update ();
         std::cout << "Camara:" << std::endl << " - pos: (" << cam[0].pos[0] << ", "    << cam[0].pos[1] << ", "    << cam[0].pos[2] << ")" << endl
-                                                                  << " - view: ("    << cam[0].view[0] << ", "   << cam[0].view[1] << ", "   << cam[0].view[2] << ")"    << endl
-                                                                  << " - focal: ("   << cam[0].focal[0] << ", "  << cam[0].focal[1] << ", "  << cam[0].focal[2] << ")"   << endl;
+                  << " - view: ("    << cam[0].view[0] << ", "   << cam[0].view[1] << ", "   << cam[0].view[2] << ")"    << endl
+                  << " - focal: ("   << cam[0].focal[0] << ", "  << cam[0].focal[1] << ", "  << cam[0].focal[2] << ")"   << endl;
     }
     catch(char const* error)
     {
@@ -143,7 +145,7 @@ void PCLViewer::on_pushButton_gardar_clicked()
     {
     std::string nome_archivo;
     QString fileName = QFileDialog::getSaveFileName(this,tr("Save file"),"",
-                                                    tr("Point Cloud (*.pcd);;Point Cloud (*.pcd *.ply)"));
+                        tr("Point Cloud (*.pcd);;Point Cloud (*.pcd *.ply)"));
     nome_archivo = fileName.toUtf8().constData();
     pointProcess.SavePointFile(nome_archivo);
     }
@@ -165,18 +167,14 @@ void PCLViewer::on_pushButton_centra_clicked()
         Eigen::Affine3f sel_frame;
         Eigen::VectorXf plane;
         pointProcess.getPlaneCoeffs(plane);
-        //viewer->removeCoordinateSystem();
         pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
         pointProcess.getSelPoints(cloud);
         std::vector<pcl::visualization::Camera> cam;
         viewer->getCameras(cam);
         float fZ;
         cam[0].pos[0] = cloud->points.back().x;
-        //cam[0].pos[0] = current_point.x;
         cam[0].pos[1] = cloud->points.back().y;
-        //cam[0].pos[0] = current_point.y;
         fZ = cloud->points.back().z;
-        //fZ = current_point.z;
         cam[0].focal[0] = cam[0].pos[0];
         cam[0].focal[1] = cam[0].pos[1];
         cam[0].focal[2] = fZ;
@@ -385,6 +383,7 @@ void PCLViewer::on_doubleSpinBox_cloud_size_valueChanged(double arg1)
 void PCLViewer::on_doubleSpinBox_mod_size_valueChanged(double arg1)
 {
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, ui->doubleSpinBox_mod_size->value(), "cloud_mod");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, ui->doubleSpinBox_mod_size->value(), "source_cloud");
     ui->qvtkWidget->update ();
 }
 
@@ -393,6 +392,32 @@ void PCLViewer::on_doubleSpinBox_sel_size_valueChanged(double arg1)
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, ui->doubleSpinBox_sel_size->value(), "distance_clicked_points");
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, ui->doubleSpinBox_sel_size->value(), "clicked_points");
     ui->qvtkWidget->update ();
+}
+
+void PCLViewer::on_spinBox_cluster_valueChanged(int argv)
+{
+  try {
+    pcl::PointCloud<pcl::PointXYZ>::Ptr seg_cloud;
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+    seg_cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    pointProcess.Extract(argv);
+    viewer->removePointCloud ("cloud");
+    pointProcess.getModPointCloud(seg_cloud);
+    cloud.reset(new pcl::PointCloud<pcl::PointXYZ>);
+    pointProcess.getPointCloud(cloud);
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> red_handler (cloud, 255, 0, 0);
+    viewer->removePointCloud ("cloud_mod");
+    viewer->addPointCloud (cloud, "cloud");
+    viewer->addPointCloud(seg_cloud, red_handler, "cloud_mod");
+    }
+    catch(char const* error)
+    {
+        std::cout << "Region selection error: " << error << std::endl;
+    }
+    catch(...)
+    {
+        std::cout << "Unknown region selection exception." << std::endl;
+    }
 }
 
 //Axusta plano
@@ -424,12 +449,10 @@ void PCLViewer::on_pushButton_funcion_2_clicked()
     viewer->addPointCloud(cloud, red_handler, "cloud_mod");
     viewer->removeShape("Plano seleccionado");
     viewer->addPlane(*coefficients_plano_manual, min_pt.x, min_pt.y, min_pt.z, "Plano seleccionado");
-    //cb_args.plane = false;
 
     pointProcess.TransformatioMatrix(ground_coeffs);
     pointProcess.getTransformationMatrix(t_matrix);
 
-    //viewer->removeCoordinateSystem("plane_frame");
     ss << "Affine3f: " << std::endl << t_matrix.matrix() << std::endl;
     viewer->addCoordinateSystem(0.01 ,t_matrix);//"plane_frame"
     pointProcess.SaveMatrix();
@@ -488,56 +511,55 @@ void PCLViewer::on_pushButton_deshacer_plano_clicked()
 void PCLViewer::on_pushButton_distances_clicked()
 {
     //TODO: implementar esta función na clase PointCloudProcess
-//    try
-//    {
-//        std::string str;
-//        std::stringstream ss;
-//        float d, d_avg, d_max, d_min;
-//        if (cb_args.distance_points->points.size() > 0){
-//            for (int i=0; i < cb_args.distance_points->points.size(); i++)
-//            {
-//                d = fabs(ground_coeffs(0)*cb_args.distance_points->points[i].x + ground_coeffs(1)*cb_args.distance_points->points[i].y + ground_coeffs(2)*cb_args.distance_points->points[i].z + ground_coeffs(3));
-//                d = d / sqrt(ground_coeffs(0)*ground_coeffs(0) + ground_coeffs(1)*ground_coeffs(1) + ground_coeffs(2)*ground_coeffs(2));
-//                ss << "d" << i << ":" << std::endl << d << std::endl;
-//                if (i == 0)
-//                {
-//                    d_avg = d;
-//                    d_max = d;
-//                    d_min = d;
-//                }
-//                else
-//                {
-//                    if (d < d_min) d_min = d;
-//                    if (d > d_max) d_max = d;
-//                    d_avg += d;
-//                }
-//            }
-//            d_avg = d_avg / cb_args.distance_points->points.size();
-//            ss << "Distancia media:" << std::endl << d_avg << std::endl;
-//            ss << "Distancia max:" << std::endl << d_max << std::endl;
-//            ss << "Distancia min:" << std::endl << d_min << std::endl;
-//        }
-//        else{
-//            ss << "Non se seleccionaron puntos" << std::endl;
-//        }
-//        str = ss.str();
-//        QString qstr = QString::fromStdString(str);
-//        ui->textBrowser_datos_2->append(qstr);
-//    }
-//    catch(char const* error)
-//    {
-//        std::cout << "Plane cutting error: " << error << std::endl;
-//    }
-//    catch(...)
-//    {
-//        std::cout << "Unknown plane cutting exception." << std::endl;
-//    }
+    try
+    {
+        std::string str;
+        std::stringstream ss;
+        pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+        pointProcess.getSelPoints(cloud);
+        float d, d_avg, d_max, d_min;
+        if (cloud->points.size() > 0){
+            for (int i=0; i < cloud->points.size(); i++)
+            {
+               ss << "point " << i << ": " << std::endl << cloud->points[i] << std::endl;
+               if (i == 0)
+               {
+                   d_avg = cloud->points[i].z;
+                   d_max = cloud->points[i].z;
+                   d_min = cloud->points[i].z;
+               }
+               else
+               {
+                   if (cloud->points[i].z < d_min) d_min = cloud->points[i].z;
+                   if (cloud->points[i].z > d_max) d_max = cloud->points[i].z;
+                   d_avg += cloud->points[i].z;
+               }
+           }
+           d_avg = d_avg / cloud->points.size();
+           ss << "Z media:" << std::endl << d_avg << std::endl;
+           ss << "Z max:" << std::endl << d_max << std::endl;
+           ss << "Z min:" << std::endl << d_min << std::endl;
+       }
+       else{
+           ss << "Non se seleccionaron puntos" << std::endl;
+       }
+        str = ss.str();
+        QString qstr = QString::fromStdString(str);
+        ui->textBrowser_datos_2->append(qstr);
+    }
+    catch(char const* error)
+    {
+        std::cout << "Distances error: " << error << std::endl;
+    }
+    catch(...)
+    {
+        std::cout << "Unknown distances exception." << std::endl;
+    }
 }
 
 //Reorienta nube con respecto ao plano
 void PCLViewer::on_pushButton_reorienta_clicked()
 {
-    //TODO:
     try
     {
         std::string str;
@@ -647,4 +669,168 @@ void PCLViewer::on_pushButton_2d_place_clicked()
     {
         std::cout << "Unknown place exception." << std::endl;
     }
+}
+
+void PCLViewer::on_pushButton_load_model_clicked()
+{
+  try {
+    std::string str;
+    std::stringstream ss;
+    std::string nome_archivo;
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Abrir nube de puntos"), "",
+                                                    tr("Point cloud files (*.pcd);;Point Cloud (*.pcd *.ply)"));
+    nome_archivo = fileName.toUtf8().constData();
+    pointProcess.LoadSourceCloud(nome_archivo);
+
+    viewer->removePointCloud("source_cloud");
+    ui->qvtkWidget->update ();
+
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+    pointProcess.getSourcePointCloud(cloud);
+
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> source_handler (cloud, 0, 255, 255);
+    viewer->addPointCloud(cloud, source_handler, "source_cloud");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, ui->doubleSpinBox_mod_size->value(), "source_cloud");
+    ui->qvtkWidget->update ();
+
+    str = ss.str();
+    QString qstr = QString::fromStdString(str);
+    ui->textBrowser_align->append(qstr);
+  }
+  catch(char const* error) {
+    std::cout << "Load model error: " << error << std::endl;
+  }
+  catch(...) {
+    std::cout << "Unknown load model exception." << std::endl;
+  }
+}
+
+void PCLViewer::on_pushButton_delete_model_clicked()
+{
+  try {
+    std::string str;
+    std::stringstream ss;
+    //TODO: Código
+    viewer->removePointCloud("source_cloud");
+    ui->qvtkWidget->update ();
+
+    str = ss.str();
+    QString qstr = QString::fromStdString(str);
+    ui->textBrowser_align->append(qstr);
+  }
+  catch(char const* error) {
+    std::cout << "Delete model error: " << error << std::endl;
+  }
+  catch(...) {
+    std::cout << "Unknown delete model exception." << std::endl;
+  }
+}
+
+void PCLViewer::on_pushButton_init_align_clicked()
+{
+  try {
+    std::string str;
+    std::stringstream ss;
+    pointProcess.InitialAlign(ui->doubleSpinBox_radio->value());
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+    pointProcess.getSourcePointCloud(cloud);
+
+    viewer->removePointCloud("source_cloud");
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> source_handler (cloud, 0, 255, 255);
+    viewer->addPointCloud(cloud, source_handler, "source_cloud");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, ui->doubleSpinBox_mod_size->value(), "source_cloud");
+    ui->qvtkWidget->update ();
+    str = ss.str();
+    QString qstr = QString::fromStdString(str);
+    ui->textBrowser_align->append(qstr);
+  }
+  catch(char const* error) {
+    std::cout << "Initial aligning error: " << error << std::endl;
+  }
+  catch(...) {
+    std::cout << "Unknown initial aligning exception." << std::endl;
+  }
+}
+
+void PCLViewer::on_pushButton_fine_alignment_clicked()
+{
+  try {
+    std::string str;
+    std::stringstream ss;
+    pointProcess.FineAlign();
+    pcl::PointCloud<pcl::PointXYZ>::Ptr cloud;
+    pointProcess.getSourcePointCloud(cloud);
+
+    viewer->removePointCloud("source_cloud");
+    pcl::visualization::PointCloudColorHandlerCustom<pcl::PointXYZ> source_handler (cloud, 0, 255, 255);
+    viewer->addPointCloud(cloud, source_handler, "source_cloud");
+    viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_POINT_SIZE, ui->doubleSpinBox_mod_size->value(), "source_cloud");
+    ui->qvtkWidget->update ();
+
+    str = ss.str();
+    QString qstr = QString::fromStdString(str);
+    ui->textBrowser_align->append(qstr);
+  }
+  catch(char const* error) {
+    std::cout << "Fine aligning error:" << error << std::endl;
+  }
+  catch(...) {
+    std::cout << "Unknown fine aligning exception." << std::endl;
+  }
+}
+
+void PCLViewer::on_pushButton_test_clicked()
+{
+  try {
+    pcl::PointCloud <pcl::PointXYZRGB>::Ptr colored_cloud;
+    colored_cloud.reset(new pcl::PointCloud<pcl::PointXYZRGB>);
+    pointProcess.Segment(colored_cloud);
+    viewer->removePointCloud ("cloud_mod");
+    viewer->removePointCloud ("cloud");
+    viewer->addPointCloud (colored_cloud, "cloud");
+  }
+  catch(char const* error) {
+    std::cout << "Test error:" << error << std::endl;
+  }
+  catch(...) {
+    std::cout << "Unknown test exception." << std::endl;
+  }
+}
+
+void PCLViewer::on_actionLoad_triggered()
+{
+  try {
+    std::string nome_archivo;
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Cargar parámetros de procesado"), "",
+                                                        tr("Json format (*.json);;"));
+    nome_archivo = fileName.toUtf8().constData();
+    if (nome_archivo != "") {
+        pointProcess.settings.load(nome_archivo);
+    }
+  }
+  catch(char const* error) {
+    std::cout << "Load parameters error:" << error << std::endl;
+  }
+  catch(...) {
+    std::cout << "Unknown load parameters exception." << std::endl;
+  }
+}
+
+void PCLViewer::on_actionSave_triggered()
+{
+  try {
+    std::string nome_archivo;
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Guardar parámetros de procesado"), "",
+                                                    tr("Json format (*.json);;"));
+    nome_archivo = fileName.toUtf8().constData();
+    if (nome_archivo != "") {
+      pointProcess.settings.save(nome_archivo);
+    }
+  }
+  catch(char const* error) {
+    std::cout << "Save parameters error:" << error << std::endl;
+  }
+  catch(...) {
+    std::cout << "Unknown save parameters exception." << std::endl;
+  }
 }
