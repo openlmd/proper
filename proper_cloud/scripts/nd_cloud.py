@@ -15,7 +15,7 @@ class NdCloud():
             '/ueye/cloud', PointCloud2, self.cb_point_cloud, queue_size=5)
 
         self.pub_cloud = rospy.Publisher(
-            '/ueye/scan', PointCloud2, queue_size=10)
+            '/ueye/scan', PointCloud2, queue_size=1)
 
         self.listener = tf.TransformListener()
 
@@ -50,8 +50,8 @@ class NdCloud():
             cloud_out.header.frame_id = "/workobject"
             cloud_out = pc2.create_cloud_xyz32(cloud_out.header, points3d)
             self.pub_cloud.publish(cloud_out)
-        except:
-            pass
+        except tf.Exception as error:
+            print error
 
 
 if __name__ == '__main__':

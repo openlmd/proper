@@ -9,6 +9,7 @@
     </include>
 
     <node name="cloud" pkg="proper_cloud" type="nd_cloud" respawn="true" />
+    <node name="height" pkg="proper_cloud" type="nd_height" respawn="true" />
 
     <include file="$(find mashes_measures)/launch/measures.launch">
       <arg name="gui" value="false" />
