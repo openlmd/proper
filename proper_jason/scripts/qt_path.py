@@ -33,8 +33,15 @@ class QtPath(QtGui.QWidget):
             rospy.wait_for_service('robot_send_command', timeout=5)
             self.send_command = rospy.ServiceProxy(
                 'robot_send_command', SrvRobotCommand)
+        except AttributeError as error:
+            rospy.loginfo(str(error))
+            print error
+        except rospy.exceptions.ROSException as error:
+            rospy.loginfo(str(error))
+            print error
         except:
             rospy.loginfo('ERROR connecting to service robot_send_command.')
+            print 'ERROR connecting to service robot_send_command.'
         #self.pub = rospy.Publisher(
         #    import tf'robot_command_json', MsgRobotCommand, queue_size=10)
 
@@ -191,14 +198,17 @@ class QtPath(QtGui.QWidget):
         #self.listWidgetPoses.clear()
 
     def btnLoadPoseClicked(self):
-        rob_pose = self.send_command('{"get_pose":1}')
-        default_command = '{"move":' + rob_pose.response + '}'
-        str_command = QtGui.QInputDialog.getText(
-            self, "Load Jason Command", "Comamnd:", text=default_command)
-        row = self.listWidgetPoses.currentRow()
-        if len(str_command[0]) > 3:
-            self.insertCommand(str_command[0], insert=True, position=row)
-        print str_command
+        try:
+            rob_pose = self.send_command('{"get_pose":1}')
+            default_command = '{"move":' + rob_pose.response + '}'
+            str_command = QtGui.QInputDialog.getText(
+                self, "Load Jason Command", "Comamnd:", text=default_command)
+            row = self.listWidgetPoses.currentRow()
+            if len(str_command[0]) > 3:
+                self.insertCommand(str_command[0], insert=True, position=row)
+            print str_command
+        except AttributeError as error:
+            print error
 
     def btnStepClicked(self):
         n_row = self.listWidgetPoses.count()
@@ -295,10 +305,13 @@ class QtPath(QtGui.QWidget):
                     command = command.replace(',true','')
                 if command.find(',false') > 0:
                     command = command.replace(',false','')
-        rob_response = self.send_command(command)
-        print 'Sended command:', command
-        print 'Received response:', rob_response
-        self.ok_command = rob_response.response
+        try:
+            rob_response = self.send_command(command)
+            print 'Sended command:', command
+            print 'Received response:', rob_response
+            self.ok_command = rob_response.response
+        except AttributeError as error:
+            print error
 
     def timeRunPathEvent(self):
         """Sends a command each time event from the list of commands."""
