@@ -17,7 +17,8 @@ class NdCloud():
         self.pub_cloud = rospy.Publisher(
             '/ueye/scan', PointCloud2, queue_size=1)
 
-        self.listener = tf.TransformListener()
+        #TODO: Try stability of different cache time (default 10)
+        self.listener = tf.TransformListener(True, rospy.Duration(1))
 
         rospy.spin()
 
