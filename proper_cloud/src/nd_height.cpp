@@ -18,7 +18,7 @@
 
 
 class NdHeight {
-private:
+ private:
   ros::NodeHandle nh;
   ros::Subscriber sub_cloud;
   ros::Publisher pub_height;
@@ -29,7 +29,8 @@ private:
   Eigen::Matrix4f matrix;
   Eigen::Matrix4f matrix1;
   Eigen::Matrix4f matrix2;
-public:
+
+ public:
   typedef pcl::PointXYZ Point;
   typedef pcl::PointCloud<Point> PointCloud;
 
@@ -38,34 +39,36 @@ public:
 
     sub_cloud = nh.subscribe<sensor_msgs::PointCloud2>("/ueye/scan", 1,  &NdHeight::cbPointCloud, this);
     pub_height = nh.advertise<std_msgs::Float32>("/ueye/zheight", 1);
-
   }
 
   ~NdHeight() {}
 
   void cbPointCloud(const sensor_msgs::PointCloud2ConstPtr& cloud_msg) {
     try {
-      //clock_t begin = clock();
-      PointCloud::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>), cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
+      // clock_t begin = clock();
+      PointCloud::Ptr cloud (new pcl::PointCloud<pcl::PointXYZ>);
+      PointCloud::Ptr  cloud_p (new pcl::PointCloud<pcl::PointXYZ>);
       Eigen::VectorXf model_coefficients;
       std::vector< double > distances;
-      //std::vector<int> inliers;
+      // std::vector<int> inliers;
       pcl::fromROSMsg(*cloud_msg, *cloud);
-      pcl::SampleConsensusModelLine<pcl::PointXYZ>::Ptr model_l (new pcl::SampleConsensusModelLine<pcl::PointXYZ> (cloud));
-      pcl::RandomSampleConsensus<pcl::PointXYZ> ransac (model_l);
-      ransac.setDistanceThreshold (0.0001);
+      pcl::SampleConsensusModelLine<pcl::PointXYZ>::Ptr model_l(new pcl::SampleConsensusModelLine<pcl::PointXYZ> (cloud));
+      pcl::RandomSampleConsensus<pcl::PointXYZ> ransac(model_l);
+      ransac.setDistanceThreshold(0.0001);
       ransac.computeModel();
-      //ransac.getInliers(inliers);
+      // ransac.getInliers(inliers);
       ransac.getModelCoefficients(model_coefficients);
       model_l->getDistancesToModel(model_coefficients, distances);
       double dMax = *max_element(distances.begin(), distances.end());
-      //clock_t end = clock();
-      //double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-      //ROS_INFO_STREAM("Inliers: " << inliers.size());
-      //double dMin = *min_element(distances.begin(), distances.end());
-      //ROS_INFO_STREAM("MinD: " << dMin);
+      // clock_t end = clock();
+      // double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+      // ROS_INFO_STREAM("Inliers: " << inliers.size());
+      // double dMin = *min_element(distances.begin(), distances.end());
+      // ROS_INFO_STREAM("MinD: " << dMin);
       z_height_msg.data = dMax;
       pub_height.publish(z_height_msg);
+      // TODO(baltasarls): Check frequency both topics publisher and subscriber
+      ros::Duration(0.5).sleep();
     } catch (...) {
       ROS_ERROR("Z height error");
     }
@@ -73,7 +76,7 @@ public:
 };
 
 
-int main (int argc, char** argv) {
+int main(int argc, char** argv) {
   ros::init(argc, argv, "height");
 
   NdHeight nd_height;

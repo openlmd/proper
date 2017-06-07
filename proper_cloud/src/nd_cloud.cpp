@@ -30,11 +30,12 @@ public:
   typedef pcl::PointCloud<Point> PointCloud;
 
   NdCloud() {
-    sub_cloud = nh.subscribe<sensor_msgs::PointCloud2>("/ueye/cloud", 5,  &NdCloud::cbPointCloud, this);
+    sub_cloud = nh.subscribe<sensor_msgs::PointCloud2>("/ueye/cloud", 1,  &NdCloud::cbPointCloud, this);
 
-    pub_cloud = nh.advertise<sensor_msgs::PointCloud2>("/ueye/scan", 10);
+    pub_cloud = nh.advertise<sensor_msgs::PointCloud2>("/ueye/scan", 1);
 
-    tf_listener = new tf::TransformListener();
+    //TODO: Try stability of different cache time (default 10)
+    tf_listener = new tf::TransformListener(ros::Duration(2.0));
   }
 
   ~NdCloud() {}
@@ -64,7 +65,7 @@ public:
       cloud_out.header.frame_id = "/workobject";
       pub_cloud.publish(cloud_out);
     } catch (tf::TransformException ex) {
-      ROS_ERROR("%s",ex.what());
+      ROS_ERROR("nd_cloud: %s", ex.what());
     }
 
     // sensor_msgs::PointCloud2 output;
