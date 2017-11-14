@@ -87,11 +87,12 @@ class QtScan(QtGui.QWidget):
 
     def cbPointCloud(self, msg_cloud):
         points = pc2.read_points(msg_cloud, skip_nans=False)
-        self.points3d = np.float32([point for point in points])
+        self.points3d = np.float32([[dim * 1000.0 for dim in point]
+                                    for point in points])
         if self.recording:
             print self.filename
             with open(self.filename, 'a') as f:
-                np.savetxt(f, self.points3d, fmt='%.6f')
+                np.savetxt(f, self.points3d, fmt='%.3f')
 
     def cbStatus(self, msg_status):
         status = msg_status.running
